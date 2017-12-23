@@ -3,4 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="App_Yellow">#FFC60B</color>
+    <color name="App_Blue">#00355F</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorClear">#00000000</color>
+    <color name="colorGrey">#334142</color>
+    <color name="colorPerisCope">#3fa4c2</color>
+
+
 </resources>
