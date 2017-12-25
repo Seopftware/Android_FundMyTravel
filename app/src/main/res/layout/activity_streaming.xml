@@ -16,21 +16,139 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linear_top"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:orientation="vertical"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            app:srcCompat="@drawable/switchcamera"
+            android:id="@+id/ibtn_switch_camera"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="#00000000"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/switchcamera2" />
+
+        <ImageButton
+            android:id="@+id/ibtn_camera_onoff"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:background="#00000000"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/streaming_cameraon" />
+
+        <ImageButton
+            android:id="@+id/ibtn_mic_onoff"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:background="#00000000"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/streaming_micon" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_number1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/number1"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:id="@+id/iv_number2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/number2"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:id="@+id/iv_number3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/number3"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/btn_live"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/holo_red_light"
+        android:text="Live"
+        android:textColor="@color/colorWhite"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linear_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#65000000"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:visibility="visible"
+        android:weightSum="10"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <ImageButton
+            android:id="@+id/ibtn_friend_invite"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_weight="2"
+            android:background="@color/colorClear"
+            android:scaleType="centerInside"
+            android:layout_gravity="center_vertical"
+            app:srcCompat="@drawable/streaming_invite" />
+
+        <ImageButton
+            android:id="@+id/ibtn_chat_view"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_weight="2"
+            android:background="@color/colorClear"
+            android:scaleType="centerInside"
+            android:layout_gravity="center_vertical"
+            app:srcCompat="@drawable/streaming_chatbubble_3" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="4" />
+
+        <Button
+            android:id="@+id/btn_finish"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_weight="2"
+            android:background="@drawable/btn_line"
+            android:layout_gravity="center_vertical"
+            android:text="Finish"
+            android:textColor="@color/colorWhite" />
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

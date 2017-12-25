@@ -22,7 +22,7 @@ import java.util.Random;
 
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.fragment.Home_Fragment;
-import seopftware.fundmytravel.util.TabEntity;
+import seopftware.fundmytravel.util.tablayout.TabEntity;
 import seopftware.fundmytravel.util.ViewFindUtils;
 
 public class Home_Activity extends AppCompatActivity {
@@ -30,7 +30,7 @@ public class Home_Activity extends AppCompatActivity {
     // TabLayout with Icon
     Context mContext = this;
     private ArrayList<Fragment> mFragments = new ArrayList<>();
-    private String[] mTitles = {"首页", "消息", "联系人", "更多"};
+    private String[] mTitles = {"Home", "Messages", "Streaming", "Settings"};
 
     // 선택 안됐을 때의 아이콘들
     private int[] mIconUnselectIds = {
@@ -41,8 +41,6 @@ public class Home_Activity extends AppCompatActivity {
     private int[] mIconSelectIds = {
             R.mipmap.tab_home_select, R.mipmap.tab_speech_select,
             R.mipmap.tab_contact_select, R.mipmap.tab_more_select};
-
-
 
     private ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>();
     private View mDecorView;

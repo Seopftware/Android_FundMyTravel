@@ -17,7 +17,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name=".util.MyApplication">
         <activity
             android:name=".activity.Intro_Activity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -30,10 +31,12 @@
         <activity
             android:name=".activity.Login_Activity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".util.streaming.Streaming_Acticity" />
+        <activity android:name=".util.streaming.Streaming_Acticity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity android:name=".activity.Home_Activity" />
         <activity android:name=".util.streaming.BeforeStreaming_Activity" />
-        <activity android:name=".util.streaming.PlayerStreaming_Activity"></activity>
+        <activity android:name=".util.streaming.PlayerStreaming_Activity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

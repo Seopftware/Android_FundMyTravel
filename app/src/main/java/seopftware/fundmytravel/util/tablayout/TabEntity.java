@@ -1,4 +1,4 @@
-package seopftware.fundmytravel.util;
+package seopftware.fundmytravel.util.tablayout;
 
 import com.flyco.tablayout.listener.CustomTabEntity;
 
