@@ -7,12 +7,20 @@
     android:layout_height="match_parent"
     tools:context="seopftware.fundmytravel.activity.Home_Activity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#2C97DE" />
+
     <com.flyco.tablayout.CommonTabLayout
         android:id="@+id/tl_2"
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:background="#ffffff"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         tl:tl_iconHeight="23dp"
         tl:tl_iconWidth="23dp"
         tl:tl_indicator_color="#2C97DE"

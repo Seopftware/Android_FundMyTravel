@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">FundMyTravel</string>
+    <string name="title_activity_chat_">Chat_Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

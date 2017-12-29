@@ -22,7 +22,6 @@ import java.util.List;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.util.streaming.ActivityLink;
 import seopftware.fundmytravel.util.streaming.BeforeStreaming_Activity;
-import seopftware.fundmytravel.util.streaming.PlayerStreaming_Activity;
 import seopftware.fundmytravel.util.streaming.Streaming_Acticity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
@@ -30,7 +29,7 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 
 @SuppressLint("ValidFragment")
-public class Home_Fragment extends Fragment {
+public class Chatlist_Fragment extends Fragment {
     private String mTitle;
     private List<ActivityLink> activities;
 
@@ -39,8 +38,8 @@ public class Home_Fragment extends Fragment {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    public static Home_Fragment getInstance(String title) {
-        Home_Fragment home_fragment = new Home_Fragment();
+    public static Chatlist_Fragment getInstance(String title) {
+        Chatlist_Fragment home_fragment = new Chatlist_Fragment();
         home_fragment.mTitle = title;
         return home_fragment;
     }
@@ -55,10 +54,9 @@ public class Home_Fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle(Html.fromHtml("<font color=\"red\">" + getString(R.string.app_name) + "</font>"));
+        getActivity().setTitle(Html.fromHtml("<font color=\"#FFFFFF\">" + getString(R.string.app_name) + "</font>"));
 
-
-        View v = inflater.inflate(R.layout.fragment_home, null);
+        View v = inflater.inflate(R.layout.fragment_chatlist, null);
         createList();
 
         if (!hasPermissions(getContext(), PERMISSIONS)) {
@@ -66,7 +64,6 @@ public class Home_Fragment extends Fragment {
         }
 
         Button btn_streamer = (Button) v.findViewById(R.id.btn_streamer);
-        Button btn_viewer = (Button) v.findViewById(R.id.btn_viewer);
         btn_streamer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,17 +83,6 @@ public class Home_Fragment extends Fragment {
                 startActivity(intent);
             }
         });
-
-        btn_viewer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(getContext(), PlayerStreaming_Activity.class);
-                startActivity(intent);
-            }
-        });
-
-
-
 
         return v;
     }

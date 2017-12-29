@@ -14,7 +14,8 @@ import android.widget.Toast;
  *   ex) 로그인 액티비티에서 받아온 사용자 아이디와 닉네임, 프사 등 저장 => 어디서나 사용가능
 **/
 
-public class MyApplication extends Application {
+public class MyApp extends Application {
+    
 
     @Override
     public void onCreate() {

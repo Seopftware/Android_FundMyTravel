@@ -12,13 +12,13 @@
     <uses-feature android:name="android.hardware.camera2.autofocus" />
 
     <application
+        android:name=".util.MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".util.MyApplication">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".activity.Intro_Activity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -31,12 +31,19 @@
         <activity
             android:name=".activity.Login_Activity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".util.streaming.Streaming_Acticity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity
+            android:name=".util.streaming.Streaming_Acticity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".activity.Home_Activity" />
         <activity android:name=".util.streaming.BeforeStreaming_Activity" />
-        <activity android:name=".util.streaming.PlayerStreaming_Activity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity
+            android:name=".util.streaming.PlayerStreaming_Activity"/>
+        <activity
+            android:name=".util.chatting.Chat_Activity"
+            android:label="@string/title_activity_chat_"></activity>
     </application>
 
 </manifest>
+
+
+<!-- android:theme="@style/AppTheme.NoActionBar"-->

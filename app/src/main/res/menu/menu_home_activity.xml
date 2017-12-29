@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".activity.Home_Activity">
+
+
+    <item android:id="@+id/navidrawer"
+        android:title="액션버튼"
+        android:icon="@drawable/menu_map_icon"
+        app:showAsAction="always"/>
+
+
+    <item android:id="@+id/navidrawer2"
+        android:title="액션버튼"
+        android:icon="@drawable/menu_serarch_icon"
+        app:showAsAction="always"/>
+
+
+</menu>
+
