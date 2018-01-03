@@ -13,20 +13,15 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.util.streaming.ActivityLink;
-import seopftware.fundmytravel.util.streaming.BeforeStreaming_Activity;
 import seopftware.fundmytravel.util.streaming.Streaming_Acticity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
 
 @SuppressLint("ValidFragment")
 public class Settings_Fragment extends Fragment {
@@ -65,28 +60,6 @@ public class Settings_Fragment extends Fragment {
             ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
         }
 
-        Button btn_streamer = (Button) v.findViewById(R.id.btn_streamer);
-        Button btn_viewer = (Button) v.findViewById(R.id.btn_viewer);
-        btn_streamer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (hasPermissions(getContext(), PERMISSIONS)) {
-                    ActivityLink link = activities.get(0);
-                    int minSdk = link.getMinSdk();
-                    if (Build.VERSION.SDK_INT >= minSdk) {
-                        startActivity(link.getIntent());
-                    } else {
-                        showMinSdkError(minSdk);
-                    }
-                } else {
-                    showPermissionsErrorAndRequest();
-                }
-
-                Intent intent=new Intent(getContext(), BeforeStreaming_Activity.class);
-                startActivity(intent);
-            }
-        });
-
         return v;
     }
 
@@ -105,27 +78,6 @@ public class Settings_Fragment extends Fragment {
             }
         }
         return true;
-    }
-
-    private void showMinSdkError(int minSdk) {
-        String named;
-        switch (minSdk) {
-            case JELLY_BEAN_MR2:
-                named = "JELLY_BEAN_MR2";
-                break;
-            case LOLLIPOP:
-                named = "LOLLIPOP";
-                break;
-            default:
-                named = "JELLY_BEAN";
-                break;
-        }
-        Toast.makeText(getContext(), "You need min Android " + named + " (API " + minSdk + " )", Toast.LENGTH_SHORT).show();
-    }
-
-    private void showPermissionsErrorAndRequest() {
-        Toast.makeText(getContext(), "You need permissions before", Toast.LENGTH_SHORT).show();
-        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
     }
 
 }

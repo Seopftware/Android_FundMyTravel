@@ -7,6 +7,36 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/Linear_up"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/view34"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="3dp"
+            android:background="#BDBDBD" />
+
+        <TextView
+            android:id="@+id/tv_UpperTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="  MyProfile"
+            android:textSize="16sp"
+            android:textStyle="italic" />
+
+        <View
+            android:id="@+id/view41"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="3dp"
+            android:background="#BDBDBD" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -47,5 +77,34 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/Linear_down"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/view24"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="3dp"
+            android:background="#BDBDBD" />
+
+        <TextView
+            android:id="@+id/tv_BottomTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="  Friends"
+            android:textSize="16sp"
+            android:textStyle="italic" />
+
+        <View
+            android:id="@+id/view74"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="3dp"
+            android:background="#BDBDBD" />
+    </LinearLayout>
 
 </LinearLayout>

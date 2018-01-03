@@ -76,7 +76,6 @@ public class Home_Activity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(false); // 뒤로가기 버튼, 디폴트로 true만 해도 백버튼이 생김
 
-
         for (String title : mTitles) {
             mFragments.add(Home_Fragment.getInstance("Switch ViewPager " + title));
             mFragments.add(Chatlist_Fragment.getInstance("Switch ViewPager " + title));

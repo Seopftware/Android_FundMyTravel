@@ -9,30 +9,36 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import seopftware.fundmytravel.R;
+import seopftware.fundmytravel.adapter.Home_Recycler_Adapter;
+import seopftware.fundmytravel.dataset.Home_Recycler_Item;
 import seopftware.fundmytravel.util.streaming.ActivityLink;
-import seopftware.fundmytravel.util.streaming.BeforeStreaming_Activity;
-import seopftware.fundmytravel.util.streaming.PlayerStreaming_Activity;
 import seopftware.fundmytravel.util.streaming.Streaming_Acticity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
 
 @SuppressLint("ValidFragment")
 public class Home_Fragment extends Fragment {
+
     private String mTitle;
     private List<ActivityLink> activities;
+
+    // Recycler View
+    RecyclerView recyclerView;
+    Home_Recycler_Adapter adapter;
+    Home_Recycler_Item recycler_item;
+    ArrayList<Home_Recycler_Item> recycler_itemlist;
+
 
     private final String[] PERMISSIONS = {
             Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA,
@@ -55,8 +61,8 @@ public class Home_Fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle(Html.fromHtml("<font color=\"red\">" + getString(R.string.app_name) + "</font>"));
-
+        // 액션바에 Friends (친구숫자) 표현하기
+        getActivity().setTitle(Html.fromHtml("<font color=\"#FFFFFF\">" + "Friends " + "</font>"+"<font color=\"#FFC60B\">" + "350" + "</font>"));
 
         View v = inflater.inflate(R.layout.fragment_home, null);
         createList();
@@ -65,38 +71,25 @@ public class Home_Fragment extends Fragment {
             ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
         }
 
-        Button btn_streamer = (Button) v.findViewById(R.id.btn_streamer);
-        Button btn_viewer = (Button) v.findViewById(R.id.btn_viewer);
-        btn_streamer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (hasPermissions(getContext(), PERMISSIONS)) {
-                    ActivityLink link = activities.get(0);
-                    int minSdk = link.getMinSdk();
-                    if (Build.VERSION.SDK_INT >= minSdk) {
-                        startActivity(link.getIntent());
-                    } else {
-                        showMinSdkError(minSdk);
-                    }
-                } else {
-                    showPermissionsErrorAndRequest();
-                }
+        recyclerView = (RecyclerView) v.findViewById(R.id.home_recycler);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recycler_itemlist = new ArrayList<Home_Recycler_Item>();
 
-                Intent intent=new Intent(getContext(), BeforeStreaming_Activity.class);
-                startActivity(intent);
-            }
-        });
+        recycler_item = new Home_Recycler_Item();
+        adapter = new Home_Recycler_Adapter();
 
-        btn_viewer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(getContext(), PlayerStreaming_Activity.class);
-                startActivity(intent);
-            }
-        });
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
-
+        adapter.addMe("나다", "재밌다", "1.jpg");
+        adapter.addFriend("친구다", "재밌다", "1.jpg");
+        adapter.addFriend("친구다", "재밌다","1.jpg");
+        adapter.addFriend("친구다", "재밌다","1.jpg");
+        adapter.addFriend("친구다", "재밌다","1.jpg");
+        adapter.addFriend("친구다", "재밌다","1.jpg");
+        adapter.addFriend("친구다", "재밌다","1.jpg");
+        adapter.notifyDataSetChanged();
 
         return v;
     }
@@ -117,26 +110,31 @@ public class Home_Fragment extends Fragment {
         }
         return true;
     }
-
-    private void showMinSdkError(int minSdk) {
-        String named;
-        switch (minSdk) {
-            case JELLY_BEAN_MR2:
-                named = "JELLY_BEAN_MR2";
-                break;
-            case LOLLIPOP:
-                named = "LOLLIPOP";
-                break;
-            default:
-                named = "JELLY_BEAN";
-                break;
-        }
-        Toast.makeText(getContext(), "You need min Android " + named + " (API " + minSdk + " )", Toast.LENGTH_SHORT).show();
-    }
-
-    private void showPermissionsErrorAndRequest() {
-        Toast.makeText(getContext(), "You need permissions before", Toast.LENGTH_SHORT).show();
-        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
-    }
-
 }
+
+/**
+ // =========================================================================================================
+ // 권한 설정
+ private void showMinSdkError(int minSdk) {
+ String named;
+ switch (minSdk) {
+ case JELLY_BEAN_MR2:
+ named = "JELLY_BEAN_MR2";
+ break;
+ case LOLLIPOP:
+ named = "LOLLIPOP";
+ break;
+ default:
+ named = "JELLY_BEAN";
+ break;
+ }
+ Toast.makeText(getContext(), "You need min Android " + named + " (API " + minSdk + " )", Toast.LENGTH_SHORT).show();
+ }
+
+ private void showPermissionsErrorAndRequest() {
+ Toast.makeText(getContext(), "You need permissions before", Toast.LENGTH_SHORT).show();
+ ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
+ }
+ // =========================================================================================================
+
+ */

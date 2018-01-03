@@ -23,7 +23,7 @@ public class MyApp extends Application {
     public static String AUTO_LOGIN_STATUS = "auto_login_status";
     public static String AUTO_LOGIN_KEY = "auto_login_key";
     public static String AUTO_LOGIN_USERID = "auto_login_userid";
-
+    public static String SERVER_URL = "http://52.79.138.20/";
 
     @Override
     public void onCreate() {
