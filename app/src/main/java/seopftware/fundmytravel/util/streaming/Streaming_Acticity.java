@@ -57,7 +57,7 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
     private Button btn_live; // 생방송 표시 버튼
 
 
-    // 카운트 다운을 위한 변수들
+    // 방송 준비를 위한 카운트 다운을 위한 변수들
     private CountDownTimer countDownTimer;
     private static final int MILLISINFUTURE = 4 * 1000; // 총 시간
     private static final int COUNT_DOWN_INTERVAL = 1000; // onTick()에 대한 시간
@@ -126,6 +126,7 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
 
     // =========================================================================================================
     // 3, 2, 1 카운트 다운 하는 곳
+    // 방송을 시작하기 전에 카운트 다운을 해준다.
     // =========================================================================================================
     public void countDownTimer() {
         countDownTimer = new CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
@@ -169,7 +170,6 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
                 linear_bottom.bringToFront();
                 linear_top.setVisibility(View.VISIBLE);
                 btn_live.setVisibility(View.VISIBLE);
-
 
             }
         };

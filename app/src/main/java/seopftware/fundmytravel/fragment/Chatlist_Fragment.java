@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import seopftware.fundmytravel.R;
+import seopftware.fundmytravel.util.chatting.Chatroom_Activity;
 import seopftware.fundmytravel.util.streaming.ActivityLink;
-import seopftware.fundmytravel.util.streaming.BeforeStreaming_Activity;
 import seopftware.fundmytravel.util.streaming.Streaming_Acticity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
@@ -67,19 +67,8 @@ public class Chatlist_Fragment extends Fragment {
         btn_streamer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (hasPermissions(getContext(), PERMISSIONS)) {
-                    ActivityLink link = activities.get(0);
-                    int minSdk = link.getMinSdk();
-                    if (Build.VERSION.SDK_INT >= minSdk) {
-                        startActivity(link.getIntent());
-                    } else {
-                        showMinSdkError(minSdk);
-                    }
-                } else {
-                    showPermissionsErrorAndRequest();
-                }
 
-                Intent intent=new Intent(getContext(), BeforeStreaming_Activity.class);
+                Intent intent=new Intent(getContext(), Chatroom_Activity.class);
                 startActivity(intent);
             }
         });

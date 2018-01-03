@@ -45,7 +45,7 @@ public class Intro_Activity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        handler.postDelayed(runnable, 3000); // 핸들러 3초 딜레이
+        handler.postDelayed(runnable, 1000); // 핸들러 1초 딜레이
     }
 
     protected void onPause() {

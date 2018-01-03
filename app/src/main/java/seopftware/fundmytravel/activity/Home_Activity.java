@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,7 +31,11 @@ import seopftware.fundmytravel.fragment.Streaminglist_Fragment;
 import seopftware.fundmytravel.util.ViewFindUtils;
 import seopftware.fundmytravel.util.tablayout.TabEntity;
 
+import static seopftware.fundmytravel.util.MyApp.USER_ID;
+
 public class Home_Activity extends AppCompatActivity {
+
+    private static final String TAG = "Home_Activity";
 
     // TabLayout with Icon
     Context mContext = this;
@@ -63,6 +68,8 @@ public class Home_Activity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Log.d(TAG, "USER ID값 궁금해: " +USER_ID);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true); //커스터마이징 하기 위해 필요

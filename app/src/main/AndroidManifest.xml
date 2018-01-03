@@ -6,6 +6,12 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- sms 문자 인증을 위한 permission -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <!-- 내 폰 번호를 가져오기 위한 permission -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <!-- some devices need it -->
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera2.full" />
@@ -36,14 +42,12 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".activity.Home_Activity" />
         <activity android:name=".util.streaming.BeforeStreaming_Activity" />
+        <activity android:name=".util.streaming.PlayerStreaming_Activity" />
         <activity
-            android:name=".util.streaming.PlayerStreaming_Activity"/>
-        <activity
-            android:name=".util.chatting.Chat_Activity"
-            android:label="@string/title_activity_chat_"></activity>
+            android:name=".util.chatting.Chatroom_Activity"
+            android:label="@string/title_activity_chat_" />
+        <activity android:name=".activity.Login_Phone_Activity" />
+        <activity android:name=".activity.Login_Phone2_Activity"></activity>
     </application>
 
-</manifest>
-
-
-<!-- android:theme="@style/AppTheme.NoActionBar"-->
+</manifest> <!-- android:theme="@style/AppTheme.NoActionBar" -->

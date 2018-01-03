@@ -1,6 +1,8 @@
 package seopftware.fundmytravel.activity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.util.Linkify;
@@ -12,6 +14,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import seopftware.fundmytravel.R;
+
+import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_KEY;
+import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_STATUS;
+import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_USERID;
+import static seopftware.fundmytravel.util.MyApp.USER_ID;
 
 public class Login_Activity extends AppCompatActivity implements Button.OnClickListener {
 
@@ -27,6 +34,20 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // =========================================================================================================
+        // 자동 로그인 확인을 위한 부분
+        SharedPreferences autologin = getSharedPreferences(AUTO_LOGIN_STATUS, Activity.MODE_PRIVATE);
+        String status = autologin.getString(AUTO_LOGIN_KEY, "fail"); // 저장된 자동로그인 정보가 있으면 "success" 없을 경우 "fail"
+
+        if (status.equals("success")) {
+            USER_ID = autologin.getString(AUTO_LOGIN_USERID, "fail"); // USER_ID 전역 변수에 고유 ID 값 담아서 어디서든 사용하기 편하게 해준다.
+            Intent intent1 = new Intent(getApplicationContext(), Home_Activity.class);
+            startActivity(intent1);
+            finish();
+        }
+        // =========================================================================================================
+
 
         // 버튼 선언
         btn_login_phone = (Button) findViewById(R.id.btn_login_phone); // 폰 로그인
@@ -59,34 +80,29 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
 
     // =========================================================================================================
     // 버튼 리스너
-    // =========================================================================================================
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
 
-            case R.id.btn_login_phone : // 폰으로 로그인
-                Intent intent=new Intent(getApplicationContext(), Home_Activity.class);
+            case R.id.btn_login_phone: // 폰으로 로그인
+                Intent intent = new Intent(getApplicationContext(), Login_Phone_Activity.class);
                 startActivity(intent);
                 finish();
                 break;
 
-            case R.id.btn_login_google : // 구글로 로그인
-                Intent intent1=new Intent(getApplicationContext(), Home_Activity.class);
+            case R.id.btn_login_google: // 구글로 로그인
+                Intent intent1 = new Intent(getApplicationContext(), Home_Activity.class);
                 startActivity(intent1);
                 finish();
                 break;
 
-            case R.id.btn_login_naver : // 네이버 로그인
-                Intent intent2=new Intent(getApplicationContext(), Home_Activity.class);
+            case R.id.btn_login_naver: // 네이버 로그인
+                Intent intent2 = new Intent(getApplicationContext(), Home_Activity.class);
                 startActivity(intent2);
                 finish();
                 break;
         }
     }
-
-
-
-
-
+    // =========================================================================================================
 
 }

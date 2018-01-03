@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#334142"
+    android:background="@color/colorPerisCope"
     tools:context="seopftware.fundmytravel.activity.Intro_Activity">
 
     <ImageView
         android:id="@+id/iv_Background"
-        android:layout_width="324dp"
-        android:layout_height="227dp"
+        android:layout_width="356dp"
+        android:layout_height="255dp"
         android:layout_marginBottom="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
