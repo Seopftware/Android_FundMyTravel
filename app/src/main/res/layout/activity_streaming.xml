@@ -10,7 +10,7 @@
         android:id="@+id/view_surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/linear_bottom"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -110,6 +110,7 @@
         android:orientation="horizontal"
         android:padding="4dp"
         android:visibility="visible"
+        android:clickable="false"
         android:weightSum="10"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -119,20 +120,20 @@
             android:id="@+id/ibtn_friend_invite"
             android:layout_width="0dp"
             android:layout_height="35dp"
+            android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:background="@color/colorClear"
             android:scaleType="centerInside"
-            android:layout_gravity="center_vertical"
             app:srcCompat="@drawable/streaming_invite" />
 
         <ImageButton
             android:id="@+id/ibtn_chat_view"
             android:layout_width="0dp"
             android:layout_height="35dp"
+            android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:background="@color/colorClear"
             android:scaleType="centerInside"
-            android:layout_gravity="center_vertical"
             app:srcCompat="@drawable/streaming_chatbubble_3" />
 
         <View
@@ -144,11 +145,77 @@
             android:id="@+id/btn_finish"
             android:layout_width="0dp"
             android:layout_height="35dp"
+            android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:background="@drawable/btn_line"
-            android:layout_gravity="center_vertical"
             android:text="Finish"
             android:textColor="@color/colorWhite" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/streaming_recycler"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:layout_marginBottom="45dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linear_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!--<EditText-->
+        <!--android:id="@+id/editText3"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--android:ems="10"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:text="Name">-->
+        <!--<requestFocus/></EditText>-->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/et_input_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:focusable="true"
+                android:hint="Write a comment" />
+
+            <ImageButton
+                android:id="@+id/ibtn_chat_send"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="#00000000"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/streaming_send_before" />
+        </RelativeLayout>
+
+        <!--<requestFocus/></seopftware.fundmytravel.util.etc.ClearEditText>-->
+
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -1,7 +1,12 @@
 package seopftware.fundmytravel.util;
 
 import android.app.Application;
+import android.util.Log;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -24,6 +29,9 @@ public class MyApp extends Application {
     public static String AUTO_LOGIN_KEY = "auto_login_key";
     public static String AUTO_LOGIN_USERID = "auto_login_userid";
     public static String SERVER_URL = "http://52.79.138.20/";
+    public static String SERVER_IP = "192.168.1.65";
+    public static int NETTY_PORT = 8000;
+
 
     @Override
     public void onCreate() {
@@ -35,7 +43,6 @@ public class MyApp extends Application {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-
     // Retrofit http 통신 과정 Logging 하기
     public static OkHttpClient createOkHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
@@ -43,5 +50,19 @@ public class MyApp extends Application {
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.addInterceptor(interceptor);
         return builder.build();
+    }
+
+    public static String TimeCheck() {
+        long now = System.currentTimeMillis();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 E요일_kkmmss", Locale.KOREA);
+        Log.d("시간이 이상함", String.valueOf(simpleDateFormat));
+        String Show_Time = simpleDateFormat.format(new Date(now));
+
+//        String[] time_split = Show_Time.split("_");
+//        String Date = time_split[0];
+//        String Time = time_split[1];
+//        Log.d("시간 확인", "Date : " + Date + " Time : " + Time);
+
+        return Show_Time;
     }
 }

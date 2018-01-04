@@ -33,12 +33,8 @@ public class Home_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.Vie
     ArrayList<Home_Recycler_Item> itemlist = new ArrayList<Home_Recycler_Item>();
     Context context;
 
-
-//    public Home_Recycler_Adapter(ArrayList<Home_Recycler_Item> items) {
-//        mItems = items;
-//    }
-
     public Home_Recycler_Adapter() {
+
     }
 
     @Override

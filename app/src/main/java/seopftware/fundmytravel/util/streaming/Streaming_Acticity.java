@@ -1,18 +1,24 @@
 package seopftware.fundmytravel.util.streaming;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,13 +29,37 @@ import com.pedro.rtplibrary.rtmp.RtmpCamera1;
 
 import net.ossrs.rtmp.ConnectCheckerRtmp;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.Delimiters;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.activity.Home_Activity;
+import seopftware.fundmytravel.adapter.Streaming_Recycler_Adapter;
+import seopftware.fundmytravel.dataset.Streaming_Item;
+
+import static seopftware.fundmytravel.util.MyApp.NETTY_PORT;
+import static seopftware.fundmytravel.util.MyApp.SERVER_IP;
+import static seopftware.fundmytravel.util.MyApp.TimeCheck;
 
 /**
  * 영상 송출하는 곳
@@ -44,21 +74,37 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
 
     private static final String TAG = "Streaming_Activity";
 
-    // UI 변수들
+    // 스트리밍 관련 UI 변수들
     private RtmpCamera1 rtmpCamera1;
     private ImageButton ibtn_switch_camera; // 카메라 전면/후면 변환 버튼
     private ImageButton ibtn_camera_onoff; // 카메라 전면/후면 변환 버튼
     private ImageButton ibtn_mic_onoff; // 카메라 전면/후면 변환 버튼
     private ImageButton ibtn_friend_invite; // 스트리밍 하단의 친구 초대 / 채팅 보이기/숨기기 버튼
-    private ImageButton ibtn_chat_view; // 스트리밍 하단의 친구 초대 / 채팅 보이기/숨기기 버튼
     private Button btn_finish; // 스트리밍 종료
     private ImageView iv_number1, iv_number2, iv_number3; // 3, 2, 1 이미지 파일
     private LinearLayout linear_top, linear_bottom; // 상단 Linear, 하단 Linear
     private Button btn_live; // 생방송 표시 버튼
 
+    // 채팅 관련 Recycler 변수들
+    RecyclerView recyclerView; // Recycler View 변수
+    Streaming_Recycler_Adapter adapter; // Recycler Adapter 변수
+    Streaming_Item recycler_item; // Reclycler view에 데이터 추가할 Item
+    ArrayList<Streaming_Item> recycler_itemlist
+            = new ArrayList<Streaming_Item>(); // Item들을 담을 Array list
+
+    // 채팅 관련 UI 변수들
+    private ImageButton ibtn_chat_view; // 채팅 메세지 창 버튼
+    private LinearLayout linear_message; // 채팅을 입력하는 Linear
+    private EditText et_input_message; // 채팅 입력창
+    private ImageButton ibtn_chat_send; // 보내기 버튼
+    InputMethodManager imm; // 키보드 강제로 올리고 내리기 위한 변수
+
+    // 채팅을 위한 Netty 변수들
+    Channel channel;
+    Bootstrap bootstrap;
 
     // 방송 준비를 위한 카운트 다운을 위한 변수들
-    private CountDownTimer countDownTimer;
+    private CountDownTimer countDownTimer; // 방송 시작 전 카운트 다운을 위한 함수
     private static final int MILLISINFUTURE = 4 * 1000; // 총 시간
     private static final int COUNT_DOWN_INTERVAL = 1000; // onTick()에 대한 시간
     int count = 3;
@@ -115,12 +161,67 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
         btn_live = (Button) findViewById(R.id.btn_live); // 생방송 표시 버튼
         linear_top = (LinearLayout) findViewById(R.id.linear_top);
         linear_bottom = (LinearLayout) findViewById(R.id.linear_bottom);
+        linear_bottom.setClickable(false);
+
 
         // 바로 스트리밍이 시작되면 검은 화면이 뜬다. 그래서 3초 딜레이 줘야한다. (페북처럼 3 2 1 효과로 시간 벌기)
-        handler.postDelayed(runnable, 2500); // 방송 스트리밍 준비 -> 시작
+//        handler.postDelayed(runnable, 2500); // 방송 스트리밍 준비 -> 시작
 
         countDownTimer();
         countDownTimer.start(); // 카운트 다운 시작
+
+        // 채팅 기능을 위한 Recycler View
+        imm= (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); // 키보드를 띄우기 위한 변수
+        recyclerView= (RecyclerView) findViewById(R.id.streaming_recycler);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recycler_item = new Streaming_Item();
+        adapter = new Streaming_Recycler_Adapter();
+        recyclerView.setAdapter(adapter);
+
+//        adapter.addEntrance("김인섭님이 입장했습니다");
+//        for(int i=0; i<10; i++) {
+//            adapter.addMessage("InseopKim", i+"번째", "1.jpg");
+//        }
+
+        // 채팅 기능을 위한 UI
+        linear_message= (LinearLayout) findViewById(R.id.linear_message);
+        et_input_message= (EditText) findViewById(R.id.et_input_message);
+        et_input_message.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                if(et_input_message.isFocused()) {
+                    // 한 글자 이상이라도 문자가 입력되어 있으면 메세지 보낼 수 있음.
+                    if(s.length()>0) {
+                        ibtn_chat_send.setImageResource(R.drawable.streaming_send_done);
+                        ibtn_chat_send.setClickable(true);
+                    }
+
+                    // 다른 경우에는 메세지 보내기 버튼 막음
+                    else {
+                        ibtn_chat_send.setImageResource(R.drawable.streaming_send_before);
+                        ibtn_chat_send.setClickable(false);
+                    }
+                }
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // 텍스트 길이가 변경되었을 경우 발생할 이벤트 작성
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // 텍스트 변경 후 발생할 이벤트 작성
+
+            }
+        });
+        ibtn_chat_send= (ImageButton) findViewById(R.id.ibtn_chat_send);
+        ibtn_chat_send.setOnClickListener(this);
+
+        // Netty ChatServer 접속
+        new ChatClient(SERVER_IP, NETTY_PORT).run();
 
     }
 
@@ -167,7 +268,6 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
                 iv_number1.setVisibility(View.INVISIBLE);
 
                 linear_bottom.setVisibility(View.VISIBLE);
-                linear_bottom.bringToFront();
                 linear_top.setVisibility(View.VISIBLE);
                 btn_live.setVisibility(View.VISIBLE);
 
@@ -229,8 +329,40 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
                 }
                 break;
 
+            // 채팅 보내기 버튼 클릭 시 채팅을 입력할 수 있는 창이 생성됨
+            // linear_message 보이게 하기
+            case R.id.ibtn_chat_view:
+
+                Log.d(TAG, "ibtn_chat_view 클릭");
+                linear_message.setVisibility(View.VISIBLE); // 채팅 입력창 보이게하고
+                linear_bottom.setVisibility(View.INVISIBLE); // 방송 옵션창 없애기
+                et_input_message.requestFocus();
+
+                // 키보드 띄우기
+                imm.showSoftInput(et_input_message, 0);
+                break;
+
+            // 채팅 메세지를 보내는 곳
+            case R.id.ibtn_chat_send:
+
+                Log.d(TAG, "ibtn_chat_send 클릭");
+
+                // 입력 완료 후 키보드 강제 내리기
+                imm.hideSoftInputFromWindow(et_input_message.getWindowToken(), 0);
+
+                linear_message.setVisibility(View.INVISIBLE); // 채팅 입력창 없애기
+                linear_bottom.setVisibility(View.VISIBLE); // 방송 옵션창 보이게 하고
+                et_input_message.setText(""); // 텍스트 메세지 초기화
+
+                // 1.나의 RecylcerView에 Item 추가
+                // 2.서버에 내가 작성한 메세지 보냄 (서버에서는 나에게 받은 메세지를 DB에 저장)
+                sendMessage_toServer();
+
+                break;
 
             case R.id.btn_finish: // 방송 종료
+                Log.d(TAG, "btn_finish 클릭");
+
                 //If you see this all time when you start stream,
                 //it is because your encoder device dont support the configuration
                 //in video encoder maybe color format.
@@ -333,35 +465,35 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
 
     // 핸들러 실행-스트리밍을 바로 시작하게 되면 검은 화면만 계속 나타남. 3초 정도의 화면 준비시간이 필요함. (FB도 마찬가지임)
     // 3초가 지나면 스트리밍 시작! + 방송 저장 시작
-    Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-
-            if (!rtmpCamera1.isStreaming()) { // 만약 스트리밍 중이 아니면
-
-                if (rtmpCamera1.prepareAudio() && rtmpCamera1.prepareVideo()) { // 오디오 & 비디오 null 값 아니면
-                    rtmpCamera1.startStream("rtmp://52.79.138.20:1935/dash/test"); // 스트리밍 시작. (스트리밍 주소)
-
-                    try {
-                        Thread.sleep(3000);
-                        startRecord();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "Error preparing stream, This device cant do it", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                rtmpCamera1.stopStream();
-                rtmpCamera1.stopPreview();
-            }
-
-        }
-
-    };
+//    Handler handler = new Handler();
+//    Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//
+//            if (!rtmpCamera1.isStreaming()) { // 만약 스트리밍 중이 아니면
+//
+//                if (rtmpCamera1.prepareAudio() && rtmpCamera1.prepareVideo()) { // 오디오 & 비디오 null 값 아니면
+//                    rtmpCamera1.startStream("rtmp://52.79.138.20:1935/dash/test"); // 스트리밍 시작. (스트리밍 주소)
+//
+//                    try {
+//                        Thread.sleep(3000);
+//                        startRecord();
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "Error preparing stream, This device cant do it", Toast.LENGTH_SHORT).show();
+//                }
+//            } else {
+//                rtmpCamera1.stopStream();
+//                rtmpCamera1.stopPreview();
+//            }
+//
+//        }
+//
+//    };
 
 
     // =========================================================================================================
@@ -401,7 +533,6 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
 
     // =========================================================================================================
     // 방송 화면 그려 주는 함수들
-    // =========================================================================================================
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         rtmpCamera1.startPreview();
@@ -420,6 +551,156 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
         rtmpCamera1.stopPreview();
     }
+    // =========================================================================================================
+
+
+
+
+    // =========================================================================================================
+    // 1.나의 RecylcerView에 Item 추가
+    // 2.서버에 내가 작성한 메세지 보냄 (서버에서는 나에게 받은 메세지를 DB에 저장)
+    private void sendMessage_toServer() {
+
+        String message = et_input_message.getText().toString();
+
+        // 1.나의 RecylcerView에 Item 추가
+        adapter.addMessage("인섭",message, "1.jpg"); // Name, Message, Profile
+
+        // 2.서버에 내가 작성한 메세지 JSON 형태로 보냄 (서버에서는 나에게 받은 메세지를 DB에 저장)
+        try {
+
+            String time = TimeCheck();
+            Log.d(TAG, "메세지 보내는 시간 체크 : "+ time);
+
+            JSONObject object = new JSONObject();
+            object.put("Sender_Id", "3");
+            object.put("Sender_Name", "인섭");
+            object.put("Sender_Message", message);
+            object.put("Sender_Profile", "1.jpg");
+            object.put("Sender_Time", time);
+            String Object_Data = object.toString();
+
+            // 서버에 메세지를 보냄
+            channel.writeAndFlush(Object_Data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+
+    // =========================================================================================================
+    // Netty Engine
+    // =========================================================================================================
+
+    // 서버와 연결하기 위한 클래스
+    class ChatClient extends Thread {
+
+        private final String host;
+        private final int port;
+
+        public ChatClient(String host, int port) {
+            this.host=host;
+            this.port=port;
+        }
+
+        public void run() {
+            EventLoopGroup group = new NioEventLoopGroup();
+
+            try {
+
+                Log.d(TAG, "**************************************************");
+                Log.d(TAG, "1. 서버와 채널(소켓) 연결");
+                Log.d(TAG, "**************************************************");
+                // to set up a channel
+                bootstrap = new Bootstrap()
+                        .group(group)
+                        .channel(NioSocketChannel.class)
+                        .handler(new ChatClientInitializer());
+
+                // 서버에 최초 접속
+                channel = bootstrap.connect(host, port).sync().channel();
+                channel.writeAndFlush("서버와 연결되었습니다.");
+                // 소켓이 연결되고 안되고로 채팅방 입장/퇴장 구분하기
+
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // 메세지를 thread 단에서 서버로 보내는 작업
+    public class ChatClientInitializer extends ChannelInitializer<SocketChannel> {
+
+        static final int MESSAGE_SIZE = 8192;
+
+        @Override
+        protected void initChannel(SocketChannel ch) throws Exception {
+            // Here's define what Netty calls a pipeline
+            // It basically describes how we want to organize our communication
+
+            ChannelPipeline pipeline = ch.pipeline();
+
+            // First, tell netty we're expecting frames of at most 8192 in size, each delimited with line endings
+            pipeline.addLast("framer", new DelimiterBasedFrameDecoder(MESSAGE_SIZE, Delimiters.lineDelimiter()));
+
+            // Since we're just exchanging Strings between the server and clients, we can use the StringDecoder to decode received bytes into Strings.
+            pipeline.addLast("decoder", new StringDecoder());
+
+            // StringEncoder to encode Strings into bytes, which we can then send over to the server
+            pipeline.addLast("encoder", new StringEncoder());
+
+            // finally, define a class which will handle all the decoded incoming Strings from the server
+            pipeline.addLast("handler", new ChatClientHandler());
+
+        }
+    }
+
+    // this class to handle incoming String objects
+    // 메세지 받는 곳
+    public class ChatClientHandler extends SimpleChannelInboundHandler<String> {
+        @Override
+        protected void channelRead0(ChannelHandlerContext ctx, final String msg) throws Exception {
+            // To print any String message we receive from the server to the console
+            // 서버로 부터 받은 메세지
+
+            Log.d(TAG, "****************************************************************");
+            Log.d(TAG, "받은 메세지");
+            Log.d(TAG, "ctx : " + ctx);
+            Log.d(TAG, "msg : " + msg);
+            Log.d(TAG, "****************************************************************");
+
+            // Thread를 생성한다.
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // runOnUiThread를 추가하고 그 안에 UI작업을 한다.
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            adapter.addMessage();
+                        }
+                    });
+                }
+            }).start();
+
+        }
+
+        // 채팅 중 에러 발생시
+        @Override
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+            cause.printStackTrace();
+            ctx.close();
+        }
+
+    } // Finish: ChatClientHandler
+    // =========================================================================================================
+
+
 
     // =========================================================================================================
     // 생명 주기
@@ -442,6 +723,5 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
         }
 
     }
-
 
 }

@@ -80,7 +80,7 @@ public class Home_Fragment extends Fragment {
         adapter = new Home_Recycler_Adapter();
 
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
 
         adapter.addMe("나다", "재밌다", "1.jpg");
         adapter.addFriend("친구다", "재밌다", "1.jpg");

@@ -27,6 +27,7 @@ import java.util.Random;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.fragment.Chatlist_Fragment;
 import seopftware.fundmytravel.fragment.Home_Fragment;
+import seopftware.fundmytravel.fragment.Settings_Fragment;
 import seopftware.fundmytravel.fragment.Streaminglist_Fragment;
 import seopftware.fundmytravel.util.ViewFindUtils;
 import seopftware.fundmytravel.util.tablayout.TabEntity;
@@ -80,6 +81,7 @@ public class Home_Activity extends AppCompatActivity {
             mFragments.add(Home_Fragment.getInstance("Switch ViewPager " + title));
             mFragments.add(Chatlist_Fragment.getInstance("Switch ViewPager " + title));
             mFragments.add(Streaminglist_Fragment.getInstance("Switch ViewPager " + title));
+            mFragments.add(Settings_Fragment.getInstance("Switch ViewPager " + title));
         }
 
         for (int i = 0; i < mTitles.length; i++) {
