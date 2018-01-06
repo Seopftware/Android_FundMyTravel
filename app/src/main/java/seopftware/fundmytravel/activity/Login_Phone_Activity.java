@@ -49,9 +49,6 @@ public class Login_Phone_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_phone);
 
-        et_phone_input = (EditText) findViewById(R.id.et_phone_input);
-        btn_phone_verify = (Button) findViewById(R.id.btn_phone_verify);
-
         //액션바 설정 부분
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -59,30 +56,13 @@ public class Login_Phone_Activity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(true);
         setTitle(Html.fromHtml("<font color=\"#FFFFFF\">" + "Enter your phone number" + "</font>"));
 
+        // UI 선언
+        et_phone_input = (EditText) findViewById(R.id.et_phone_input);
+        btn_phone_verify = (Button) findViewById(R.id.btn_phone_verify);
 
-        // 나의 휴대폰 번호 받아오기 위한 함수 호출
-        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            // ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            // public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        my_phone_number = manager.getLine1Number();
-        Log.d(TAG, "변경 전 폰번호: " + my_phone_number);
-        my_phone_number = my_phone_number.replace("+82", "0"); // +82를 0으로 변경
-        Log.d(TAG, "변경 후 폰번호: " + my_phone_number);
-
-        et_phone_input.setText(my_phone_number);
+        // 나의 휴대폰 번호 받아오기 위한 커스텀 메소드
+        getMyphone();
 
         // 폰 번호 인증하기 클릭 시
         btn_phone_verify.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +71,27 @@ public class Login_Phone_Activity extends AppCompatActivity {
                 phonenumDialog();
             }
         });
+    }
+
+
+    // 나의 휴대폰 번호 받아오기 위한 함수 호출
+    private void getMyphone() {
+        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+
+        my_phone_number = manager.getLine1Number();
+        Log.d(TAG, "변경 전 폰번호: " + my_phone_number);
+        my_phone_number = my_phone_number.replace("+82", "0"); // +82를 0으로 변경 후 텍스트 창에 입력
+        Log.d(TAG, "변경 후 폰번호: " + my_phone_number);
+
+        et_phone_input.setText(my_phone_number); // 휴대폰으로 부터 받아온 내 번호를 et에 입력
     }
 
     // =========================================================================================================

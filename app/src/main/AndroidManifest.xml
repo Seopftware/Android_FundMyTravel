@@ -47,7 +47,14 @@
             android:name=".util.chatting.Chatroom_Activity"
             android:label="@string/title_activity_chat_" />
         <activity android:name=".activity.Login_Phone_Activity" />
-        <activity android:name=".activity.Login_Phone2_Activity"></activity>
+        <activity android:name=".activity.Login_Phone2_Activity"/>
+
+
+        <service
+            android:name=".util.chatting.Chat_Service"
+            android:enabled="true"
+            android:exported="true" />
+
     </application>
 
 </manifest> <!-- android:theme="@style/AppTheme.NoActionBar" -->

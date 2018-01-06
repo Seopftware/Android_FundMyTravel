@@ -31,22 +31,29 @@ import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_STATUS;
 import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_USERID;
 import static seopftware.fundmytravel.util.MyApp.USER_ID;
 
+/**
+ * 이 액티비티는 폰에 도착한 문자 메세지 인증번호를 입력하는 액티비티
+ * @author 김인섭
+ * @version 1.0.0
+ * @since 2018-01-06 오전 11:30
+ * @class comment
+ *   이 액티비티는 SMS로 받은 인증번호를 입력하기 위한 용도로 만들어졌습니다.
+**/
+
+
 public class Login_Phone2_Activity extends AppCompatActivity {
 
-    private static final String TAG = "all_"+Login_Phone2_Activity.class;
+    private static final String TAG = "all_" + Login_Phone2_Activity.class;
 
     // 화면 UI
     int verify_number; // 인증 번호
     String verify_phone; // 휴대폰 번호
-    EditText et_num_input, et_num_input2,et_num_input3, et_num_input4;
-    Button btn_verify_confirm;
+    EditText et_num_input, et_num_input2, et_num_input3, et_num_input4; // et 한개에 한 번호씩 입력
+    Button btn_verify_confirm; // 인증 완료
     TextView tv_left_time; // 남은 인증시간
     TextView tv_resend_code; // 인증시간 만료 후 다시 보내기
 
-    Retrofit retrofit;
-    HttpService httpService;
-
-    // 카운트 다운을 위한 변수들
+    // 제한된 시간내 인증번호 입력을 유도하는데 사용되는 변수들
     private CountDownTimer countDownTimer;
     private static final int MILLISINFUTURE = 16 * 1000; // 총 시간
     private static final int COUNT_DOWN_INTERVAL = 1000; // onTick()에 대한 시간
@@ -65,18 +72,18 @@ public class Login_Phone2_Activity extends AppCompatActivity {
         setTitle(Html.fromHtml("<font color=\"#FFFFFF\">" + "Verify your phone number" + "</font>"));
 
         // Login_Phone.Activity로 부터 인증번호 및 폰 번호 받아오기
-        Intent intent=getIntent();
-        verify_number=intent.getIntExtra("verify_number", 1111); // 인증번호 4자리
-        verify_phone=intent.getStringExtra("verify_phone"); // 인증하고자 하는 폰번호
+        Intent intent = getIntent();
+        verify_number = intent.getIntExtra("verify_number", 1111); // 인증번호 4자리
+        verify_phone = intent.getStringExtra("verify_phone"); // 인증하고자 하는 폰번호
 
         // 화면 UI 선언
-        et_num_input= (EditText) findViewById(R.id.et_num_input);
-        et_num_input2= (EditText) findViewById(R.id.et_num_input2);
-        et_num_input3= (EditText) findViewById(R.id.et_num_input3);
-        et_num_input4= (EditText) findViewById(R.id.et_num_input4);
-        btn_verify_confirm= (Button) findViewById(R.id.btn_verify_confirm);
-        tv_left_time= (TextView) findViewById(R.id.tv_left_time);
-        tv_resend_code= (TextView) findViewById(R.id.tv_resend_code);
+        et_num_input = (EditText) findViewById(R.id.et_num_input);
+        et_num_input2 = (EditText) findViewById(R.id.et_num_input2);
+        et_num_input3 = (EditText) findViewById(R.id.et_num_input3);
+        et_num_input4 = (EditText) findViewById(R.id.et_num_input4);
+        btn_verify_confirm = (Button) findViewById(R.id.btn_verify_confirm);
+        tv_left_time = (TextView) findViewById(R.id.tv_left_time);
+        tv_resend_code = (TextView) findViewById(R.id.tv_resend_code);
 
         // 제한된 시간안에 인증을 유도하기 위한 함수 작동(15초내 인증못하면 이전 화면으로 돌아가야함)
         countDownTimer();
@@ -96,9 +103,9 @@ public class Login_Phone2_Activity extends AppCompatActivity {
             public void onClick(View view) {
                 String user_input
                         = et_num_input.getText().toString() +
-                          et_num_input2.getText().toString() +
-                          et_num_input3.getText().toString() +
-                          et_num_input4.getText().toString();
+                        et_num_input2.getText().toString() +
+                        et_num_input3.getText().toString() +
+                        et_num_input4.getText().toString();
 
                 Log.d(TAG, "user_input :" + user_input);
 
@@ -107,32 +114,34 @@ public class Login_Phone2_Activity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "인증번호 4자리를 입력해 주세요", Toast.LENGTH_SHORT).show();
                     et_num_input.requestFocus();
                     return;
-                } else if(et_num_input2.getText().toString().length() ==0) {
+                } else if (et_num_input2.getText().toString().length() == 0) {
                     Toast.makeText(getApplicationContext(), "인증번호 4자리를 입력해 주세요", Toast.LENGTH_SHORT).show();
                     et_num_input2.requestFocus();
                     return;
-                } else if(et_num_input3.getText().toString().length() ==0) {
+                } else if (et_num_input3.getText().toString().length() == 0) {
                     Toast.makeText(getApplicationContext(), "인증번호 4자리를 입력해 주세요", Toast.LENGTH_SHORT).show();
                     et_num_input3.requestFocus();
                     return;
-                } else if(et_num_input4.getText().toString().length() ==0) {
+                } else if (et_num_input4.getText().toString().length() == 0) {
                     Toast.makeText(getApplicationContext(), "인증번호 4자리를 입력해 주세요", Toast.LENGTH_SHORT).show();
                     et_num_input4.requestFocus();
                     return;
                 }
 
-                // 시스템이 생성한 인증번호와 사용자가 입력한 인증번호가 일치했을 경우
-                if(verify_number == Integer.parseInt(user_input)) {
+                // 시스템이 생성한 인증번호와 사용자가 입력한 인증번호가 일치했을 경우 (인증 성공)
+                if (verify_number == Integer.parseInt(user_input)) {
 
                     // Http 통신하는 부분
-                    retrofit = RetrofitClient.getClient();
-                    httpService = retrofit.create(HttpService.class);
+                    // 보내는 값: User_Phone
+                    // 받는 값: User_Id
+                    Retrofit retrofit = RetrofitClient.getClient();
+                    HttpService httpService = retrofit.create(HttpService.class);
                     Call<ResponseBody> comment = httpService.register_phone("phone", verify_phone); // 1.회원가입 방법(폰번호) 2.휴대폰 번호
                     comment.enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                            if(!response.isSuccessful()) {
+                            if (!response.isSuccessful()) {
                                 Log.d(TAG, "유저 정보 등록 실패");
                                 return;
                             }
@@ -140,7 +149,7 @@ public class Login_Phone2_Activity extends AppCompatActivity {
                             try {
 
                                 // 자동 로그인을 위해 SharedPreferences에 회원 정보 저장
-                                USER_ID=response.body().string(); // 로그인 세션 유지를 위해 user의 고유 ID 값 변수에 담는다.
+                                USER_ID = response.body().string(); // 로그인 세션 유지를 위해 user의 고유 ID 값 변수에 담는다.
                                 SharedPreferences pref = getSharedPreferences(AUTO_LOGIN_STATUS, MODE_PRIVATE);
                                 SharedPreferences.Editor editor = pref.edit();
                                 editor.putString(AUTO_LOGIN_KEY, "success"); // 자동 로그인 상태 저장
@@ -156,9 +165,8 @@ public class Login_Phone2_Activity extends AppCompatActivity {
                             countDownTimer.cancel(); // 카운트 다운 쓰레드 멈추기
 
                             // SMS 인증에 성공하면 Home 화면으로 넘어가기
-                            Intent intent=new Intent(getApplicationContext(), Home_Activity.class);
+                            Intent intent = new Intent(getApplicationContext(), Home_Activity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // 최상위 액티비티(Home_Activity) 남기고 다 없애기 (회원가입 화면이 뜨지 않게끔 하기 위해)
-
                             startActivity(intent);
                             finish();
 
@@ -171,7 +179,7 @@ public class Login_Phone2_Activity extends AppCompatActivity {
                         }
                     }); // HTTP 통신 종료
 
-                // 시스템이 생성한 인증번호와 사용자가 입력한 인증번호가 일치하지 않을 경우
+                    // 시스템이 생성한 인증번호와 사용자가 입력한 인증번호가 일치하지 않을 경우
                 } else {
                     Toast.makeText(getApplicationContext(), "Code is not correspond", Toast.LENGTH_LONG).show();
                 }
@@ -181,27 +189,30 @@ public class Login_Phone2_Activity extends AppCompatActivity {
     }
 
 
-
     // =========================================================================================================
     // 제한된 시간 내에 인증을 유도하기 위한 함수 (카운트 다운 하는 곳)
     // =========================================================================================================
     public void countDownTimer() {
         countDownTimer = new CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
+
+            // 1초씩 지날 떄 마다 발생하는 함수
             @Override
             public void onTick(long l) {
-
                 Log.d(TAG, "l 값은? " + l);
                 Log.d(TAG, "count 값은? " + count);
 
-                count --;
-                if(count>=10) {
-                    tv_left_time.setText(Integer.toString(count));
+                // 1초 지날 때마다 count 다운 (1씩 감소)
+                count--;
+                if (count >= 10) {
+                    tv_left_time.setText(Integer.toString(count)); // 10초보다 크면 0:15, 0:11
                 } else {
-                    tv_left_time.setText("0"+Integer.toString(count));
+                    tv_left_time.setText("0" + Integer.toString(count)); // 10초보다 작으면 0:09, 0:08
                 }
 
             }
 
+
+            // 지정된 카운트가 모두 끝났을 때, 마지막에 한 번 발생하는 함수 (다시 인증받게 유도)
             @Override
             public void onFinish() {
                 // 만약 15초 동안 입력에 실패하면 버튼 클릭 막고 Resend code text view 보이게하기
@@ -216,8 +227,8 @@ public class Login_Phone2_Activity extends AppCompatActivity {
 }
 
 
-
-
-/**-----------------------------------------------------------------------------------------------------------------
- The boss group will accept incoming connections as they arrive and pass them on processing to the worker group
- -----------------------------------------------------------------------------------------------------------------*/
+/**
+ * -----------------------------------------------------------------------------------------------------------------
+ * The boss group will accept incoming connections as they arrive and pass them on processing to the worker group
+ * -----------------------------------------------------------------------------------------------------------------
+ */

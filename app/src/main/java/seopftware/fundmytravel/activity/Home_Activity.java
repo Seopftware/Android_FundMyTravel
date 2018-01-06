@@ -34,9 +34,19 @@ import seopftware.fundmytravel.util.tablayout.TabEntity;
 
 import static seopftware.fundmytravel.util.MyApp.USER_ID;
 
+
+/**
+ * 메인 화면의 액티비티
+ * @author 김인섭
+ * @version 1.0.0
+ * @class comment
+ * @since 2018-01-06 오전 11:23
+ * 이 액티비티는 앱의 메인 화면을 나타내기 위한 용도로 만들어졌습니다.
+ **/
+
 public class Home_Activity extends AppCompatActivity {
 
-    private static final String TAG = "Home_Activity";
+    private static final String TAG = "all_"+"Home_Activity";
 
     // TabLayout with Icon
     Context mContext = this;
@@ -53,11 +63,11 @@ public class Home_Activity extends AppCompatActivity {
             R.mipmap.tab_home_select, R.mipmap.tab_speech_select,
             R.mipmap.tab_contact_select, R.mipmap.tab_more_select};
 
-    private ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>();
+
+    private ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>(); // TabLayout 커스텀한 객체가 담겨 있는 ArrayList
     private View mDecorView;
-    private ViewPager mViewPager;
-    private CommonTabLayout mTabLayout_2;
-    private Toolbar toolbar;
+    private ViewPager mViewPager; // ViewPager 변수
+    private CommonTabLayout mTabLayout_2; //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +76,10 @@ public class Home_Activity extends AppCompatActivity {
 
         // setSupportActionBar 는 현재 액션바가 없으니 툴바를 액션바로 대체 하겠다는 뜻이고,
         // actionBar 객체를 생성한 이유는 액션바를 커스터마이징 하기 위한 것입니다.
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Log.d(TAG, "USER ID값 궁금해: " +USER_ID);
+        Log.d(TAG, "USER ID값 궁금해: " + USER_ID);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true); //커스터마이징 하기 위해 필요
@@ -119,7 +128,6 @@ public class Home_Activity extends AppCompatActivity {
 //        }
 
     }
-
 
 
     Random mRandom = new Random();

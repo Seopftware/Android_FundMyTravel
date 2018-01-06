@@ -19,20 +19,28 @@ import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.dataset.Streaming_Item;
 
 import static seopftware.fundmytravel.util.MyApp.SERVER_URL;
+import static seopftware.fundmytravel.util.MyApp.USER_ID;
 
 /**
- * Created by MSI on 2018-01-03.
- */
+ * 스트리밍 중 채팅 데이터 추가를 위한 Adapter
+ * @author 김인섭
+ * @version 1.0.0
+ * @since 2018-01-06 오전 11:47
+ * @class comment
+ *   이 어댑터는 스트리밍 중 채팅 데이터를 뿌려 주기 위해 만들어졌습니다.
+**/
 
 public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = "all_"+Streaming_Recycler_Adapter.class;
-    private static final int ENTRANCE = 0;
-    private static final int MESSAGE= 1;
-    private static final int IMAGE= 2;
-    private static final int STAR= 3;
 
-    ArrayList<Streaming_Item> itemlist = new ArrayList<Streaming_Item>();
+    // View Type 지정을 위한 변수
+    private static final int ENTRANCE = 0; // 입장
+    private static final int MESSAGE= 1; // 메세지
+    private static final int IMAGE= 2; // 이미지 전송
+    private static final int STAR= 3; // 별풍선
+
+    ArrayList<Streaming_Item> itemlist = new ArrayList<Streaming_Item>(); // 아이템을 담기 위한 객체가 담겨 있는 ArrayList
     Context context;
 
     public Streaming_Recycler_Adapter() {
@@ -94,12 +102,12 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
     }
 
 
-
+    // 데이터를 binding 시켜주는 함수
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Streaming_Item listviewItem = itemlist.get(position);
 
-        // 입장 또는 나갔을 때 View
+        // 1. 입장 또는 나갔을 때 View
         if(holder instanceof ItemOneViewHolder) {
 
             ((ItemOneViewHolder)holder).tv_Id.setText(listviewItem.getStreaming_user_id()); // 고유 Id
@@ -108,7 +116,7 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
 
         }
 
-        // 메세지 보냈을 때 View
+        // 2. 메세지 보냈을 때 View
         else if(holder instanceof ItemTwoViewHolder) {
 
             ((ItemTwoViewHolder)holder).tv_Id.setText(listviewItem.getStreaming_user_id()); // 고유 Id
@@ -118,16 +126,25 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
                     .load(listviewItem.getStreameing_image_profile())
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(((ItemTwoViewHolder)holder).iv_Profile); // 유저 이미지
+
+
+            if(USER_ID.equals("50")) {
+                ((ItemTwoViewHolder)holder).iv_Roommaker.setVisibility(View.VISIBLE);
+                ((ItemTwoViewHolder)holder).iv_Roommaker.bringToFront();
+
+            } else {
+                ((ItemTwoViewHolder)holder).iv_Roommaker.setVisibility(View.INVISIBLE);
+
+            }
         }
 
+
     }
 
-    @Override
-    public int getItemCount() {
-        return itemlist.size();
-    }
 
-    // ENTRANCE
+    // =========================================================================================================
+    // 커스텀 뷰홀더 (item layout에 존재하는 위젯들을 바인딩함.)
+    // 1. ENTRANCE
     class ItemOneViewHolder extends RecyclerView.ViewHolder {
         TextView tv_Id, tv_Entrance;
 
@@ -140,7 +157,7 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
-    // MESSAGE
+    // 2. MESSAGE
     class ItemTwoViewHolder extends RecyclerView.ViewHolder {
         LinearLayout Linear_up, Linear_down;
         TextView tv_Id, tv_Name, tv_Message;
@@ -157,11 +174,11 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
 
         }
     }
+    // =========================================================================================================
+
 
     // =========================================================================================================
     // List Item에 아이템들을 추가하는 함수들
-    // =========================================================================================================
-
     // ENTRANCE 메세지 추가하는 곳
     public void addEntrance(String message) {
         Streaming_Item item = new Streaming_Item();
@@ -183,4 +200,9 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
         itemlist.add(item);
     }
     // =========================================================================================================
+
+    @Override
+    public int getItemCount() {
+        return itemlist.size();
+    }
 }

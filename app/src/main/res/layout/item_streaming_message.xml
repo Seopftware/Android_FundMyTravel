@@ -22,8 +22,8 @@
 
             <ImageView
                 android:id="@+id/iv_Profile"
-                android:layout_width="65dp"
-                android:layout_height="65dp" />
+                android:layout_width="45dp"
+                android:layout_height="45dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,7 +37,7 @@
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="10dp"
                     android:text="닉네임"
-                    android:textColor="@android:color/black"
+                    android:textColor="@android:color/white"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -47,7 +47,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:paddingLeft="10dp"
-                    android:text="이번 한 주도 불태웠구나" />
+                    android:text="이번 한 주도 불태웠구나"
+                    android:textColor="@android:color/white" />
 
             </LinearLayout>
 
@@ -65,11 +66,23 @@
 
     <ImageView
         android:id="@+id/iv_Roommaker"
-        android:layout_width="21dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="52dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:scaleType="fitXY"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/streaming_captain" />
+
+
+    <!--<ImageView-->
+        <!--android:id="@+id/iv_Roommaker"-->
+        <!--android:layout_width="21dp"-->
+        <!--android:layout_height="20dp"-->
+        <!--android:layout_marginStart="32dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:srcCompat="@drawable/streaming_captain" />-->
 </android.support.constraint.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,21 +15,33 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import seopftware.fundmytravel.R;
+import seopftware.fundmytravel.util.chatting.Chat_Service;
 
 import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_KEY;
 import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_STATUS;
 import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_USERID;
 import static seopftware.fundmytravel.util.MyApp.USER_ID;
+import static seopftware.fundmytravel.util.MyApp.getMyInfo;
+
+/**
+ * 로그인 화면
+ * @author 김인섭
+ * @version 1.0.0
+ * @class comment
+ * @since 2018-01-06 오전 11:29
+ * 이 액티비티는 사용자들이 로그인할 때 이용할 용도로 만들어졌습니다.
+ **/
 
 public class Login_Activity extends AppCompatActivity implements Button.OnClickListener {
 
-    // 로그인 버튼
-    Button btn_login_phone;
-    Button btn_login_google;
-    Button btn_login_naver;
+    private static final String TAG = "all_" + "Login_Activity";
 
-    // 이용약관
-    TextView tv_terms;
+    // 로그인 버튼
+    Button btn_login_phone; // 폰으로 로그인할 때 사용
+    Button btn_login_google; // 구글 아이디로 로그인할 때 사용
+    Button btn_login_naver; // 네이버 아이디로 로그인할 때 사용
+
+    TextView tv_terms; // 이용약관을 보여줌
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +53,22 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
         SharedPreferences autologin = getSharedPreferences(AUTO_LOGIN_STATUS, Activity.MODE_PRIVATE);
         String status = autologin.getString(AUTO_LOGIN_KEY, "fail"); // 저장된 자동로그인 정보가 있으면 "success" 없을 경우 "fail"
 
+        // 자동 로그인 정보가 저장되어 있다면 "success" 아닌 경우 "fail"
         if (status.equals("success")) {
-            USER_ID = autologin.getString(AUTO_LOGIN_USERID, "fail"); // USER_ID 전역 변수에 고유 ID 값 담아서 어디서든 사용하기 편하게 해준다.
-            Intent intent1 = new Intent(getApplicationContext(), Home_Activity.class);
-            startActivity(intent1);
+
+            // 로그인 한 경험이 있는 회원은 자동으로 Home 화면으로 넘어가게끔.
+            USER_ID = autologin.getString(AUTO_LOGIN_USERID, "autoLogin_fail"); // USER_ID 전역 변수에 고유 ID 값 담아서 어디서든 사용하기 편하게 해준다.
+            Intent intent2 = new Intent(getApplicationContext(), Home_Activity.class);
+            startActivity(intent2);
             finish();
+
+            getMyInfo();
+
+            // 네티와의 채팅 연결을 위한 Service 시작
+            Intent intent1 = new Intent(Login_Activity.this, Chat_Service.class);
+            Log.d(TAG, "채팅을 위한 (netty Channel connection)서비스 시작");
+            startService(intent1);
+
         }
         // =========================================================================================================
 
@@ -64,6 +88,7 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
         String terms = "by signing up you agree to our ToS and Privacy Policy";
         tv_terms.setText(terms);
 
+        // 지정한 단어들에 링크를 걸어주는 함수
         Linkify.TransformFilter transform = new Linkify.TransformFilter() {
             @Override
             public String transformUrl(Matcher matcher, String s) {
@@ -84,21 +109,35 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
     public void onClick(View view) {
         switch (view.getId()) {
 
-            case R.id.btn_login_phone: // 폰으로 로그인
+            // 폰으로 로그인
+            case R.id.btn_login_phone:
                 Intent intent = new Intent(getApplicationContext(), Login_Phone_Activity.class);
                 startActivity(intent);
                 finish();
                 break;
 
-            case R.id.btn_login_google: // 구글로 로그인
-                Intent intent1 = new Intent(getApplicationContext(), Home_Activity.class);
-                startActivity(intent1);
+            // 구글로 로그인
+            case R.id.btn_login_google:
+
+                USER_ID = "50";
+                getMyInfo();
+
+                // 임시로 서비스 시작 가능하게끔
+                // 네티와의 채팅 연결을 위한 Service 시작
+                Intent intent2 = new Intent(Login_Activity.this, Chat_Service.class);
+                Log.d(TAG, "채팅을 위한 (netty Channel connection)서비스 시작");
+                startService(intent2);
+
+
+                Intent intent3 = new Intent(getApplicationContext(), Home_Activity.class);
+                startActivity(intent3);
                 finish();
                 break;
 
-            case R.id.btn_login_naver: // 네이버 로그인
-                Intent intent2 = new Intent(getApplicationContext(), Home_Activity.class);
-                startActivity(intent2);
+            // 네이버 로그인
+            case R.id.btn_login_naver:
+                Intent intent4 = new Intent(getApplicationContext(), Home_Activity.class);
+                startActivity(intent4);
                 finish();
                 break;
         }

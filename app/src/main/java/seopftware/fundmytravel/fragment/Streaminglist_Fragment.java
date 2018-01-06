@@ -22,6 +22,7 @@ import java.util.List;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.util.streaming.ActivityLink;
 import seopftware.fundmytravel.util.streaming.BeforeStreaming_Activity;
+import seopftware.fundmytravel.util.streaming.PlayerStreaming_Activity;
 import seopftware.fundmytravel.util.streaming.Streaming_Acticity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
@@ -65,8 +66,17 @@ public class Streaminglist_Fragment extends Fragment {
             ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
         }
 
-        Button btn_streamer = (Button) v.findViewById(R.id.btn_streamer);
         Button btn_viewer = (Button) v.findViewById(R.id.btn_viewer);
+        btn_viewer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getContext(), PlayerStreaming_Activity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        Button btn_streamer = (Button) v.findViewById(R.id.btn_streamer);
         btn_streamer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

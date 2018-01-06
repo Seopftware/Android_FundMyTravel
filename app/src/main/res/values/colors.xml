@@ -9,6 +9,8 @@
     <color name="colorClear">#00000000</color>
     <color name="colorGrey">#334142</color>
     <color name="colorPerisCope">#3fa4c2</color>
+    <color name="colorViewer_grey">#576162</color>
+    <color name="colorViewer_cleargrey">#10000000</color>
 
 
 </resources>

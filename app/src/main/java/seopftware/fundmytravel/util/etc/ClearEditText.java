@@ -15,8 +15,13 @@ import seopftware.fundmytravel.R;
 
 
 /**
- * Created by TedPark on 16. 4. 11..
- */
+ * 커스텀한 Edit Text
+ * @author 김인섭
+ * @version 1.0.0
+ * @since 2018-01-06 오후 12:00
+ * @class comment
+ *   이 클래스는 커스텀한 Edit Text 함수 입니다. 메세지 입력 시 X 박스의 아이콘이 생성되고, X 버튼 클릭 시 입력된 메세지 모두 삭제
+**/
 
 public class ClearEditText extends AppCompatEditText implements TextWatcher, View.OnTouchListener, View.OnFocusChangeListener {
 
