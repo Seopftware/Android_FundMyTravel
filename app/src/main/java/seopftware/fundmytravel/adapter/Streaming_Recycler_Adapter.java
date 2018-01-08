@@ -18,8 +18,8 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.dataset.Streaming_Item;
 
-import static seopftware.fundmytravel.util.MyApp.SERVER_URL;
-import static seopftware.fundmytravel.util.MyApp.USER_ID;
+import static seopftware.fundmytravel.function.MyApp.SERVER_URL;
+import static seopftware.fundmytravel.function.MyApp.USER_ID;
 
 /**
  * 스트리밍 중 채팅 데이터 추가를 위한 Adapter

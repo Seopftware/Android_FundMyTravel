@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorViewer_grey"
-    tools:context="seopftware.fundmytravel.util.streaming.PlayerStreaming_Activity">
+    tools:context="seopftware.fundmytravel.function.streaming.PlayerStreaming_Activity">
 
     <LinearLayout
         android:id="@+id/linear_message"
@@ -165,8 +165,9 @@
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="75dp"
         android:focusable="true"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

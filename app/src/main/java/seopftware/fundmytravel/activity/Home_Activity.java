@@ -29,10 +29,10 @@ import seopftware.fundmytravel.fragment.Chatlist_Fragment;
 import seopftware.fundmytravel.fragment.Home_Fragment;
 import seopftware.fundmytravel.fragment.Settings_Fragment;
 import seopftware.fundmytravel.fragment.Streaminglist_Fragment;
-import seopftware.fundmytravel.util.ViewFindUtils;
-import seopftware.fundmytravel.util.tablayout.TabEntity;
+import seopftware.fundmytravel.function.ViewFindUtils;
+import seopftware.fundmytravel.function.tablayout.TabEntity;
 
-import static seopftware.fundmytravel.util.MyApp.USER_ID;
+import static seopftware.fundmytravel.function.MyApp.USER_ID;
 
 
 /**

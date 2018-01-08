@@ -20,10 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import seopftware.fundmytravel.R;
-import seopftware.fundmytravel.util.streaming.ActivityLink;
-import seopftware.fundmytravel.util.streaming.BeforeStreaming_Activity;
-import seopftware.fundmytravel.util.streaming.PlayerStreaming_Activity;
-import seopftware.fundmytravel.util.streaming.Streaming_Acticity;
+import seopftware.fundmytravel.function.streaming.ActivityLink;
+import seopftware.fundmytravel.function.streaming.BeforeStreaming_Activity;
+import seopftware.fundmytravel.function.streaming.PlayerStreaming_Activity;
+import seopftware.fundmytravel.function.streaming.Streaming_Acticity;
+import seopftware.fundmytravel.webrtc.Connect_Activity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
@@ -76,6 +77,15 @@ public class Streaminglist_Fragment extends Fragment {
         });
 
 
+        Button btn_call = (Button) v.findViewById(R.id.btn_call);
+        btn_call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getContext(), Connect_Activity.class);
+                startActivity(intent);
+            }
+        });
+
         Button btn_streamer = (Button) v.findViewById(R.id.btn_streamer);
         btn_streamer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +106,8 @@ public class Streaminglist_Fragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+
 
         return v;
     }

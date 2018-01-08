@@ -18,7 +18,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.dataset.Home_Recycler_Item;
 
-import static seopftware.fundmytravel.util.MyApp.SERVER_URL;
+import static seopftware.fundmytravel.function.MyApp.SERVER_URL;
 
 /**
  * 홈 화면 친구 리스트를 뿌려주기 위한 Adapter

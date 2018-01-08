@@ -23,13 +23,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import seopftware.fundmytravel.R;
-import seopftware.fundmytravel.util.retrofit.HttpService;
-import seopftware.fundmytravel.util.retrofit.RetrofitClient;
+import seopftware.fundmytravel.function.retrofit.HttpService;
+import seopftware.fundmytravel.function.retrofit.RetrofitClient;
 
-import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_KEY;
-import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_STATUS;
-import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_USERID;
-import static seopftware.fundmytravel.util.MyApp.USER_ID;
+import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_KEY;
+import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_STATUS;
+import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_USERID;
+import static seopftware.fundmytravel.function.MyApp.USER_ID;
 
 /**
  * 이 액티비티는 폰에 도착한 문자 메세지 인증번호를 입력하는 액티비티

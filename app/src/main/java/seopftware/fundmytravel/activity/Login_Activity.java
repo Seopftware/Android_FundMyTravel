@@ -15,13 +15,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import seopftware.fundmytravel.R;
-import seopftware.fundmytravel.util.chatting.Chat_Service;
+import seopftware.fundmytravel.function.chatting.Chat_Service;
 
-import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_KEY;
-import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_STATUS;
-import static seopftware.fundmytravel.util.MyApp.AUTO_LOGIN_USERID;
-import static seopftware.fundmytravel.util.MyApp.USER_ID;
-import static seopftware.fundmytravel.util.MyApp.getMyInfo;
+import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_KEY;
+import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_STATUS;
+import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_USERID;
+import static seopftware.fundmytravel.function.MyApp.USER_ID;
+import static seopftware.fundmytravel.function.MyApp.getMyInfo;
 
 /**
  * 로그인 화면
@@ -65,9 +65,9 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
             getMyInfo();
 
             // 네티와의 채팅 연결을 위한 Service 시작
-            Intent intent1 = new Intent(Login_Activity.this, Chat_Service.class);
-            Log.d(TAG, "채팅을 위한 (netty Channel connection)서비스 시작");
-            startService(intent1);
+//            Intent intent1 = new Intent(Login_Activity.this, Chat_Service.class);
+//            Log.d(TAG, "채팅을 위한 (netty Channel connection)서비스 시작");
+//            startService(intent1);
 
         }
         // =========================================================================================================

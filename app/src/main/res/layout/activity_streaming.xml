@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="seopftware.fundmytravel.util.streaming.Streaming_Acticity">
+    tools:context="seopftware.fundmytravel.function.streaming.Streaming_Acticity">
 
     <SurfaceView
         android:id="@+id/view_surface"

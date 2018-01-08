@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import seopftware.fundmytravel.R;
-import seopftware.fundmytravel.util.chatting.Chatroom_Activity;
-import seopftware.fundmytravel.util.streaming.ActivityLink;
-import seopftware.fundmytravel.util.streaming.Streaming_Acticity;
+import seopftware.fundmytravel.function.chatting.Chatroom_Activity;
+import seopftware.fundmytravel.function.streaming.ActivityLink;
+import seopftware.fundmytravel.function.streaming.Streaming_Acticity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;

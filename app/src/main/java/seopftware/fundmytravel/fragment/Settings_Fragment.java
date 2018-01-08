@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import seopftware.fundmytravel.R;
-import seopftware.fundmytravel.util.streaming.ActivityLink;
-import seopftware.fundmytravel.util.streaming.Streaming_Acticity;
+import seopftware.fundmytravel.function.streaming.ActivityLink;
+import seopftware.fundmytravel.function.streaming.Streaming_Acticity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 
@@ -41,10 +41,7 @@ public class Settings_Fragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
