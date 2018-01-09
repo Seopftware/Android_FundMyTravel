@@ -1,4 +1,4 @@
-package seopftware.fundmytravel.webrtc;
+package seopftware.fundmytravel.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,74 +9,58 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.webkit.URLUtil;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.bumptech.glide.Glide;
 
-import java.util.ArrayList;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Random;
 
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 import seopftware.fundmytravel.R;
+import seopftware.fundmytravel.dataset.Parsing;
+import seopftware.fundmytravel.function.retrofit.HttpService;
+import seopftware.fundmytravel.function.retrofit.RetrofitClient;
+import seopftware.fundmytravel.webrtc.Call_Activity;
 
-public class Connect_Activity extends Activity {
-    private static final String TAG = "ConnectActivity";
+import static seopftware.fundmytravel.function.MyApp.SERVER_URL;
+import static seopftware.fundmytravel.function.MyApp.USER_ID;
+import static seopftware.fundmytravel.function.chatting.Chat_Service.channel;
+
+public class Home_Profile_Activity extends Activity implements View.OnClickListener{
+
+    private static final String TAG = "all_"+ "ConnectActivity";
     private static final int CONNECTION_REQUEST = 1;
-    private static final int REMOVE_FAVORITE_INDEX = 0;
     private static boolean commandLineRun = false;
 
-    private ImageButton connectButton;
-    private ImageButton addFavoriteButton;
-    private EditText roomEditText;
-    private ListView roomListView;
     private SharedPreferences sharedPref;
-    private String keyprefVideoCallEnabled;
-    private String keyprefScreencapture;
-    private String keyprefCamera2;
     private String keyprefResolution;
     private String keyprefFps;
-    private String keyprefCaptureQualitySlider;
     private String keyprefVideoBitrateType;
     private String keyprefVideoBitrateValue;
-    private String keyprefVideoCodec;
     private String keyprefAudioBitrateType;
     private String keyprefAudioBitrateValue;
-    private String keyprefAudioCodec;
-    private String keyprefHwCodecAcceleration;
-    private String keyprefCaptureToTexture;
-    private String keyprefFlexfec;
-    private String keyprefNoAudioProcessingPipeline;
-    private String keyprefAecDump;
-    private String keyprefOpenSLES;
-    private String keyprefDisableBuiltInAec;
-    private String keyprefDisableBuiltInAgc;
-    private String keyprefDisableBuiltInNs;
-    private String keyprefEnableLevelControl;
-    private String keyprefDisableWebRtcAGCAndHPF;
-    private String keyprefDisplayHud;
-    private String keyprefTracing;
     private String keyprefRoomServerUrl;
     private String keyprefRoom;
-    private String keyprefRoomList;
-    private ArrayList<String> roomList;
-    private ArrayAdapter<String> adapter;
-    private String keyprefEnableDataChannel;
-    private String keyprefOrdered;
-    private String keyprefMaxRetransmitTimeMs;
-    private String keyprefMaxRetransmits;
-    private String keyprefDataProtocol;
-    private String keyprefNegotiated;
-    private String keyprefDataId;
+
+    // 화면 변수들
+    private ImageButton ibtn_videocall, ibtn_exit; // 영상통화 버튼, 프로필 나가기 버튼
+    private ImageView iv_background, iv_profile; // 백그라운드 이미지, 프로필 이미지
+    private TextView tv_message, tv_name; // 상태 메세지, 유저 이름
+
+    // 친구 ID
+    private int receiver_id; // 영통을 받을 사람의 id
+    String user_name, user_profile, user_status, user_background;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,66 +69,40 @@ public class Connect_Activity extends Activity {
         // Get setting keys.
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        keyprefVideoCallEnabled = getString(R.string.pref_videocall_key);
-        keyprefScreencapture = getString(R.string.pref_screencapture_key);
-        keyprefCamera2 = getString(R.string.pref_camera2_key);
         keyprefResolution = getString(R.string.pref_resolution_key);
         keyprefFps = getString(R.string.pref_fps_key);
-        keyprefCaptureQualitySlider = getString(R.string.pref_capturequalityslider_key);
         keyprefVideoBitrateType = getString(R.string.pref_maxvideobitrate_key);
         keyprefVideoBitrateValue = getString(R.string.pref_maxvideobitratevalue_key);
-        keyprefVideoCodec = getString(R.string.pref_videocodec_key);
-        keyprefHwCodecAcceleration = getString(R.string.pref_hwcodec_key);
-        keyprefCaptureToTexture = getString(R.string.pref_capturetotexture_key);
-        keyprefFlexfec = getString(R.string.pref_flexfec_key);
         keyprefAudioBitrateType = getString(R.string.pref_startaudiobitrate_key);
         keyprefAudioBitrateValue = getString(R.string.pref_startaudiobitratevalue_key);
-        keyprefAudioCodec = getString(R.string.pref_audiocodec_key);
-        keyprefNoAudioProcessingPipeline = getString(R.string.pref_noaudioprocessing_key);
-        keyprefAecDump = getString(R.string.pref_aecdump_key);
-        keyprefOpenSLES = getString(R.string.pref_opensles_key);
-        keyprefDisableBuiltInAec = getString(R.string.pref_disable_built_in_aec_key);
-        keyprefDisableBuiltInAgc = getString(R.string.pref_disable_built_in_agc_key);
-        keyprefDisableBuiltInNs = getString(R.string.pref_disable_built_in_ns_key);
-        keyprefEnableLevelControl = getString(R.string.pref_enable_level_control_key);
-        keyprefDisableWebRtcAGCAndHPF = getString(R.string.pref_disable_webrtc_agc_and_hpf_key);
-        keyprefDisplayHud = getString(R.string.pref_displayhud_key);
-        keyprefTracing = getString(R.string.pref_tracing_key);
         keyprefRoomServerUrl = getString(R.string.pref_room_server_url_key);
         keyprefRoom = getString(R.string.pref_room_key);
-        keyprefRoomList = getString(R.string.pref_room_list_key);
-        keyprefEnableDataChannel = getString(R.string.pref_enable_datachannel_key);
-        keyprefOrdered = getString(R.string.pref_ordered_key);
-        keyprefMaxRetransmitTimeMs = getString(R.string.pref_max_retransmit_time_ms_key);
-        keyprefMaxRetransmits = getString(R.string.pref_max_retransmits_key);
-        keyprefDataProtocol = getString(R.string.pref_data_protocol_key);
-        keyprefNegotiated = getString(R.string.pref_negotiated_key);
-        keyprefDataId = getString(R.string.pref_data_id_key);
-
         setContentView(R.layout.activity_connect);
 
-        roomEditText = (EditText) findViewById(R.id.room_edittext);
-        roomEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_DONE) {
-                    addFavoriteButton.performClick();
-                    return true;
-                }
-                return false;
-            }
-        });
-        roomEditText.requestFocus();
 
-        roomListView = (ListView) findViewById(R.id.room_listview);
-        roomListView.setEmptyView(findViewById(android.R.id.empty));
-        roomListView.setOnItemClickListener(roomListClickListener);
-        registerForContextMenu(roomListView);
+        // UI 선언
+        // 1.영상 통화
+        ibtn_videocall = (ImageButton) findViewById(R.id.ibtn_videocall);
+        ibtn_videocall.setOnClickListener(this);
 
-        connectButton = (ImageButton) findViewById(R.id.connect_button);
-        connectButton.setOnClickListener(connectListener);
-        addFavoriteButton = (ImageButton) findViewById(R.id.add_favorite_button);
-        addFavoriteButton.setOnClickListener(addFavoriteListener);
+        // 2.프로필 화면 나가기
+        ibtn_exit= (ImageButton) findViewById(R.id.ibtn_exit);
+        ibtn_exit.setOnClickListener(this);
+
+        // 3.백그라운드 이미지
+        iv_background= (ImageView) findViewById(R.id.iv_background);
+
+        // 4.프로필 이미지
+        iv_profile= (ImageView) findViewById(R.id.iv_profile);
+
+        // 5.상태 메세지
+        tv_message= (TextView) findViewById(R.id.tv_message);
+
+        // 6.유저 이름
+        tv_name= (TextView) findViewById(R.id.tv_name);
+
+
+
 
         // If an implicit VIEW intent is launching the app, go directly to that URL.
         final Intent intent = getIntent();
@@ -156,57 +114,111 @@ public class Connect_Activity extends Activity {
             String room = sharedPref.getString(keyprefRoom, "");
             connectToRoom(room, true, loopback, useValuesFromIntent, runTimeMs);
         }
-    }
+
+        receiver_id = intent.getIntExtra("FRIENDS_ID", 0);
+
+        getFriendsInfo();
 
 
+    } // onCreate() finish
+
+
+    // =========================================================================================================
+    // 클릭 리스너
+    // =========================================================================================================
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == REMOVE_FAVORITE_INDEX) {
-            AdapterView.AdapterContextMenuInfo info =
-                    (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-            roomList.remove(info.position);
-            adapter.notifyDataSetChanged();
-            return true;
-        }
+    public void onClick(View view) {
 
-        return super.onContextItemSelected(item);
-    }
+        switch (view.getId()) {
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        String room = roomEditText.getText().toString();
-        String roomListJson = new JSONArray(roomList).toString();
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(keyprefRoom, room);
-        editor.putString(keyprefRoomList, roomListJson);
-        editor.commit();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        String room = sharedPref.getString(keyprefRoom, "");
-        roomEditText.setText(room);
-        roomList = new ArrayList<String>();
-        String roomListJson = sharedPref.getString(keyprefRoomList, null);
-        if (roomListJson != null) {
-            try {
-                JSONArray jsonArray = new JSONArray(roomListJson);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    roomList.add(jsonArray.get(i).toString());
+            // 1.영상 통화
+            case R.id.ibtn_videocall:
+                Random generator = new Random();
+                int random_num= generator.nextInt(9000)+1000;
+                // netxtInt(9000): 0~8999 +1000 = 1000 ~ 9999의 4자리 랜덤 숫자 발생
+                Log.d(TAG, "난수 발생: " + random_num);
+
+                String room_number = "seope" + random_num;
+                connectToRoom(room_number, false, false, false, 0); // 영상통화 연결
+
+
+                try {
+
+                    // Netty로 영통이 왔다는 걸 알림
+                    JSONObject object = new JSONObject();
+                    object.put("message_type", "video_call"); // 서버와 연결됨
+                    object.put("user_id", USER_ID); // 나의 id
+                    object.put("receiver_id", receiver_id); // 통화를 받는 친구의 ID
+                    object.put("room_number", room_number); // 통화를 하기 위해 필요한 Room Number
+
+                    String Object_Data = object.toString();
+                    channel.writeAndFlush(Object_Data);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                Log.e(TAG, "Failed to load room list: " + e.toString());
+
+                break;
+
+
+            // 2.프로필 화면 나가기
+            case R.id.ibtn_exit:
+                finish();
+                break;
+
+            // 3.백그라운드 이미지
+            case R.id.iv_background:
+
+                break;
+
+
+
+        } // switch 구문 close
+    } // onClick 함수 finish
+    // =========================================================================================================
+    // 보내는 값: User ID (내가 보고자 하는 유저의 ID)
+    // 받는 값: User_Nickname, User_Profile, User_Status, User_Background
+    private void getFriendsInfo() {
+        // Http 통신하는 부분
+        Retrofit retrofit = RetrofitClient.getClient();
+        HttpService httpService = retrofit.create(HttpService.class);
+        Call<Parsing> comment = httpService.get_userinfo(receiver_id); // 1.User Id 보내고 정보 받아옴
+        comment.enqueue(new Callback<Parsing>() {
+            @Override
+            public void onResponse(Call<Parsing> call, Response<Parsing> response) {
+                Parsing parsing = response.body();
+
+                // 유저의 이름
+                user_name = parsing.getResult().get(0).getUserName();
+                tv_name.setText(user_name);
+
+                // 유저의 프로필 사진
+                user_profile = parsing.getResult().get(0).getUserPhoto();
+                Glide.with(getApplicationContext())
+                        .load(SERVER_URL + "photo/"+user_profile)
+                        .bitmapTransform(new CropCircleTransformation(getApplicationContext()))
+                        .into(iv_profile);
+
+                // 유저의 상태 메세지
+                user_status = parsing.getResult().get(0).getUserStatus();
+                tv_message.setText(user_status);
+
+                // 유저의 백그라운드 이미지
+                user_background = parsing.getResult().get(0).getUserPhotoBackground();
+                Glide.with(getApplicationContext()).load(SERVER_URL + "photo/"+user_background).into(iv_background); // 사각형 프로필
+
             }
-        }
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, roomList);
-        roomListView.setAdapter(adapter);
-        if (adapter.getCount() > 0) {
-            roomListView.requestFocus();
-            roomListView.setItemChecked(0, true);
-        }
+
+            @Override
+            public void onFailure(Call<Parsing> call, Throwable t) {
+
+
+            }
+        });
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -456,6 +468,7 @@ public class Connect_Activity extends Activity {
         String protocol = sharedPrefGetString(R.string.pref_data_protocol_key,
                 Call_Activity.EXTRA_PROTOCOL, R.string.pref_data_protocol_default, useValuesFromIntent);
 
+
         // Start AppRTCMobile activity.
         Log.d(TAG, "Connecting to room " + roomId + " at URL " + roomUrl);
         if (validateUrl(roomUrl)) {
@@ -532,6 +545,7 @@ public class Connect_Activity extends Activity {
         }
     }
 
+
     private boolean validateUrl(String url) {
         if (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url)) {
             return true;
@@ -552,30 +566,17 @@ public class Connect_Activity extends Activity {
         return false;
     }
 
-    private final AdapterView.OnItemClickListener roomListClickListener =
-            new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    String roomId = ((TextView) view).getText().toString();
-                    connectToRoom(roomId, false, false, false, 0);
-                }
-            };
+    // =========================================================================================================
+    // 생명주기
+    // =========================================================================================================
 
-    private final View.OnClickListener addFavoriteListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            String newRoom = roomEditText.getText().toString();
-            if (newRoom.length() > 0 && !roomList.contains(newRoom)) {
-                adapter.add(newRoom);
-                adapter.notifyDataSetChanged();
-            }
-        }
-    };
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
-    private final View.OnClickListener connectListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            connectToRoom(roomEditText.getText().toString(), false, false, false, 0);
-        }
-    };
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }

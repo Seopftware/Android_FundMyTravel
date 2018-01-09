@@ -45,12 +45,12 @@
         android:layout_marginBottom="3dp">
 
         <ImageView
-            android:id="@+id/iv_Profile"
+            android:id="@+id/iv_profile"
             android:layout_width="65dp"
             android:layout_height="65dp"/>
 
         <TextView
-            android:id="@+id/tv_Name"
+            android:id="@+id/tv_name"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

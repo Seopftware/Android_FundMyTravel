@@ -18,6 +18,7 @@ import java.util.List;
 
 
 public class Parsing {
+
     @SerializedName("result")
     @Expose
     private List<Result> result = null;
@@ -31,32 +32,50 @@ public class Parsing {
     }
 
 
+    // =========================================================================================================
+    // 유저 정보 GSon
+    // 정보를 받아오는 Table: user_info
+    // =========================================================================================================
     public class Result{
 
-        @SerializedName("user_key")
+        @SerializedName("user_key") // 고유 ID 번호
         @Expose
-        private String userKey;
-        @SerializedName("user_method")
+        private int userKey;
+
+        @SerializedName("user_method") // 회원가입 방법(폰, 구글, 네이버)
         @Expose
         private String userMethod;
-        @SerializedName("user_email")
+
+        @SerializedName("user_email") // 유저 이메일
         @Expose
         private String userEmail;
-        @SerializedName("user_phone")
+
+        @SerializedName("user_phone") // 유저 폰번호
         @Expose
         private String userPhone;
-        @SerializedName("user_name")
+
+        @SerializedName("user_name") // 유저 닉네임
         @Expose
         private String userName;
-        @SerializedName("user_photo")
+
+        @SerializedName("user_photo") // 유저 사진
         @Expose
         private String userPhoto;
 
-        public String getUserKey() {
+        @SerializedName("user_status") // 유저 상태 메세지
+        @Expose
+        private String userStatus;
+
+
+        @SerializedName("user_photo_background") // 유저 백그라운드 이미지
+        @Expose
+        private String userPhotoBackground;
+
+        public int getUserKey() {
             return userKey;
         }
 
-        public void setUserKey(String userKey) {
+        public void setUserKey(int userKey) {
             this.userKey = userKey;
         }
 
@@ -99,7 +118,103 @@ public class Parsing {
         public void setUserPhoto(String userPhoto) {
             this.userPhoto = userPhoto;
         }
+
+        public String getUserStatus() {
+            return userStatus;
+        }
+
+        public void setUserStatus(String userStatus) {
+            this.userStatus = userStatus;
+        }
+
+        public String getUserPhotoBackground() {
+            return userPhotoBackground;
+        }
+
+        public void setUserPhotoBackground(String userPhotoBackground) {
+            this.userPhotoBackground = userPhotoBackground;
+        }
     }
 
+    @SerializedName("friendslist")
+    @Expose
+    private List<Friendslist> friendslist = null;
+
+    public List<Friendslist> getFriendslist() {
+        return friendslist;
+    }
+
+    public void setFriendslist(List<Friendslist> friendslist) {
+        this.friendslist = friendslist;
+    }
+
+    // =========================================================================================================
+    // 친구 목록 + 친구 정보 GSon
+    // 정보를 받아오는 Table: user_info, user_friends
+    // user_friends AS f LEFT JOIN user_info AS i
+    // =========================================================================================================
+    public class Friendslist {
+
+        @SerializedName("user_login_id") // 나의 고유 ID
+        @Expose
+        private int userLoginId;
+
+        @SerializedName("user_friends_id") // 친구의 고유 ID
+        @Expose
+        private int userFriendsId;
+
+        @SerializedName("user_name") // 친구의 닉네임
+        @Expose
+        private String userName;
+
+        @SerializedName("user_photo") // 친구의 프로필 사진
+        @Expose
+        private String userPhoto;
+
+        @SerializedName("user_status") // 친구의 상태 메세지
+        @Expose
+        private String userStatus;
+
+
+        public int getUserLoginId() {
+            return userLoginId;
+        }
+
+        public void setUserLoginId(int userLoginId) {
+            this.userLoginId = userLoginId;
+        }
+
+        public int getUserFriendsId() {
+            return userFriendsId;
+        }
+
+        public void setUserFriendsId(int userFriendsId) {
+            this.userFriendsId = userFriendsId;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getUserPhoto() {
+            return userPhoto;
+        }
+
+        public void setUserPhoto(String userPhoto) {
+            this.userPhoto = userPhoto;
+        }
+
+        public String getUserStatus() {
+            return userStatus;
+        }
+
+        public void setUserStatus(String userStatus) {
+            this.userStatus = userStatus;
+        }
+    }
 
 }

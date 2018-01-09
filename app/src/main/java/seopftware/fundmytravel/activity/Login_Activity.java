@@ -57,7 +57,9 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
         if (status.equals("success")) {
 
             // 로그인 한 경험이 있는 회원은 자동으로 Home 화면으로 넘어가게끔.
-            USER_ID = autologin.getString(AUTO_LOGIN_USERID, "autoLogin_fail"); // USER_ID 전역 변수에 고유 ID 값 담아서 어디서든 사용하기 편하게 해준다.
+            USER_ID = autologin.getInt(AUTO_LOGIN_USERID, 0); // USER_ID 전역 변수에 고유 ID 값 담아서 어디서든 사용하기 편하게 해준다.
+            Log.d(TAG, "USER_ID 값은? : " + USER_ID);
+
             Intent intent2 = new Intent(getApplicationContext(), Home_Activity.class);
             startActivity(intent2);
             finish();
@@ -65,9 +67,9 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
             getMyInfo();
 
             // 네티와의 채팅 연결을 위한 Service 시작
-//            Intent intent1 = new Intent(Login_Activity.this, Chat_Service.class);
-//            Log.d(TAG, "채팅을 위한 (netty Channel connection)서비스 시작");
-//            startService(intent1);
+            Intent intent1 = new Intent(Login_Activity.this, Chat_Service.class);
+            Log.d(TAG, "채팅을 위한 (netty Channel connection)서비스 시작");
+            startService(intent1);
 
         }
         // =========================================================================================================
@@ -119,7 +121,14 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
             // 구글로 로그인
             case R.id.btn_login_google:
 
-                USER_ID = "50";
+
+                USER_ID = 59;
+                SharedPreferences pref = getSharedPreferences(AUTO_LOGIN_STATUS, MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString(AUTO_LOGIN_KEY, "success"); // 자동 로그인 상태 저장
+                editor.putInt(AUTO_LOGIN_USERID, USER_ID); // 유저 고유 번호ID 저장
+                editor.commit();
+
                 getMyInfo();
 
                 // 임시로 서비스 시작 가능하게끔

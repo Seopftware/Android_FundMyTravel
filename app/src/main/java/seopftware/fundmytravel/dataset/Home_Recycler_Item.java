@@ -8,7 +8,7 @@ package seopftware.fundmytravel.dataset;
 public class Home_Recycler_Item {
 
     int home_type; // View Type 지정
-    String home_id; // 유저들의 고유 Id 저장
+    int home_id; // 유저들의 고유 Id 저장
     String home_profile; // 이미지 경로
     String home_nickname; // 유저들의 닉네임
     String home_message; // 유저들의 상태 메세지
@@ -21,11 +21,11 @@ public class Home_Recycler_Item {
         this.home_type = home_type;
     }
 
-    public String getHome_id() {
+    public int getHome_id() {
         return home_id;
     }
 
-    public void setHome_id(String home_id) {
+    public void setHome_id(int home_id) {
         this.home_id = home_id;
     }
 

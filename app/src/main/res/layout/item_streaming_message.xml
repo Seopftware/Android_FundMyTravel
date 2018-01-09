@@ -21,7 +21,7 @@
             android:paddingLeft="10dp">
 
             <ImageView
-                android:id="@+id/iv_Profile"
+                android:id="@+id/iv_profile"
                 android:layout_width="45dp"
                 android:layout_height="45dp" />
 
@@ -31,7 +31,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_Name"
+                    android:id="@+id/tv_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

@@ -1,6 +1,9 @@
 package seopftware.fundmytravel.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,6 +35,7 @@ import seopftware.fundmytravel.fragment.Streaminglist_Fragment;
 import seopftware.fundmytravel.function.ViewFindUtils;
 import seopftware.fundmytravel.function.tablayout.TabEntity;
 
+import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_VIDEOCALL;
 import static seopftware.fundmytravel.function.MyApp.USER_ID;
 
 
@@ -67,7 +71,11 @@ public class Home_Activity extends AppCompatActivity {
     private ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>(); // TabLayout 커스텀한 객체가 담겨 있는 ArrayList
     private View mDecorView;
     private ViewPager mViewPager; // ViewPager 변수
-    private CommonTabLayout mTabLayout_2; //
+    private CommonTabLayout mTabLayout_2;
+
+    // 브로드 캐스트 리시버 동적 생성(매니페스트 intent filter 추가 안하고)
+    BroadcastReceiver broadcast_receiver; // 서비스로부터 메세지를 받기 위해 브로드 캐스트 리시버 동적 생성
+    IntentFilter intentfilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +88,9 @@ public class Home_Activity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Log.d(TAG, "USER ID값 궁금해: " + USER_ID);
+        Log.d(TAG, "USER_ID 값을 서버로 보내다. (USER_ID) : " + USER_ID);
+
+
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true); //커스터마이징 하기 위해 필요
@@ -127,8 +138,57 @@ public class Home_Activity extends AppCompatActivity {
 //            rtv_2_3.setBackgroundColor(Color.parseColor("#6D8FB0"));
 //        }
 
+
+        // 브로드 캐스트 관련
+        intentfilter = new IntentFilter(); // 인텐트 필터 생성
+        intentfilter.addAction(BROADCAST_NETTY_VIDEOCALL); // 인텐트 필터에 액션 추가
+        register_receiver(); // 리시버 등록하는 함수 작동
+
     }
 
+
+    // 영상 통화 브로드 캐스트 메세지 받아오는 곳
+    // 여기서 Home_Activity -> Videocall_Receive_Activity 이동하는 작업 진행
+    private void register_receiver() {
+        broadcast_receiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                String user_id = intent.getStringExtra("user_id"); // 전화건 사람
+                String receiver_id = intent.getStringExtra("receiver_id"); // 전화 받는 사람
+                String room_number = intent.getStringExtra("room_number"); // webRTC 방번호
+
+                Log.d(TAG, "user_id (서버에서 받은 메세지 (from Service) : " + user_id);
+                Log.d(TAG, "receiver_id (서버에서 받은 메세지 (from Service) : " + receiver_id);
+                Log.d(TAG, "room_number (서버에서 받은 메세지 (from Service) : " + room_number);
+
+                Log.d(TAG, "****************************************************************");
+                Log.d(TAG, "BroadcastReceiver() : (받기) 2.서비스에서 받은 메세지를 리스트뷰에 추가하는 곳");
+                Log.d(TAG, "****************************************************************");
+
+
+                // 보내는 값: caller_id, room_number
+                // 보내는 곳: Videocall_Receive_Activity
+                Intent callintent=new Intent(getApplicationContext(), Videocall_Receive_Activity.class);
+                callintent.putExtra("user_id", user_id); // 전화를 건 사람
+                callintent.putExtra("receiver_id", receiver_id); // 전화를 받는 사람
+                callintent.putExtra("room_number", room_number);
+                startActivity(callintent);
+            }
+        };
+
+        registerReceiver(broadcast_receiver, intentfilter);
+        Log.d(TAG, "video call broadcast receiver를 시작합니다.");
+
+    }
+
+    
+    
+    
+    
+    
+    
+    
 
     Random mRandom = new Random();
 
@@ -166,7 +226,7 @@ public class Home_Activity extends AppCompatActivity {
             }
         });
 
-        mViewPager.setCurrentItem(1);
+        mViewPager.setCurrentItem(0);
     }
 
     // Viewpager Adapter
@@ -221,4 +281,22 @@ public class Home_Activity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    // 동적으로(코드상으로) 브로드 캐스트 종료
+    private void unregister_receiver() {
+        if(broadcast_receiver !=null) {
+            this.unregisterReceiver(broadcast_receiver);
+            broadcast_receiver=null;
+            Log.d(TAG, "broadcast receiver를 종료합니다.");
+        }
+    }
+    // =========================================================================================================
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        unregister_receiver();
+    }
+
 }

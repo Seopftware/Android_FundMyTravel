@@ -24,11 +24,13 @@ import seopftware.fundmytravel.function.streaming.ActivityLink;
 import seopftware.fundmytravel.function.streaming.BeforeStreaming_Activity;
 import seopftware.fundmytravel.function.streaming.PlayerStreaming_Activity;
 import seopftware.fundmytravel.function.streaming.Streaming_Acticity;
-import seopftware.fundmytravel.webrtc.Connect_Activity;
+import seopftware.fundmytravel.activity.Home_Profile_Activity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static seopftware.fundmytravel.function.MyApp.USER_ID;
+import static seopftware.fundmytravel.function.chatting.Chat_Service.channel;
 
 @SuppressLint("ValidFragment")
 public class Streaminglist_Fragment extends Fragment {
@@ -81,8 +83,20 @@ public class Streaminglist_Fragment extends Fragment {
         btn_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(getContext(), Connect_Activity.class);
+                Intent intent=new Intent(getContext(), Home_Profile_Activity.class);
                 startActivity(intent);
+            }
+        });
+
+
+        Button btn_server = (Button) v.findViewById(R.id.btn_server);
+        btn_server.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Toast.makeText(getContext(), "서버로 메세지 보냄" + USER_ID, Toast.LENGTH_LONG).show();
+                channel.writeAndFlush(USER_ID + "데이터가 서버에 옵니까???");
+
             }
         });
 

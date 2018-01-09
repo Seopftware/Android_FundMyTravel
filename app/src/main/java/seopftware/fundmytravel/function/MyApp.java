@@ -33,16 +33,19 @@ public class MyApp extends Application {
 
     public static String TAG ="all_"+"MyApp";
 
-    public static String USER_ID;
+    public static int USER_ID;
     public static String USER_NAME;
     public static String USER_PHOTO;
+    public static String USER_STATUS;
     public static String AUTO_LOGIN_STATUS = "auto_login_status";
     public static String AUTO_LOGIN_KEY = "auto_login_key";
     public static String AUTO_LOGIN_USERID = "auto_login_userid";
     public static String SERVER_URL = "http://52.79.138.20/";
     public static String SERVER_IP1 = "192.168.144.2";
-    public static String SERVER_IP = "172.30.1.17";
+    public static String SERVER_IP = "192.168.0.4"; // Netty Chat Server
     public static String BROADCAST_NETTY_MESSAGE = "seopftware.fundmytravel.chatmessage.SEND_BROAD_CAST";
+    public static String BROADCAST_NETTY_VIDEOCALL = "seopftware.fundmytravel.chatmessage.SEND_VIDEO_CALL";
+    public static String BROADCAST_NETTY_VIDEOCALL_DENY = "seopftware.fundmytravel.chatmessage.SEND_VIDEO_CALLDENY";
     public static int NETTY_PORT = 8000;
 
 
@@ -96,7 +99,7 @@ public class MyApp extends Application {
             @Override
             public void onResponse(Call<Parsing> call, Response<Parsing> response) {
                 Parsing parsing = response.body();
-                String user_key = parsing.getResult().get(0).getUserKey();
+                int user_key = parsing.getResult().get(0).getUserKey();
                 USER_ID = user_key;
 
                 // 유저의 이름
@@ -106,6 +109,10 @@ public class MyApp extends Application {
                 // 유저의 프로필 사진
                 String user_profile = parsing.getResult().get(0).getUserPhoto();
                 USER_PHOTO=user_profile;
+
+                // 유저의 상태 메세지
+                String user_status = parsing.getResult().get(0).getUserStatus();
+                USER_STATUS=user_status;
             }
 
             @Override
@@ -114,6 +121,9 @@ public class MyApp extends Application {
             }
         });
     }
+
+
+
 
     /*
     *         comment.enqueue(new Callback<ResponseBody>() { // 비동기로 Request를 보내고 Response가 돌아올 때 콜백으로 앱에게 알림

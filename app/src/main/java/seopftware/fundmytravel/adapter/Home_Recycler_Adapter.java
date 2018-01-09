@@ -35,10 +35,11 @@ public class Home_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.Vie
     private static final int ME = 0; // 나일 경우
     private static final int FRIENDS = 1; // 친구일 경우
 
-    ArrayList<Home_Recycler_Item> itemlist = new ArrayList<Home_Recycler_Item>(); // 데이터 바구니
+    ArrayList<Home_Recycler_Item> itemlist; // 데이터 바구니
     Context context;
 
-    public Home_Recycler_Adapter() {
+    public Home_Recycler_Adapter(ArrayList<Home_Recycler_Item> items) {
+        itemlist=items;
 
     }
 
@@ -95,7 +96,7 @@ public class Home_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.Vie
         // 1. 본인인 경우
         if(holder instanceof ItemOneViewHolder) {
 
-            ((ItemOneViewHolder)holder).tv_Id.setText(listviewItem.getHome_id()); // 고유 Id
+            ((ItemOneViewHolder)holder).tv_Id.setText(""+listviewItem.getHome_id()); // 고유 Id
             ((ItemOneViewHolder)holder).tv_Name.setText(listviewItem.getHome_nickname()); // 닉네임
             ((ItemOneViewHolder)holder).tv_Message.setText(listviewItem.getHome_message()); // 상태 메세지
             Glide.with(context)
@@ -111,7 +112,7 @@ public class Home_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.Vie
         // 2. 친구인 경우
         else if(holder instanceof ItemTwoViewHolder) {
 
-            ((ItemTwoViewHolder)holder).tv_Id.setText(listviewItem.getHome_id()); // 고유 Id
+            ((ItemTwoViewHolder)holder).tv_Id.setText(""+listviewItem.getHome_id()); // 고유 Id
             ((ItemTwoViewHolder)holder).tv_Name.setText(listviewItem.getHome_nickname()); // 닉네임
             ((ItemTwoViewHolder)holder).tv_Message.setText(listviewItem.getHome_message()); // 상태 메세지
             Glide.with(context)
@@ -133,9 +134,9 @@ public class Home_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.Vie
             super(itemView);
 
             tv_Id= (TextView) itemView.findViewById(R.id.tv_Id);
-            tv_Name= (TextView) itemView.findViewById(R.id.tv_Name);
+            tv_Name= (TextView) itemView.findViewById(R.id.tv_name);
             tv_Message= (TextView) itemView.findViewById(R.id.tv_Message);
-            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_Profile);
+            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_profile);
 
         }
     }
@@ -150,9 +151,9 @@ public class Home_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.Vie
             super(itemView);
 
             tv_Id= (TextView) itemView.findViewById(R.id.tv_Id);
-            tv_Name= (TextView) itemView.findViewById(R.id.tv_Name);
+            tv_Name= (TextView) itemView.findViewById(R.id.tv_name);
             tv_Message= (TextView) itemView.findViewById(R.id.tv_Message);
-            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_Profile);
+            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_profile);
             Linear_up= (LinearLayout) itemView.findViewById(R.id.Linear_up);
             Linear_up.setVisibility(View.GONE);
             Linear_down= (LinearLayout) itemView.findViewById(R.id.Linear_down);
@@ -184,10 +185,11 @@ public class Home_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     // 사진 메세지
-    public void addFriend(String name, String message, String profile) {
+    public void addFriend(int id, String name, String message, String profile) {
         Home_Recycler_Item item = new Home_Recycler_Item();
 
         item.setHome_type(FRIENDS);
+        item.setHome_id(id);
         item.setHome_nickname(name);
         item.setHome_message(message);
         item.setHome_profile(SERVER_URL + "photo/"+profile);

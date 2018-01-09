@@ -149,11 +149,15 @@ public class Login_Phone2_Activity extends AppCompatActivity {
                             try {
 
                                 // 자동 로그인을 위해 SharedPreferences에 회원 정보 저장
-                                USER_ID = response.body().string(); // 로그인 세션 유지를 위해 user의 고유 ID 값 변수에 담는다.
+                                String user_id = response.body().string(); // 로그인 세션 유지를 위해 user의 고유 ID 값 변수에 담는다.
+
+                                Log.d(TAG, "response.body().string(): "+ user_id);
+
+                                USER_ID = Integer.parseInt(user_id);
                                 SharedPreferences pref = getSharedPreferences(AUTO_LOGIN_STATUS, MODE_PRIVATE);
                                 SharedPreferences.Editor editor = pref.edit();
                                 editor.putString(AUTO_LOGIN_KEY, "success"); // 자동 로그인 상태 저장
-                                editor.putString(AUTO_LOGIN_USERID, USER_ID); // 유저 고유 번호ID 저장
+                                editor.putInt(AUTO_LOGIN_USERID, USER_ID); // 유저 고유 번호ID 저장
                                 editor.commit();
 
                             } catch (IOException e) {

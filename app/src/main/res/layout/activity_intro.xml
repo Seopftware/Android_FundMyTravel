@@ -8,7 +8,7 @@
     tools:context="seopftware.fundmytravel.activity.Intro_Activity">
 
     <ImageView
-        android:id="@+id/iv_Background"
+        android:id="@+id/iv_background"
         android:layout_width="356dp"
         android:layout_height="255dp"
         android:layout_marginBottom="64dp"

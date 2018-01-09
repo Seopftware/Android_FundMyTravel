@@ -18,13 +18,14 @@ import seopftware.fundmytravel.dataset.Parsing;
 
 public interface HttpService {
 
+    // PHP에서 POST로 받아올 변수명
 
     // 폰 번호로 회원가입할 때
     @FormUrlEncoded
-    @POST("php/insert/phone.php") // 폴더명/파일명
+    @POST("php/insert/register_phone.php") // 폴더명/파일명
     Call<ResponseBody>register_phone(
             // @Field("서버에 보낼 변수명")
-            @Field("user_method") String user_login, // 회원가입 방법
+            @Field("user_method") String user_method, // 회원가입 방법
             @Field("user_phone") String user_phone); // 회원가입할 휴대폰 번호
 
 
@@ -33,7 +34,14 @@ public interface HttpService {
     @FormUrlEncoded
     @POST("php/select/user_info.php") // 폴더명/파일명
     Call<Parsing>get_userinfo(
-            @Field("user_key") String user_phone); // 회원가입할 휴대폰 번호
+            @Field("user_key") int user_key); // 유저 고유 ID
+
+
+    // 나의 id 보내고 친구 목록 가져오기
+    @FormUrlEncoded
+    @POST("php/select/find_friendlist.php") // 폴더명/파일명
+    Call<Parsing>get_friendslist(
+            @Field("user_login_id") int user_login_id);
 
 }
 

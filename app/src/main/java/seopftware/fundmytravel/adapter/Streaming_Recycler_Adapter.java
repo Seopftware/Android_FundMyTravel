@@ -128,7 +128,7 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
                     .into(((ItemTwoViewHolder)holder).iv_Profile); // 유저 이미지
 
 
-            if(USER_ID.equals("50")) {
+            if(USER_ID == 50) {
                 ((ItemTwoViewHolder)holder).iv_Roommaker.setVisibility(View.VISIBLE);
                 ((ItemTwoViewHolder)holder).iv_Roommaker.bringToFront();
 
@@ -167,9 +167,9 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
             super(itemView);
 
             tv_Id= (TextView) itemView.findViewById(R.id.tv_Id);
-            tv_Name= (TextView) itemView.findViewById(R.id.tv_Name);
+            tv_Name= (TextView) itemView.findViewById(R.id.tv_name);
             tv_Message= (TextView) itemView.findViewById(R.id.tv_Message);
-            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_Profile);
+            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_profile);
             iv_Roommaker= (ImageView) itemView.findViewById(R.id.iv_Roommaker);
 
         }

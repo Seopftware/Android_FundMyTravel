@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.webrtc.RendererCommon.ScalingType;
@@ -32,10 +31,7 @@ public class CallFragment extends Fragment {
   private TextView contactView;
   private ImageButton disconnectButton;
   private ImageButton cameraSwitchButton;
-  private ImageButton videoScalingButton;
   private ImageButton toggleMuteButton;
-  private TextView captureFormatText;
-  private SeekBar captureFormatSlider;
   private OnCallEvents callEvents;
   private ScalingType scalingType;
   private boolean videoCallEnabled = true;
@@ -60,10 +56,7 @@ public class CallFragment extends Fragment {
     contactView = (TextView) controlView.findViewById(R.id.contact_name_call);
     disconnectButton = (ImageButton) controlView.findViewById(R.id.button_call_disconnect);
     cameraSwitchButton = (ImageButton) controlView.findViewById(R.id.button_call_switch_camera);
-    videoScalingButton = (ImageButton) controlView.findViewById(R.id.button_call_scaling_mode);
     toggleMuteButton = (ImageButton) controlView.findViewById(R.id.button_call_toggle_mic);
-    captureFormatText = (TextView) controlView.findViewById(R.id.capture_format_text_call);
-    captureFormatSlider = (SeekBar) controlView.findViewById(R.id.capture_format_slider_call);
 
     // Add buttons click events.
     disconnectButton.setOnClickListener(new View.OnClickListener() {
@@ -80,21 +73,6 @@ public class CallFragment extends Fragment {
       }
     });
 
-    videoScalingButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        if (scalingType == ScalingType.SCALE_ASPECT_FILL) {
-          videoScalingButton.setBackgroundResource(R.drawable.ic_launcher_background);
-          scalingType = ScalingType.SCALE_ASPECT_FIT;
-        } else {
-          videoScalingButton.setBackgroundResource(R.drawable.ic_launcher_foreground);
-          scalingType = ScalingType.SCALE_ASPECT_FILL;
-        }
-        callEvents.onVideoScalingSwitch(scalingType);
-      }
-    });
-    scalingType = ScalingType.SCALE_ASPECT_FILL;
-
     toggleMuteButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -110,24 +88,14 @@ public class CallFragment extends Fragment {
   public void onStart() {
     super.onStart();
 
-    boolean captureSliderEnabled = false;
     Bundle args = getArguments();
     if (args != null) {
       String contactName = args.getString(Call_Activity.EXTRA_ROOMID);
       contactView.setText(contactName);
       videoCallEnabled = args.getBoolean(Call_Activity.EXTRA_VIDEO_CALL, true);
-      captureSliderEnabled = videoCallEnabled
-          && args.getBoolean(Call_Activity.EXTRA_VIDEO_CAPTUREQUALITYSLIDER_ENABLED, false);
     }
     if (!videoCallEnabled) {
       cameraSwitchButton.setVisibility(View.INVISIBLE);
-    }
-    if (captureSliderEnabled) {
-      captureFormatSlider.setOnSeekBarChangeListener(
-          new CaptureQualityController(captureFormatText, callEvents));
-    } else {
-      captureFormatText.setVisibility(View.GONE);
-      captureFormatSlider.setVisibility(View.GONE);
     }
   }
 

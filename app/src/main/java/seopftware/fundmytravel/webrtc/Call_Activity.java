@@ -4,9 +4,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
@@ -44,13 +46,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import seopftware.fundmytravel.R;
+import seopftware.fundmytravel.activity.Videocall_Receive_Activity;
 import seopftware.fundmytravel.webrtc.AppRTCAudioManager.AudioDevice;
 import seopftware.fundmytravel.webrtc.AppRTCAudioManager.AudioManagerEvents;
 import seopftware.fundmytravel.webrtc.AppRTCClient.RoomConnectionParameters;
 import seopftware.fundmytravel.webrtc.AppRTCClient.SignalingParameters;
 import seopftware.fundmytravel.webrtc.PeerConnectionClient.DataChannelParameters;
 import seopftware.fundmytravel.webrtc.PeerConnectionClient.PeerConnectionParameters;
-import seopftware.fundmytravel.R;
+
+import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_MESSAGE;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -59,6 +64,7 @@ import seopftware.fundmytravel.R;
 public class Call_Activity extends Activity implements AppRTCClient.SignalingEvents,
         PeerConnectionClient.PeerConnectionEvents,
         CallFragment.OnCallEvents {
+
     private static final String TAG = Call_Activity.class.getSimpleName();
 
     public static final String EXTRA_ROOMID = "org.appspot.apprtc.ROOMID";
@@ -137,6 +143,7 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
         }
     }
 
+
     private final ProxyRenderer remoteProxyRenderer = new ProxyRenderer();
     private final ProxyRenderer localProxyRenderer = new ProxyRenderer();
     private PeerConnectionClient peerConnectionClient = null;
@@ -169,6 +176,9 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
     // Controls
     private CallFragment callFragment;
 
+    // 브로드 캐스트 리시버 동적 생성(매니페스트 intent filter 추가 안하고)
+    BroadcastReceiver broadcast_receiver; // 서비스로부터 메세지를 받기 위해 브로드 캐스트 리시버 동적 생성
+    IntentFilter intentfilter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -324,8 +334,8 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
 
         // Send intent arguments to fragments.
         callFragment.setArguments(intent.getExtras());
-//        hudFragment.setArguments(intent.getExtras());
-        // Activate call and HUD fragments and start the call.
+
+        // Activate call start the call.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(R.id.call_fragment_container, callFragment);
         ft.commit();
@@ -354,8 +364,45 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
         } else {
             startCall();
         }
-    }
 
+
+        // 브로드 캐스트 관련
+        intentfilter = new IntentFilter(); // 인텐트 필터 생성
+        intentfilter.addAction(BROADCAST_NETTY_MESSAGE); // 인텐트 필터에 액션 추가
+        register_receiver(); // 리시버 등록하는 함수 작동
+
+    } //onCreate() finish
+
+
+    private void register_receiver() {
+        broadcast_receiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                String caller_id = intent.getStringExtra("caller_id");
+                String room_number = intent.getStringExtra("room_number");
+
+                Log.d(TAG, "caller_id (서버에서 받은 메세지 (from Service) : " + caller_id);
+                Log.d(TAG, "room_number (서버에서 받은 메세지 (from Service) : " + room_number);
+
+                Log.d(TAG, "****************************************************************");
+                Log.d(TAG, "BroadcastReceiver() : (받기) 2.서비스에서 받은 메세지를 리스트뷰에 추가하는 곳");
+                Log.d(TAG, "****************************************************************");
+
+
+                // 보내는 값: caller_id, room_number
+                // 보내는 곳: Videocall_Receive_Activity
+                Intent callintent=new Intent(getApplicationContext(), Videocall_Receive_Activity.class);
+                callintent.putExtra("caller_id", caller_id);
+                callintent.putExtra("room_number", room_number);
+                startActivity(callintent);
+            }
+        };
+
+        registerReceiver(broadcast_receiver, intentfilter);
+        Log.d(TAG, "video call broadcast receiver를 시작합니다.");
+
+    }
     @TargetApi(17)
     private DisplayMetrics getDisplayMetrics() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -702,7 +749,7 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
         localProxyRenderer.setTarget(isSwappedFeeds ? fullscreenRenderer : pipRenderer);
         remoteProxyRenderer.setTarget(isSwappedFeeds ? pipRenderer : fullscreenRenderer);
         fullscreenRenderer.setMirror(isSwappedFeeds);
-        pipRenderer.setMirror(!isSwappedFeeds);
+        pipRenderer.setMirror(isSwappedFeeds);
     }
 
     // -----Implementation of AppRTCClient.AppRTCSignalingEvents ---------------
