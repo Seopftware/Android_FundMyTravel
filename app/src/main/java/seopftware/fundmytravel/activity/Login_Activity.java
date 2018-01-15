@@ -69,7 +69,7 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
             // 네티와의 채팅 연결을 위한 Service 시작
             Intent intent1 = new Intent(Login_Activity.this, Chat_Service.class);
             Log.d(TAG, "채팅을 위한 (netty Channel connection)서비스 시작");
-            startService(intent1);
+//            startService(intent1);
 
         }
         // =========================================================================================================

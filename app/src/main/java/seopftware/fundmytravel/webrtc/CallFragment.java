@@ -12,6 +12,7 @@ package seopftware.fundmytravel.webrtc;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import org.webrtc.RendererCommon.ScalingType;
 
 import seopftware.fundmytravel.R;
+import seopftware.fundmytravel.activity.Home_Activity;
 
 /**
  * Fragment for call control.
@@ -32,8 +34,7 @@ public class CallFragment extends Fragment {
   private ImageButton disconnectButton;
   private ImageButton cameraSwitchButton;
   private ImageButton toggleMuteButton;
-  private OnCallEvents callEvents;
-  private ScalingType scalingType;
+  static OnCallEvents callEvents;
   private boolean videoCallEnabled = true;
 
   /**
@@ -62,21 +63,27 @@ public class CallFragment extends Fragment {
     disconnectButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        callEvents.onCallHangUp();
+        callEvents.onCallHangUp(); // 영상 통화 종료 버튼
+
+        // 영상통화 종료 후 홈 액티비티 띄우기
+        Intent intent = new Intent(getActivity(), Home_Activity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // 최상위 액티비티(Home_Activity) 남기고 다 없애기
+        startActivity(intent);
+        getActivity().finish();
       }
     });
 
     cameraSwitchButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        callEvents.onCameraSwitch();
+        callEvents.onCameraSwitch(); // 카메라 앞/뒤 변경
       }
     });
 
     toggleMuteButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        boolean enabled = callEvents.onToggleMic();
+        boolean enabled = callEvents.onToggleMic(); // 마이크 음소거 기능
         toggleMuteButton.setAlpha(enabled ? 1.0f : 0.3f);
       }
     });
@@ -90,7 +97,8 @@ public class CallFragment extends Fragment {
 
     Bundle args = getArguments();
     if (args != null) {
-      String contactName = args.getString(Call_Activity.EXTRA_ROOMID);
+
+      String contactName = args.getString("user_name");
       contactView.setText(contactName);
       videoCallEnabled = args.getBoolean(Call_Activity.EXTRA_VIDEO_CALL, true);
     }

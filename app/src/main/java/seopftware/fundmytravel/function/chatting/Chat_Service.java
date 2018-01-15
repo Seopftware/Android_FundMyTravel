@@ -27,6 +27,7 @@ import io.netty.handler.codec.string.StringEncoder;
 import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_STATUS;
 import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_USERID;
 import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_VIDEOCALL;
+import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_VIDEOCALL_DENY;
 import static seopftware.fundmytravel.function.MyApp.NETTY_PORT;
 import static seopftware.fundmytravel.function.MyApp.SERVER_IP;
 import static seopftware.fundmytravel.function.MyApp.USER_ID;
@@ -190,7 +191,7 @@ public class Chat_Service extends Service {
 
                     Log.d(TAG, "****************************************************************");
                     Log.d(TAG, "서비스 ChatClientHandler() : (받기) 1.서버에서 받은 메세지를 액티비티로 보내는 곳");
-                    Log.d(TAG, "서비스 Broad Cast Action : " + BROADCAST_NETTY_VIDEOCALL);
+                    Log.d(TAG, "서비스 Broad Cast Action(ACCEPT) : " + BROADCAST_NETTY_VIDEOCALL);
                     Log.d(TAG, "**************************************************");
 
 
@@ -209,6 +210,33 @@ public class Chat_Service extends Service {
                     sendIntent.putExtra("receiver_id", receiver_id); // 전화를 받는 사람
                     sendIntent.putExtra("room_number", room_number); // 방 번호
                     sendBroadcast(sendIntent);
+
+                    Log.d(TAG, "sendBroadcast() : 작동");
+
+                    break;
+
+
+
+                // Home_Profile_Activity에서 영통 클릭 ㅡ> 서버로 메세지 보냄
+                // video_call type의 메세지를 받음
+                case "video_call_deny":
+
+                    Log.d(TAG, "****************************************************************");
+                    Log.d(TAG, "서비스 video_call_deny : 전화받기 거절 클릭 했을 때(거절당한 상대방에게 알림보내기");
+                    Log.d(TAG, "서비스 ChatClientHandler() : (받기) 1.서버에서 받은 메세지를 액티비티로 보내는 곳");
+                    Log.d(TAG, "서비스 Broad Cast Action(DENY) : " + BROADCAST_NETTY_VIDEOCALL_DENY);
+                    Log.d(TAG, "**************************************************");
+
+                    //{"message_type":"video_call","user_id":67,"receiver_id":59,"room_number":"seope3569"}
+
+
+                    // 서비스 ㅡ> 액티비티 (Call_Activity)
+                    // 거절 당한 상대방에게 알림 보내기 (동적 리시버)
+                    Intent denyIntent = new Intent(BROADCAST_NETTY_VIDEOCALL_DENY);
+                    sendBroadcast(denyIntent);
+
+                    Log.d(TAG, "sendBroadcast() : 작동");
+
                     break;
 
 

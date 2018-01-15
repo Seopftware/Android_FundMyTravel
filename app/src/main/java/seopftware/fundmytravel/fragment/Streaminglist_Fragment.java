@@ -42,9 +42,8 @@ public class Streaminglist_Fragment extends Fragment {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    public static Streaminglist_Fragment getInstance(String title) {
+    public static Streaminglist_Fragment getInstance() {
         Streaminglist_Fragment home_fragment = new Streaminglist_Fragment();
-        home_fragment.mTitle = title;
         return home_fragment;
     }
 
@@ -58,7 +57,7 @@ public class Streaminglist_Fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle(Html.fromHtml("<font color=\"red\">" + getString(R.string.app_name) + "</font>"));
+        getActivity().setTitle(Html.fromHtml("<font color=\"red\">" + "streaming" + "</font>"));
         getActivity().getResources().getColor(android.R.color.white);
 
 

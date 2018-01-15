@@ -84,7 +84,18 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.Videocall_Receive_Activity"></activity>
+        <activity android:name=".activity.Videocall_Receive_Activity" />
+
+
+        <receiver
+            android:name=".webrtc.VideoCallReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="seopftware.fundmytravel.chatmessage.SEND_VIDEO_CALL"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest> <!-- android:theme="@style/AppTheme.NoActionBar" -->

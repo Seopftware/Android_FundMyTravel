@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,9 +37,8 @@ public class Chatlist_Fragment extends Fragment {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    public static Chatlist_Fragment getInstance(String title) {
+    public static Chatlist_Fragment getInstance() {
         Chatlist_Fragment home_fragment = new Chatlist_Fragment();
-        home_fragment.mTitle = title;
         return home_fragment;
     }
 
@@ -54,7 +52,6 @@ public class Chatlist_Fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle(Html.fromHtml("<font color=\"#FFFFFF\">" + getString(R.string.app_name) + "</font>"));
 
         View v = inflater.inflate(R.layout.fragment_chatlist, null);
         createList();

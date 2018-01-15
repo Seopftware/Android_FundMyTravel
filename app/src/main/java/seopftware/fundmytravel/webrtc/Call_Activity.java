@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Set;
 
 import seopftware.fundmytravel.R;
-import seopftware.fundmytravel.activity.Videocall_Receive_Activity;
 import seopftware.fundmytravel.webrtc.AppRTCAudioManager.AudioDevice;
 import seopftware.fundmytravel.webrtc.AppRTCAudioManager.AudioManagerEvents;
 import seopftware.fundmytravel.webrtc.AppRTCClient.RoomConnectionParameters;
@@ -55,7 +54,8 @@ import seopftware.fundmytravel.webrtc.AppRTCClient.SignalingParameters;
 import seopftware.fundmytravel.webrtc.PeerConnectionClient.DataChannelParameters;
 import seopftware.fundmytravel.webrtc.PeerConnectionClient.PeerConnectionParameters;
 
-import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_MESSAGE;
+import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_VIDEOCALL_DENY;
+import static seopftware.fundmytravel.webrtc.CallFragment.callEvents;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -366,9 +366,9 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
         }
 
 
-        // 브로드 캐스트 관련
+        // 상대방으로 부터 통화를 거절당했을 때 발생하는 브로드 캐스트 리시버
         intentfilter = new IntentFilter(); // 인텐트 필터 생성
-        intentfilter.addAction(BROADCAST_NETTY_MESSAGE); // 인텐트 필터에 액션 추가
+        intentfilter.addAction(BROADCAST_NETTY_VIDEOCALL_DENY); // 인텐트 필터에 액션 추가
         register_receiver(); // 리시버 등록하는 함수 작동
 
     } //onCreate() finish
@@ -379,23 +379,12 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                String caller_id = intent.getStringExtra("caller_id");
-                String room_number = intent.getStringExtra("room_number");
-
-                Log.d(TAG, "caller_id (서버에서 받은 메세지 (from Service) : " + caller_id);
-                Log.d(TAG, "room_number (서버에서 받은 메세지 (from Service) : " + room_number);
-
                 Log.d(TAG, "****************************************************************");
-                Log.d(TAG, "BroadcastReceiver() : (받기) 2.서비스에서 받은 메세지를 리스트뷰에 추가하는 곳");
+                Log.d(TAG, "통화 거절 시 발생");
                 Log.d(TAG, "****************************************************************");
 
-
-                // 보내는 값: caller_id, room_number
-                // 보내는 곳: Videocall_Receive_Activity
-                Intent callintent=new Intent(getApplicationContext(), Videocall_Receive_Activity.class);
-                callintent.putExtra("caller_id", caller_id);
-                callintent.putExtra("room_number", room_number);
-                startActivity(callintent);
+                // 다이얼로그 발생
+                denyDialog();
             }
         };
 
@@ -494,6 +483,14 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
         });
     }
 
+    // 동적으로(코드상으로) 브로드 캐스트 종료
+    private void unregister_receiver() {
+        if(broadcast_receiver !=null) {
+            this.unregisterReceiver(broadcast_receiver);
+            broadcast_receiver=null;
+            Log.d(TAG, "broadcast receiver를 종료합니다.");
+        }
+    }
     // Activity interfaces
     @Override
     public void onStop() {
@@ -504,7 +501,10 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
         if (peerConnectionClient != null && !screencaptureEnabled) {
             peerConnectionClient.stopVideoSource();
         }
-//        cpuMonitor.pause();
+
+        // broadcast receiver 해제
+        unregister_receiver();
+
     }
 
     @Override
@@ -952,4 +952,27 @@ public class Call_Activity extends Activity implements AppRTCClient.SignalingEve
     public void onPeerConnectionError(final String description) {
         reportError(description);
     }
+
+
+    // =========================================================================================================
+    // 다이얼 로그창 띄우기 - 입력된 폰 번호가 나의 번호가 맞는지? 한번 더 확인하기
+    private void denyDialog(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Call_Activity.this);
+        alertDialog.setTitle("Alert Message");
+        alertDialog.setMessage("Videocall denyed");
+        alertDialog.setPositiveButton("okay",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+
+                        callEvents.onCallHangUp(); // 다이얼로그 창에서 okay 버튼 클릭하면 통화 종료
+                        // 화면 종료
+                        finish();
+                    }
+                });
+        alertDialog.show();
+    }
+    // =========================================================================================================
+
+
 }

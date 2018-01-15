@@ -100,15 +100,19 @@ public class Videocall_Receive_Activity extends AppCompatActivity {
 
         iv_profile= (ImageView) findViewById(R.id.iv_profile);
         tv_name= (TextView) findViewById(R.id.tv_name);
+
+        // 통화 거절시
         ibtn_videocall_deny= (ImageButton) findViewById(R.id.ibtn_videocall_deny);
         ibtn_videocall_deny.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 try {
+
+                    // 통화 거절을 전화를 건 상대방에게 알리기
                     JSONObject object = new JSONObject();
                     object.put("message_type", "video_call_deny"); // 서버와 연결됨
-                    object.put("user_id", user_id); // 유저 ID
+                    object.put("user_id", Integer.parseInt(user_id)); // 전화를 건 사람의 ID
                     String Object_Data = object.toString();
                     channel.writeAndFlush(Object_Data);
                     finish();
@@ -120,11 +124,14 @@ public class Videocall_Receive_Activity extends AppCompatActivity {
             }
         });
 
+
+        // 통화 수락시
         ibtn_videocall_accept= (ImageButton) findViewById(R.id.ibtn_videocall_accept);
         ibtn_videocall_accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 connectToRoom(room_number, false, false, false, 0); // 영상통화 연결
+                finish();
 
             }
         });

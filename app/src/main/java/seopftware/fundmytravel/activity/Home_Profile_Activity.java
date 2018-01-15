@@ -470,11 +470,13 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
 
 
         // Start AppRTCMobile activity.
+        // Call_Activity로 보내는 값들
         Log.d(TAG, "Connecting to room " + roomId + " at URL " + roomUrl);
         if (validateUrl(roomUrl)) {
             Uri uri = Uri.parse(roomUrl);
             Intent intent = new Intent(this, Call_Activity.class);
             intent.setData(uri);
+            intent.putExtra("user_name", user_name);
             intent.putExtra(Call_Activity.EXTRA_ROOMID, roomId);
             intent.putExtra(Call_Activity.EXTRA_LOOPBACK, loopback);
             intent.putExtra(Call_Activity.EXTRA_VIDEO_CALL, videoCallEnabled);
@@ -503,7 +505,6 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
             intent.putExtra(Call_Activity.EXTRA_TRACING, tracing);
             intent.putExtra(Call_Activity.EXTRA_CMDLINE, commandLineRun);
             intent.putExtra(Call_Activity.EXTRA_RUNTIME, runTimeMs);
-
             intent.putExtra(Call_Activity.EXTRA_DATA_CHANNEL_ENABLED, dataChannelEnabled);
 
             if (dataChannelEnabled) {

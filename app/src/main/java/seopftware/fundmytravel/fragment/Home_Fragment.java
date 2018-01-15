@@ -11,7 +11,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +39,7 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static seopftware.fundmytravel.function.MyApp.USER_ID;
 import static seopftware.fundmytravel.function.MyApp.USER_NAME;
 import static seopftware.fundmytravel.function.MyApp.USER_PHOTO;
-import static seopftware.fundmytravel.function.MyApp.USER_STATUS;
+import static seopftware.fundmytravel.function.MyApp.USER_STATUS_MESSAGE;
 
 @SuppressLint("ValidFragment")
 public class Home_Fragment extends Fragment {
@@ -57,29 +56,24 @@ public class Home_Fragment extends Fragment {
     ArrayList<Home_Recycler_Item> recycler_itemlist;
 
 
+    // 허용 여부
     private final String[] PERMISSIONS = {
             Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    public static Home_Fragment getInstance(String title) {
+    public static Home_Fragment getInstance() {
         Home_Fragment home_fragment = new Home_Fragment();
-        home_fragment.mTitle = title;
         return home_fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // 액션바에 Friends (친구숫자) 표현하기
-        getActivity().setTitle(Html.fromHtml("<font color=\"#FFFFFF\">" + "Friends " + "</font>"+"<font color=\"#FFC60B\">" + "350" + "</font>"));
 
         View v = inflater.inflate(R.layout.fragment_home, null);
         createList();
@@ -175,11 +169,12 @@ public class Home_Fragment extends Fragment {
                 Log.d(TAG, "adapter.getItemCount() 전: " + adapter.getItemCount());
                 Log.d(TAG, "recycler_itemlist.size(): " + recycler_itemlist.size());
 
-                adapter.addMe(USER_NAME, USER_STATUS, USER_PHOTO); // NAME, 상태 메세지, PROFILE
+                adapter.addMe(USER_NAME, USER_STATUS_MESSAGE, USER_PHOTO); // NAME, 상태 메세지, PROFILE
 
 
                 //Todo 여기 무한 반복 어떻게?
-                for (int i=0; i<2; i++) {
+                // 친구목록을 뿌려주는 곳
+                for (int i=0; i<6; i++) {
 
                     // 친구의 고유 ID
                     int friends_id = parsing.getFriendslist().get(i).getUserFriendsId();
@@ -193,6 +188,7 @@ public class Home_Fragment extends Fragment {
                     // 친구의 상태메세지
                     String friends_stats = parsing.getFriendslist().get(i).getUserName();
 
+                    // 친구
                     adapter.addFriend(friends_id, friends_name, friends_stats, friends_photo); // ID, NAME, MESSAGE, STATUS
 
                 }

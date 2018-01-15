@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,6 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 
 @SuppressLint("ValidFragment")
 public class Settings_Fragment extends Fragment {
-    private String mTitle;
     private List<ActivityLink> activities;
 
     private final String[] PERMISSIONS = {
@@ -33,9 +31,8 @@ public class Settings_Fragment extends Fragment {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    public static Settings_Fragment getInstance(String title) {
+    public static Settings_Fragment getInstance() {
         Settings_Fragment home_fragment = new Settings_Fragment();
-        home_fragment.mTitle = title;
         return home_fragment;
     }
 
@@ -46,11 +43,8 @@ public class Settings_Fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle(Html.fromHtml("<font color=\"red\">" + getString(R.string.app_name) + "</font>"));
-        getActivity().getResources().getColor(android.R.color.white);
 
-
-        View v = inflater.inflate(R.layout.fragment_streaminglist, null);
+        View v = inflater.inflate(R.layout.fragment_settings, null);
         createList();
 
         if (!hasPermissions(getContext(), PERMISSIONS)) {
