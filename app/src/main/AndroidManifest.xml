@@ -86,16 +86,19 @@
         </activity>
         <activity android:name=".activity.Videocall_Receive_Activity" />
 
-
         <receiver
             android:name=".webrtc.VideoCallReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="seopftware.fundmytravel.chatmessage.SEND_VIDEO_CALL"/>
+                <action android:name="seopftware.fundmytravel.chatmessage.SEND_VIDEO_CALL" />
             </intent-filter>
         </receiver>
 
+        <activity android:name=".function.googlevision.FaceDetect_Activity" />
+        <activity android:name=".function.googlevision.FaceCanvas_Activity" />
+        <activity android:name=".function.googlevision.sticker.Material_Activity"
+            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"></activity>
     </application>
 
 </manifest> <!-- android:theme="@style/AppTheme.NoActionBar" -->

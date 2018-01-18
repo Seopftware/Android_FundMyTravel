@@ -29,6 +29,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.dataset.Parsing;
+import seopftware.fundmytravel.function.googlevision.FaceDetect_Activity;
 import seopftware.fundmytravel.function.retrofit.HttpService;
 import seopftware.fundmytravel.function.retrofit.RetrofitClient;
 import seopftware.fundmytravel.webrtc.Call_Activity;
@@ -54,7 +55,7 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
     private String keyprefRoom;
 
     // 화면 변수들
-    private ImageButton ibtn_videocall, ibtn_exit; // 영상통화 버튼, 프로필 나가기 버튼
+    private ImageButton ibtn_videocall, ibtn_exit, ibtn_pic_message; // 영상통화 버튼, 프로필 나가기 버튼, 사진 보내기 버튼
     private ImageView iv_background, iv_profile; // 백그라운드 이미지, 프로필 이미지
     private TextView tv_message, tv_name; // 상태 메세지, 유저 이름
 
@@ -101,7 +102,9 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
         // 6.유저 이름
         tv_name= (TextView) findViewById(R.id.tv_name);
 
-
+        // 7.사진 메세지 보내기
+        ibtn_pic_message= (ImageButton) findViewById(R.id.ibtn_pic_message);
+        ibtn_pic_message.setOnClickListener(this);
 
 
         // If an implicit VIEW intent is launching the app, go directly to that URL.
@@ -117,6 +120,7 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
 
         receiver_id = intent.getIntExtra("FRIENDS_ID", 0);
 
+        // 프사화면 띄울 때 친구 정보 가져오는 곳
         getFriendsInfo();
 
 
@@ -172,6 +176,13 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
 
                 break;
 
+            // 4.사진 메세지 보내기
+            case R.id.ibtn_pic_message:
+                Intent intent=new Intent(getApplicationContext(), FaceDetect_Activity.class);
+                startActivity(intent);
+                finish();
+
+                break;
 
 
         } // switch 구문 close
@@ -545,7 +556,6 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
             startActivityForResult(intent, CONNECTION_REQUEST);
         }
     }
-
 
     private boolean validateUrl(String url) {
         if (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url)) {

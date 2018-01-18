@@ -135,7 +135,7 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
                 // 네티와의 채팅 연결을 위한 Service 시작
                 Intent intent2 = new Intent(Login_Activity.this, Chat_Service.class);
                 Log.d(TAG, "채팅을 위한 (netty Channel connection)서비스 시작");
-                startService(intent2);
+//                startService(intent2);
 
 
                 Intent intent3 = new Intent(getApplicationContext(), Home_Activity.class);
@@ -145,6 +145,22 @@ public class Login_Activity extends AppCompatActivity implements Button.OnClickL
 
             // 네이버 로그인
             case R.id.btn_login_naver:
+                USER_ID = 67;
+                SharedPreferences prefs = getSharedPreferences(AUTO_LOGIN_STATUS, MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = prefs.edit();
+                editor1.putString(AUTO_LOGIN_KEY, "success"); // 자동 로그인 상태 저장
+                editor1.putInt(AUTO_LOGIN_USERID, USER_ID); // 유저 고유 번호ID 저장
+                editor1.commit();
+
+                getMyInfo();
+
+                // 임시로 서비스 시작 가능하게끔
+                // 네티와의 채팅 연결을 위한 Service 시작
+                Intent intent11 = new Intent(Login_Activity.this, Chat_Service.class);
+                Log.d(TAG, "채팅을 위한 (netty Channel connection)서비스 시작");
+//                startService(intent11);
+
+
                 Intent intent4 = new Intent(getApplicationContext(), Home_Activity.class);
                 startActivity(intent4);
                 finish();
