@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -26,8 +28,11 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.Landmark;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.function.googlevision.camera.CameraSourcePreview;
@@ -46,10 +51,17 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
 
     Bitmap bitmap_preview = null;
     public static Bitmap bitmap_current_mask =null;
+    int masktype = 0;
 
     ImageButton ibtn_taka_picture; // 사진 촬영
     ImageButton ibtn_mask_face; // 얼굴 마스크 (얼굴 전체에 씌우는 마스크)
     ImageButton ibtn_mask_item; // 아이템 마스크 (선글라스와 같은 소품들)
+
+    private Map<Integer, PointF> mPreviousProportions = new HashMap<>();
+
+
+    int i =1; // 얼굴 마스크 변경하기 위한 변수
+    int j =0; // 선글라스 변경하기 위한 변수
 
 
     @Override
@@ -63,21 +75,23 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
         // UI 설정
         mPreview = (CameraSourcePreview) findViewById(R.id.preview); // 카메라 프리뷰
         mGraphicOverlay= (GraphicOverlay) findViewById(R.id.faceOverlay); // 캔버스로 마스크 그려주는 곳
-        bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.dog2); // 현재 마스크
+        bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.facemask_dog); // 현재 마스크
 
         // 버튼 설정
         // 1.사진촬영 (카메라 촬영 버튼을 클릭하면 화면이 멈추면서 그리기 + 스티커 입히기)
         ibtn_taka_picture= (ImageButton) findViewById(R.id.ibtn_taka_picture);
         ibtn_taka_picture.setOnClickListener(this);
+        ibtn_taka_picture.bringToFront();
 
         // 2.얼굴 마스크
         ibtn_mask_face= (ImageButton) findViewById(R.id.ibtn_mask_face);
         ibtn_mask_face.setOnClickListener(this);
+        ibtn_mask_face.bringToFront();
 
         // 3.아이템 마스크
         ibtn_mask_item= (ImageButton) findViewById(R.id.ibtn_mask_item);
         ibtn_mask_item.setOnClickListener(this);
-
+        ibtn_mask_item.bringToFront();
 
     }
 
@@ -100,11 +114,109 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
             // 얼굴 마스크
             case R.id.ibtn_mask_face:
 
+                // 강아지
+                if(i==0) {
+
+                    Log.d(TAG, "강아지 안옴?");
+                    masktype = 0; // 기존의 얼굴 인식 소스 사용
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.facemask_dog); // Resource 폴더에 저장된 그림파일을 Bitmap으로 리턴해줌
+                    i ++;
+                }
+
+                // 대머리
+                else if(i==1) {
+
+                    masktype = 0; // 기존의 얼굴 인식 소스 사용
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.facemask_head); // Resource 폴더에 저장된 그림파일을 Bitmap으로 리턴해줌
+                    i ++;
+                }
+
+                // 사자
+                else if (i==2) {
+
+                    masktype = 1; // 라이언! 가면 위치 내리고 크기 좀 더 키우기
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.facemask_leopard); // Resource 폴더에 저장된 그림파일을 Bitmap으로 리턴해줌
+                    i ++;
+                }
+
+                // 초록 마스크
+                else if (i==3) {
+
+                    masktype = 2; // 라이언! 가면 위치 내리고 크기 좀 더 키우기
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.facemask_mellon); // Resource 폴더에 저장된 그림파일을 Bitmap으로 리턴해줌
+                    i ++;
+                }
+
+                // 너구리
+                else if (i==4) {
+
+                    masktype = 3; // 라이언! 가면 위치 내리고 크기 좀 더 키우기
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.facemask_noguri); // Resource 폴더에 저장된 그림파일을 Bitmap으로 리턴해줌
+                    i ++;
+                }
+
+                // 유니콘
+                else if (i==5) {
+
+                    masktype = 4; // 라이언! 가면 위치 내리고 크기 좀 더 키우기
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.facemask_unicon); // Resource 폴더에 저장된 그림파일을 Bitmap으로 리턴해줌
+                    i=0;
+                }
+
+                startCameraSource();
+                Toast.makeText(getApplicationContext(), "마스크 변경", Toast.LENGTH_LONG).show();
 
                 break;
 
-            // 아이템 마스크
+            // 선글라스 변경
             case R.id.ibtn_mask_item:
+                Log.d(TAG, "int j 값은 : " + j);
+
+                masktype=5;
+
+                if(j==0) {
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.glasses1);
+                    j ++;
+                }
+
+                else if(j==1) {
+
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.glasses2);
+                    j ++;
+                }
+
+                else if(j==2) {
+
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.glasses3);
+                    j ++;
+                }
+
+                else if(j==3) {
+
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.glasses8);
+                    j ++;
+                }
+
+                else if(j==4) {
+
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.glasses5);
+                    j ++;
+                }
+
+                else if(j==5) {
+
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.glasses6);
+                    j ++;
+                }
+
+                else if(j==6) {
+
+                    bitmap_current_mask = BitmapFactory.decodeResource(getResources(), R.drawable.glasses7);
+                    j=0;
+                }
+
+                startCameraSource();
+                Toast.makeText(getApplicationContext(), "선글라스 변경", Toast.LENGTH_LONG).show();
 
 
                 break;
@@ -196,6 +308,9 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
         } else {
             requestCameraPermission();
         }
+
+
+
         startCameraSource();
     }
 
@@ -329,7 +444,7 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
          */
         @Override
         public void onNewItem(int faceId, Face item) {
-            mFaceGraphic.setId(faceId);
+
         }
 
         /**
@@ -337,8 +452,75 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
          */
         @Override
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
+
+            Log.d(TAG, "onUpdate 발생!!!! mask type = " + masktype);
+
             mOverlay.add(mFaceGraphic);
-            mFaceGraphic.updateFace(face);
+
+            // 강아지, 대머리
+            if (masktype==0) {
+                mFaceGraphic.updateFace(face, masktype);
+            }
+
+            // 사자
+            else if (masktype==1) {
+                mFaceGraphic.updateLion(face, masktype);
+            }
+
+            // 멜론
+            else if (masktype==2) {
+                mFaceGraphic.updateMellon(face, masktype);
+            }
+
+            // 너구리
+            else if (masktype==3) {
+                mFaceGraphic.updateLion(face, masktype);
+            }
+
+            // 유니콘
+            else if (masktype==4) {
+                mFaceGraphic.updateLion(face, masktype);
+            }
+
+            // 선글라스
+            else if (masktype==5){
+
+                updatePreviousProportions(face);
+                PointF leftPosition = getLandmarkPosition(face, Landmark.LEFT_EYE); // 왼쪽 눈 land mark
+                PointF rightPosition = getLandmarkPosition(face, Landmark.RIGHT_EYE); // 오른쪽 눈 land mark
+                mFaceGraphic.updateEyes(leftPosition, rightPosition, masktype);
+            }
+
+        }
+
+        /**
+         * Finds a specific landmark position, or approximates the position based on past observations
+         * if it is not present.
+         */
+        private PointF getLandmarkPosition(Face face, int landmarkId) {
+            for (Landmark landmark : face.getLandmarks()) {
+                if (landmark.getType() == landmarkId) {
+                    return landmark.getPosition();
+                }
+            }
+
+            PointF prop = mPreviousProportions.get(landmarkId);
+            if (prop == null) {
+                return null;
+            }
+
+            float x = face.getPosition().x + (prop.x * face.getWidth());
+            float y = face.getPosition().y + (prop.y * face.getHeight());
+            return new PointF(x, y);
+        }
+
+        private void updatePreviousProportions(Face face) {
+            for (Landmark landmark : face.getLandmarks()) {
+                PointF position = landmark.getPosition();
+                float xProp = (position.x - face.getPosition().x) / face.getWidth();
+                float yProp = (position.y - face.getPosition().y) / face.getHeight();
+                mPreviousProportions.put(landmark.getType(), new PointF(xProp, yProp));
+            }
         }
 
         /**

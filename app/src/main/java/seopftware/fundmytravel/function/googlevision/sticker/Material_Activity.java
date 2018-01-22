@@ -28,8 +28,14 @@ public class Material_Activity extends AppCompatActivity {
 
     // 추가하고자 하는 아이템들의 Resource. 스티커 추가 하고 싶으면 Resource 더해주면 된다.
     private final int[] stickerIds = {
-            R.drawable.abra,
-            R.drawable.bellsprout,
+            R.drawable.kakao1,
+            R.drawable.kakao2,
+            R.drawable.kakao3,
+            R.drawable.kakao4,
+            R.drawable.kakao5,
+            R.drawable.kakao6,
+            R.drawable.kakao7,
+            R.drawable.kakao8,
             R.drawable.keai_01,
             R.drawable.keai_02,
             R.drawable.keai_03,
@@ -43,16 +49,6 @@ public class Material_Activity extends AppCompatActivity {
             R.drawable.keai_11,
             R.drawable.mustache,
             R.drawable.rainbow,
-            R.drawable.kakao1,
-            R.drawable.kakao2,
-            R.drawable.kakao3,
-            R.drawable.kakao4,
-            R.drawable.kakao5,
-            R.drawable.kakao6,
-            R.drawable.kakao7,
-            R.drawable.kakao8,
-
-
     };
 
     @Override

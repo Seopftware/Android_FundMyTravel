@@ -1,13 +1,22 @@
 package seopftware.fundmytravel.function.chatting;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
+
 import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -23,14 +32,19 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import seopftware.fundmytravel.R;
+import seopftware.fundmytravel.activity.Pic_Receive_Activity;
 
 import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_STATUS;
 import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_USERID;
+import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_MESSAGE_PIC;
 import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_VIDEOCALL;
 import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_VIDEOCALL_DENY;
 import static seopftware.fundmytravel.function.MyApp.NETTY_PORT;
+import static seopftware.fundmytravel.function.MyApp.PIC_MESSAGE;
 import static seopftware.fundmytravel.function.MyApp.SERVER_IP;
 import static seopftware.fundmytravel.function.MyApp.USER_ID;
+import static seopftware.fundmytravel.function.MyApp.numberofpic;
 
 /**
  * 채팅 서버와의 통신을 위한 서비스
@@ -45,9 +59,16 @@ public class Chat_Service extends Service {
 
     private static final String TAG = "all_" + "Chat_Service";
 
+    // 노티피케이션
+    NotificationManager Notifi_Manager;
+    Notification Notifi_Message;
 
+
+
+    // Netty 서버 관련 변수들
     public static Channel channel; // 전역변수로 만들어서 Service에서 생성된 Netty channel을 활용해 서버로 데이터 전송 가능)
     Bootstrap bootstrap;
+
 
     @Override
     public void onCreate() {
@@ -57,6 +78,8 @@ public class Chat_Service extends Service {
         Log.d(TAG, "서비스 on Create(): 1.Netty Chat Server Start");
         Log.d(TAG, "**************************************************");
         new ChatClient(SERVER_IP, NETTY_PORT).run();
+
+        Notifi_Manager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
     }
 
@@ -240,7 +263,32 @@ public class Chat_Service extends Service {
                     break;
 
 
-                case "message":
+                case "message_normal":
+
+                    break;
+
+
+                // 이미지 메세지 전달 받는 곳
+                case "message_pic":
+
+                    Log.d(TAG, "****************************************************************");
+                    Log.d(TAG, "(Service) message_pic");
+                    Log.d(TAG, "****************************************************************");
+
+                    String image_file_name = (String) jsonObject.get("image_file_name"); // 이미지 메세지를 보낸 상대방의 프로필 사진 이름
+                    String pic_sender_name = (String) jsonObject.get("sender_name"); // 이미지 메세지를 보낸 상대방의 이름
+                    String pic_sender_profile = (String) jsonObject.get("sender_profile"); // 이미지 메세지를 보낸 상대방의 프로필 사진 이름
+
+                    Log.d(TAG, "sender_profile : " + pic_sender_profile);
+                    notifyAlert(image_file_name, pic_sender_name, pic_sender_profile);
+
+                    // 이미지 메세지를 받은 상대방에게 알림 보내기 (다이얼로그 메세지 창 띄우기)
+                    Intent picIntent = new Intent(BROADCAST_NETTY_MESSAGE_PIC);
+                    sendBroadcast(picIntent);
+
+
+
+
 
                     break;
 
@@ -331,6 +379,56 @@ public class Chat_Service extends Service {
     }
     // =========================================================================================================
 
+
+    // =========================================================================================================
+    // 노티피케이션 관련 함수들
+    // =========================================================================================================
+
+    private void notifyAlert(String image_file_name, String pic_sender_name, String pic_sender_profile) throws ExecutionException, InterruptedException {
+
+        Bitmap noti_bitmap = Glide.with(getApplicationContext()).load("http://52.79.138.20/photo/" + pic_sender_profile).asBitmap().into(100, 100).get();
+
+        Log.d(TAG, "**************************************************");
+        Log.d(TAG, "노티피케이션이 작동하는 곳");
+        Log.d(TAG, "image_file_name : " + image_file_name);
+        Log.d(TAG, "**************************************************");
+
+        // 임시방편임. 유저 닉네임이 같은 경우에만 +1 해주기
+        PIC_MESSAGE++; // 받은 메세지 수 더해주기 (+1) 노티피케이션 클릭 시 0으로 다시 초기화 시켜주기
+
+        numberofpic.add(image_file_name);
+
+        // 유저 ID 값 받아오기
+        SharedPreferences prefs = getSharedPreferences(AUTO_LOGIN_STATUS, MODE_PRIVATE);
+        USER_ID = prefs.getInt(AUTO_LOGIN_USERID, '0');
+
+        // 알람을 클릭했을 때, 특정 액티비티를 활성화시킬 인텐트 객체 준비
+        Intent intent = new Intent(Chat_Service.this, Pic_Receive_Activity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(Chat_Service.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // 노티피케이션 메세지 옵션
+        Notifi_Message = new Notification.Builder(getApplicationContext())
+                .setContentTitle("FundMyTravel") // 알림의 상단바 (제목) 설정
+                .setContentText(pic_sender_name + " ("+PIC_MESSAGE + ")") // 알림의 하단바 (내용) 설정
+                .setLargeIcon(noti_bitmap)
+                .setPriority(Notification.PRIORITY_MAX) // 상단에 레이아웃의 형태로 사용자에게 표시됨
+                .setSmallIcon(R.drawable.chatmessage2)
+                .setTicker("Pic message arrived") // 알림이 뜰 때 잠깐 표시되는 메세지
+                .setWhen(System.currentTimeMillis()) // 알림이 표시되는 시간 설정
+                .setContentIntent(pendingIntent) // 알람 클릭 시 반응
+                .setAutoCancel(true) // 클릭하면 자동으로 노티피케이션 알람이 없어짐
+                .build();
+
+        //                                     .setLargeIcon(BitmapFactory.decodeResource(getResources(),android.R.drawable.star_on))
+
+        Notifi_Message.defaults = Notification.DEFAULT_VIBRATE; // 소리 or 진동 추가
+        Notifi_Message.flags = Notification.FLAG_ONLY_ALERT_ONCE; // 알림 소리를 한번만 내도록
+        Notifi_Message.flags = Notification.FLAG_AUTO_CANCEL; // 확인하면 자동으로 알림이 제거 되도록
+
+        // 알람 띄우기
+        Notifi_Manager.notify(777, Notifi_Message);
+
+    }
 
     // =========================================================================================================
     // Service 객체와 Activity 사이에서 통신이 이루어질 때 사용하는 메소드

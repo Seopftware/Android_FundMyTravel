@@ -95,7 +95,6 @@ public class Home_Fragment extends Fragment {
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Toast.makeText(getContext(), position+"번 째 아이템 클릭",Toast.LENGTH_SHORT).show();
 
                 // 내 프로필을 클릭한 경우 (영통 버튼 없애기
                 if(position==0) {

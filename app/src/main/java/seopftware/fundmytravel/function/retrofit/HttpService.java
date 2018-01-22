@@ -1,10 +1,13 @@
 package seopftware.fundmytravel.function.retrofit;
 
+import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import seopftware.fundmytravel.dataset.Parsing;
 
 /**
@@ -42,6 +45,22 @@ public interface HttpService {
     @POST("php/select/find_friendlist.php") // 폴더명/파일명
     Call<Parsing>get_friendslist(
             @Field("user_login_id") int user_login_id);
+
+
+    // Retrofit을 통해 서버로 사진을 전송하기 위한 부분
+    @Multipart
+    @POST("php/insert/add_pic_message.php")
+    Call<ResponseBody>uploadPhoto(
+
+            @Part MultipartBody.Part photo,
+            @Part("sender_id") int sender_id, // 사진 메세지를 보내는 사람의 ID
+            @Part("receiver_id") int receiver_id, // 사진 메세지를 받는 사람의 ID
+            @Part("message_limited_time") String message_limited_time, // 상대방이 사진을 보는 순간 메세지가 사라지는데 걸리는 시간
+            @Part("message_date") String message_date // 메세지를 보낸 시간
+
+    );
+
+
 
 }
 

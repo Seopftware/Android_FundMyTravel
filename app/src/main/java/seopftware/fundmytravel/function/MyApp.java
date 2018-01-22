@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -47,11 +48,17 @@ public class MyApp extends Application {
 
     // Server 관련 정보들
     public static String SERVER_URL = "http://52.79.138.20/"; // AWS Server
-    public static String SERVER_IP = "172.30.1.28"; // Netty Chat Server IP
+    public static String SERVER_IP = "172.30.1.38"; // Netty Chat Server IP
     public static int NETTY_PORT = 8000; // Netty Chat Server Port
+
+    // 이미지 파일 갯수 관리
+    public static ArrayList<String> numberofpic = new ArrayList<>(); // 받은 이미지 파일 담아두는 곳
+    public static int PIC_MESSAGE= 0; // 노티피케이션 메세지 알람 숫자
+
 
     // Broad cast Receiver_ intent filter 값들
     public static String BROADCAST_NETTY_MESSAGE = "seopftware.fundmytravel.chatmessage.SEND_BROAD_CAST"; // Netty_채팅 메세지
+    public static String BROADCAST_NETTY_MESSAGE_PIC = "seopftware.fundmytravel.chatmessage.MESSAGE_PIC"; // Netty_영상 통화 거절시
     public static String BROADCAST_NETTY_VIDEOCALL = "seopftware.fundmytravel.chatmessage.SEND_VIDEO_CALL"; // Netty_영상 통화 걸 때
     public static String BROADCAST_NETTY_VIDEOCALL_DENY = "seopftware.fundmytravel.chatmessage.SEND_VIDEO_CALLDENY"; // Netty_영상 통화 거절시
 

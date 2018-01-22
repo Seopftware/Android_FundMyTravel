@@ -26,25 +26,34 @@
             app:srcCompat="@drawable/ic_pets_white_24dp" />
 
         <ImageButton
-            android:id="@+id/ibtn_paint"
+            android:id="@+id/ibtn_timer"
             android:background="#00000000"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginTop="16dp"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_edit_white_24dp"/>
+            app:srcCompat="@drawable/ic_timer_white_24dp"/>
+
+        <!--<ImageButton-->
+            <!--android:id="@+id/ibtn_paint"-->
+            <!--android:background="#00000000"-->
+            <!--android:layout_width="35dp"-->
+            <!--android:layout_height="35dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:scaleType="fitXY"-->
+            <!--app:srcCompat="@drawable/ic_edit_white_24dp"/>-->
 
         <LinearLayout
             android:id="@+id/paintLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <ImageButton
                 android:id="@+id/ibtn_color"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginTop="16dp"
                 android:background="#00000000"
                 android:scaleType="fitXY"
@@ -52,26 +61,17 @@
 
             <ImageButton
                 android:id="@+id/ibtn_border"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginTop="16dp"
                 android:background="#00000000"
                 android:scaleType="fitXY"
                 app:srcCompat="@drawable/ic_border_color_white_24dp" />
 
             <ImageButton
-                android:id="@+id/ibtn_eraser"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_marginTop="16dp"
-                android:background="#00000000"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/ic_stay_current_landscape_white_24dp" />
-
-            <ImageButton
                 android:id="@+id/ibtn_undo"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginTop="16dp"
                 android:background="#00000000"
                 android:scaleType="fitXY"
@@ -96,17 +96,6 @@
         app:srcCompat="@drawable/chat_delete" />
 
     <ImageButton
-        android:id="@+id/ibtn_pic_send"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:scaleType="fitXY"
-        android:background="@drawable/pic_send"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
-
-    <ImageButton
         android:id="@+id/ibtn_save"
         android:layout_width="35dp"
         android:layout_height="35dp"
@@ -115,6 +104,17 @@
         android:background="@drawable/ic_file_download_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/ibtn_pic_send"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/pic_send"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <FrameLayout
         android:id="@+id/frameLayout"

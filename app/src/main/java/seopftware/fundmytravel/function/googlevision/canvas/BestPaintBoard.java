@@ -144,9 +144,8 @@ public class BestPaintBoard extends View {
 		Log.i("GoodPaintBoard", "saveUndo() called.");
 	}
 	
-	/**
-	 * Undo
-	 */
+
+	// undo 기능 (되돌리기)
 	public void undo()
 	{
 		Bitmap prev = null;

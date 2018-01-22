@@ -17,6 +17,14 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- NumberPicker 진동을 위한 permission -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- 구글맵 퍼미션 -->
+    <uses-permission android:name="com.google.maps.android.utils.permission.MAPS_RECEIVE"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+
+
     <!-- some devices need it -->
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -34,6 +42,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- google maps API -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCS7QdtueWQ5yWXNJqqaXZe12jCWo2sJ9g" />
+
+
         <activity
             android:name=".activity.Intro_Activity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -97,8 +112,20 @@
 
         <activity android:name=".function.googlevision.FaceDetect_Activity" />
         <activity android:name=".function.googlevision.FaceCanvas_Activity" />
-        <activity android:name=".function.googlevision.sticker.Material_Activity"
-            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"></activity>
+        <activity
+            android:name=".function.googlevision.sticker.Material_Activity"
+            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar" />
+        <activity
+            android:name=".function.googlevision.canvas.ColorPalette_Activity"
+            android:theme="@style/Base.Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".function.googlevision.canvas.PenPalette_Activity"
+            android:theme="@style/Base.Theme.AppCompat.Dialog.Alert" />
+        <activity android:name=".activity.Pic_Receive_Activity" />
+        <activity android:name=".function.googlemap.CustomMarkerClusteringDemoActivity"/>
+        <activity android:name=".function.googlemap.GoogleMap_Main_Activity"></activity>
     </application>
 
-</manifest> <!-- android:theme="@style/AppTheme.NoActionBar" -->
+
+
+</manifest>

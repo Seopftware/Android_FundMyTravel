@@ -44,6 +44,9 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
     private static final int CONNECTION_REQUEST = 1;
     private static boolean commandLineRun = false;
 
+    public static String PIC_MESSAGE_USERINFO = "pic_message_userinfo";
+    public static String PIC_MESSAGE_USERINFO_ID = "pic_message_userid";
+
     private SharedPreferences sharedPref;
     private String keyprefResolution;
     private String keyprefFps;
@@ -218,6 +221,11 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
                 // 유저의 백그라운드 이미지
                 user_background = parsing.getResult().get(0).getUserPhotoBackground();
                 Glide.with(getApplicationContext()).load(SERVER_URL + "photo/"+user_background).into(iv_background); // 사각형 프로필
+
+                SharedPreferences pref = getSharedPreferences(PIC_MESSAGE_USERINFO, MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putInt(PIC_MESSAGE_USERINFO_ID, receiver_id); // 메세지를 보낼 유저의 이름
+                editor.commit();
 
             }
 

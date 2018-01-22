@@ -1,6 +1,9 @@
 package seopftware.fundmytravel.activity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,7 +34,10 @@ import seopftware.fundmytravel.fragment.Settings_Fragment;
 import seopftware.fundmytravel.fragment.Streaminglist_Fragment;
 import seopftware.fundmytravel.function.ViewFindUtils;
 import seopftware.fundmytravel.function.etc.TabEntity;
+import seopftware.fundmytravel.function.googlemap.CustomMarkerClusteringDemoActivity;
 
+import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_STATUS;
+import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_USERID;
 import static seopftware.fundmytravel.function.MyApp.USER_ID;
 
 
@@ -80,6 +86,15 @@ public class Home_Activity extends AppCompatActivity {
         // actionBar 객체를 생성한 이유는 액션바를 커스터마이징 하기 위한 것입니다.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        SharedPreferences autologin = getSharedPreferences(AUTO_LOGIN_STATUS, Activity.MODE_PRIVATE);
+        int user_id = autologin.getInt(AUTO_LOGIN_USERID, 0);
+        USER_ID = user_id;
+
+            // 로그인 한 경험이 있는 회원은 자동으로 Home 화면으로 넘어가게끔.
+            USER_ID = autologin.getInt(AUTO_LOGIN_USERID, 0); // USER_ID 전역 변수에 고유 ID 값 담아서 어디서든 사용하기 편하게 해준다.
+            Log.d(TAG, "USER_ID 값은? : " + USER_ID);
 
         Log.d(TAG, "USER ID값 궁금해: " + USER_ID);
         Log.d(TAG, "USER_ID 값을 서버로 보내다. (USER_ID) : " + USER_ID);
@@ -243,10 +258,16 @@ public class Home_Activity extends AppCompatActivity {
 
             case R.id.navidrawer: {
                 Toast.makeText(getApplicationContext(), "maps open", Toast.LENGTH_SHORT).show();
+
+//                Intent intent=new Intent(getApplicationContext(), GoogleMap_Main_Activity.class);
+                Intent intent=new Intent(getApplicationContext(), CustomMarkerClusteringDemoActivity.class);
+                startActivity(intent);
+                break;
             }
 
             case R.id.navidrawer2: {
                 Toast.makeText(getApplicationContext(), "search open", Toast.LENGTH_SHORT).show();
+                break;
             }
         }
         return super.onOptionsItemSelected(item);
