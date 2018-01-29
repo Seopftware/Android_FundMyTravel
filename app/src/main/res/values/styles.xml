@@ -7,6 +7,16 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor">#3fa4c2</item>
+
+        <item name="android:textColorSecondary">@android:color/white</item>
+    </style>
+
+    <style name="MyToolbarStyle" parent="ThemeOverlay.AppCompat.ActionBar">
+        <!-- Menu 아이콘 색상 변경 -->
+        <item name="colorControlNormal">#FFFFFF</item>
+
+        <!-- Menu 아이콘의 텍스트 색상 변경 -->
+        <item name="android:textColorPrimary">@color/colorGrey</item>
     </style>
 
 
@@ -19,6 +29,7 @@
         <item name="android:paddingRight">3dp</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:textColor">@color/App_Blue</item>
+
         <item name="android:background">@android:color/background_light</item>
     </style>
 

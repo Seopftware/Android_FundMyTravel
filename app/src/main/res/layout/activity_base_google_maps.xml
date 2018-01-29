@@ -22,8 +22,8 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/map_toolbar"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="?attr/actionBarTheme"
+            android:background="@color/App_Blue"
+            android:theme="@style/MyToolbarStyle"
             android:layout_width="match_parent"/>
 
         <fragment
@@ -53,11 +53,13 @@
                 android:id="@+id/tv_numofroom"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="bottom"
+                android:gravity="center_vertical"
                 android:layout_weight="1"
-                android:background="@color/colorGrey"
+                android:background="@color/App_Blue"
                 android:textSize="16sp"
                 android:text="방송 목록 보기"
+                android:textColor="@color/white"
                 android:paddingLeft="10dp"/>
 
         </LinearLayout>

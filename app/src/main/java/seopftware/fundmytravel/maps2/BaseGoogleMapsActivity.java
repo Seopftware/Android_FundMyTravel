@@ -1,6 +1,7 @@
 package seopftware.fundmytravel.maps2;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -17,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,6 +60,7 @@ import seopftware.fundmytravel.function.retrofit.RetrofitClient;
 public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+//    private ClusterManager<Markers> mClusterManager;
     private ClusterManager<Markers> mClusterManager;
 
 
@@ -76,6 +80,9 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 풀 스크린 만들기
+        requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀바 없애기
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN); // 상태바 없애기
         setContentView(R.layout.activity_base_google_maps);
 
         //액션바 설정 부분
@@ -158,36 +165,38 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
             // AR 길찾기
             case R.id.action_findway:
                 Toast.makeText(getApplicationContext(), "길 찾기", Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(getApplicationContext(), FindAddress_Activity.class);
+                startActivity(intent);
                 break;
 
-            //  하단의 panel layout 보이기 / 숨기기
-            case R.id.action_toggle: {
-                if (mLayout != null) {
-                    if (mLayout.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN) {
-                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-                        item.setTitle(R.string.action_show);
-                    } else {
-                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                        item.setTitle(R.string.action_hide);
-                    }
-                }
-                return true;
-            }
-
-            case R.id.action_anchor: {
-                if (mLayout != null) {
-                    if (mLayout.getAnchorPoint() == 1.0f) {
-                        mLayout.setAnchorPoint(0.7f);
-                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
-                        item.setTitle(R.string.action_anchor_disable);
-                    } else {
-                        mLayout.setAnchorPoint(1.0f);
-                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                        item.setTitle(R.string.action_anchor_enable);
-                    }
-                }
-                return true;
-            }
+//            //  하단의 panel layout 보이기 / 숨기기
+//            case R.id.action_toggle: {
+//                if (mLayout != null) {
+//                    if (mLayout.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN) {
+//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+//                        item.setTitle(R.string.action_show);
+//                    } else {
+//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+//                        item.setTitle(R.string.action_hide);
+//                    }
+//                }
+//                return true;
+//            }
+//
+//            case R.id.action_anchor: {
+//                if (mLayout != null) {
+//                    if (mLayout.getAnchorPoint() == 1.0f) {
+//                        mLayout.setAnchorPoint(0.7f);
+//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+//                        item.setTitle(R.string.action_anchor_disable);
+//                    } else {
+//                        mLayout.setAnchorPoint(1.0f);
+//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+//                        item.setTitle(R.string.action_anchor_enable);
+//                    }
+//                }
+//                return true;
+//            }
         }
         return super.onOptionsItemSelected(item);
     } // onOptionsItemSelected finish
@@ -323,7 +332,7 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
         // 하나의 아이템을 클릭했을 때 나타나는 List View
         mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Markers>() {
             @Override
-            public boolean onClusterItemClick(Markers person2) {
+            public boolean onClusterItemClick(Markers markers) {
                 Toast.makeText(getApplicationContext(), "하나의 아이템 클릭!", Toast.LENGTH_LONG).show();
 
                 Log.d(TAG, "mLayout.getPanelState() :" + mLayout.getPanelState());
@@ -358,7 +367,7 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
                 Parsing parsing = response.body();
                 //Todo 여기 무한 반복 어떻게?
                 // 맵에 marker 뿌려주는 곳
-                for (int i=0; i<6; i++) {
+                for (int i=0; i<7; i++) {
 
                      // 1
                     String room_id = parsing.getRoomlist().get(i).getRoomId();
@@ -399,7 +408,14 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
                     double latitude = Double.parseDouble(s_latitude);
 
                     mClusterManager.addItem(new Markers(longitude, latitude, room_name_streamer, R.drawable.kakao1,
-                            room_id,room_numpeople, room_name_title, room_name_tag, room_image_path, room_status));
+                            room_id, room_numpeople, room_name_title, room_name_tag, room_image_path, room_status));
+
+
+//                     mClusterManager.addItem(new Markers(51.503186, -0.126446, "HAHA", R.drawable.kakao1,
+//                             "room_id", 1, "title", "tag", "1.jpg", "live"));
+
+//                    mClusterManager.addItem(new Person(51.503186, -0.126446, "Walter", R.drawable.kakao1));
+
                 }
 
                 adapter.notifyDataSetChanged();

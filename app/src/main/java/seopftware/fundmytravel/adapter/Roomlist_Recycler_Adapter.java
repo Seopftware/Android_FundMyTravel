@@ -14,7 +14,6 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.dataset.Roomlist_Item;
 
@@ -105,7 +104,7 @@ public class Roomlist_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView
 
             Glide.with(context)
                     .load(listviewItem.getRoom_image_path())
-                    .bitmapTransform(new CropCircleTransformation(context))
+//                    .bitmapTransform(new CropCircleTransformation(context))
                     .into(((ItemOneViewHolder)holder).iv_streampic); // 방송 대문 이미지
 
 
@@ -171,7 +170,7 @@ public class Roomlist_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView
         item.setRoom_name_title(room_name_title);
         item.setRoom_name_tag(room_name_tag);
         item.setRoom_name_streamer(room_name_streamer);
-        item.setRoom_image_path(SERVER_URL + "photo/" + room_image_path);
+        item.setRoom_image_path(SERVER_URL + "/streaming_room/" + room_image_path);
         item.setRoom_status(room_status);
 
         itemlist.add(item);

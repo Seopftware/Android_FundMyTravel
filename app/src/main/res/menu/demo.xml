@@ -1,21 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:sothree="http://schemas.android.com/apk/res-auto">
 
-<item
-    android:id="@+id/action_findway"
-    android:orderInCategory="100"
-    sothree:showAsAction="never"
-    android:title="AR 길찾기"/>
-
     <item
-        android:id="@+id/action_toggle"
+        android:id="@+id/action_findway"
         android:orderInCategory="100"
         sothree:showAsAction="never"
-        android:title="show"/>
+        android:icon="@drawable/ic_more_vert_white_24dp"
+        android:title="AR 길찾기"/>
 
-    <item
-        android:id="@+id/action_anchor"
-        android:orderInCategory="100"
-        sothree:showAsAction="never"
-        android:title="anchor"/>
+    <!--<item-->
+        <!--android:id="@+id/action_toggle"-->
+        <!--android:orderInCategory="100"-->
+        <!--sothree:showAsAction="never"-->
+        <!--android:title="show"/>-->
+
+    <!--<item-->
+        <!--android:id="@+id/action_anchor"-->
+        <!--android:orderInCategory="100"-->
+        <!--sothree:showAsAction="never"-->
+        <!--android:title="anchor"/>-->
 </menu>

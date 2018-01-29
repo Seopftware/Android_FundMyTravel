@@ -234,9 +234,9 @@
         <activity
             android:name=".maps.VisibleRegionDemoActivity"
             android:label="@string/visible_region_demo_label" />
-
-        <activity android:name=".maps2.BaseGoogleMapsActivity">
-        </activity>
+        <activity android:name=".maps2.BaseGoogleMapsActivity" />
+        <activity android:name=".maps2.ARNavigation_Activity" />
+        <activity android:name=".maps2.FindAddress_Activity"></activity>
     </application>
 
 </manifest>

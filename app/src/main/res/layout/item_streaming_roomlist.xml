@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FFFFFF"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -22,7 +22,8 @@
             <ImageView
                 android:id="@+id/iv_streampic"
                 android:layout_width="120dp"
-                android:layout_height="120dp" />
+                android:layout_height="120dp"
+                android:scaleType="fitXY"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -60,7 +61,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="TextView" />
+                        android:text="TextView"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <TextView
@@ -70,7 +74,8 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="12dp"
                     android:text="제목"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/tv_tag"
@@ -79,7 +84,8 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="8dp"
                     android:text="태그"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/tv_nickname"
@@ -88,9 +94,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginTop="8dp"
                     android:text="닉네임"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -106,14 +111,4 @@
 
     </LinearLayout>
 
-
-    <!--<ImageView-->
-        <!--android:id="@+id/iv_Roommaker"-->
-        <!--android:layout_width="21dp"-->
-        <!--android:layout_height="20dp"-->
-        <!--android:layout_marginStart="32dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:srcCompat="@drawable/streaming_captain" />-->
 </android.support.constraint.ConstraintLayout>

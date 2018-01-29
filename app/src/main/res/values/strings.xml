@@ -456,7 +456,6 @@
     <string name="permission_required_toast">Location permission is required for this demo.</string>
 
 
-
     <!-- 구글맵에서 개인을 선택했을 시 나타나는 화면) -->
     <string name="dummy_text">Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
