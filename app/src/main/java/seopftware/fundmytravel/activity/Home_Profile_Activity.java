@@ -97,7 +97,7 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
         iv_background= (ImageView) findViewById(R.id.iv_background);
 
         // 4.프로필 이미지
-        iv_profile= (ImageView) findViewById(R.id.iv_profile);
+        iv_profile= (ImageView) findViewById(R.id.iv_streampic);
 
         // 5.상태 메세지
         tv_message= (TextView) findViewById(R.id.tv_message);

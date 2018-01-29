@@ -45,7 +45,7 @@
         android:layout_marginBottom="3dp">
 
         <ImageView
-            android:id="@+id/iv_profile"
+            android:id="@+id/iv_streampic"
             android:layout_width="65dp"
             android:layout_height="65dp"/>
 

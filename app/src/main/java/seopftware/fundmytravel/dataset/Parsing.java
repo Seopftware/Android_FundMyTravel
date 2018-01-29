@@ -16,6 +16,10 @@ import java.util.List;
  *   {"result":[{"user_key":"51","user_method":"phone","user_email":"0","user_phone":"01041675164","user_name":"MACHINE","user_photo":"inseop.jpg"}]}
  **/
 
+// gson으로 변경해 주는 사이트
+// http://www.jsonschema2pojo.org/
+// source type: JSON, Annotation style : Gson
+
 
 public class Parsing {
 
@@ -216,5 +220,117 @@ public class Parsing {
             this.userStatus = userStatus;
         }
     }
+    // =========================================================================================================
+
+
+
+    // =========================================================================================================
+    // 방 정보 GSon
+    // 방 정보를 받아오는 Table: streaming_roomlist
+    // =========================================================================================================
+    @SerializedName("roomlist")
+    @Expose
+    private List<Roomlist> roomlist = null;
+
+    public List<Roomlist> getRoomlist() {
+        return roomlist;
+    }
+
+    public void setRoomlist(List<Roomlist> roomlist) {
+        this.roomlist = roomlist;
+    }
+
+    public class Roomlist {
+
+        @SerializedName("room_id")
+        @Expose
+        private String roomId;
+        @SerializedName("room_numpeople")
+        @Expose
+        private int roomNumpeople;
+        @SerializedName("room_name_title")
+        @Expose
+        private String roomNameTitle;
+        @SerializedName("room_name_tag")
+        @Expose
+        private String roomNameTag;
+        @SerializedName("room_name_streamer")
+        @Expose
+        private String roomNameStreamer;
+        @SerializedName("room_image_path")
+        @Expose
+        private String roomImagePath;
+        @SerializedName("room_status")
+        @Expose
+        private String roomStatus;
+        @SerializedName("room_location")
+        @Expose
+        private String roomLocation;
+
+        public String getRoomId() {
+            return roomId;
+        }
+
+        public void setRoomId(String roomId) {
+            this.roomId = roomId;
+        }
+
+        public int getRoomNumpeople() {
+            return roomNumpeople;
+        }
+
+        public void setRoomNumpeople(int roomNumpeople) {
+            this.roomNumpeople = roomNumpeople;
+        }
+
+        public String getRoomNameTitle() {
+            return roomNameTitle;
+        }
+
+        public void setRoomNameTitle(String roomNameTitle) {
+            this.roomNameTitle = roomNameTitle;
+        }
+
+        public String getRoomNameTag() {
+            return roomNameTag;
+        }
+
+        public void setRoomNameTag(String roomNameTag) {
+            this.roomNameTag = roomNameTag;
+        }
+
+        public String getRoomNameStreamer() {
+            return roomNameStreamer;
+        }
+
+        public void setRoomNameStreamer(String roomNameStreamer) {
+            this.roomNameStreamer = roomNameStreamer;
+        }
+
+        public String getRoomImagePath() {
+            return roomImagePath;
+        }
+
+        public void setRoomImagePath(String roomImagePath) {
+            this.roomImagePath = roomImagePath;
+        }
+
+        public String getRoomStatus() {
+            return roomStatus;
+        }
+
+        public void setRoomStatus(String roomStatus) {
+            this.roomStatus = roomStatus;
+        }
+
+        public String getRoomLocation() {
+            return roomLocation;
+        }
+
+        public void setRoomLocation(String roomLocation) {
+            this.roomLocation = roomLocation;
+        }
+    }
+    // =========================================================================================================
 
 }

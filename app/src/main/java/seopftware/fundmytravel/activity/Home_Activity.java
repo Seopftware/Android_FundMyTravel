@@ -34,7 +34,7 @@ import seopftware.fundmytravel.fragment.Settings_Fragment;
 import seopftware.fundmytravel.fragment.Streaminglist_Fragment;
 import seopftware.fundmytravel.function.ViewFindUtils;
 import seopftware.fundmytravel.function.etc.TabEntity;
-import seopftware.fundmytravel.function.googlemap.CustomMarkerClusteringDemoActivity;
+import seopftware.fundmytravel.maps2.BaseGoogleMapsActivity;
 
 import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_STATUS;
 import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_USERID;
@@ -260,7 +260,9 @@ public class Home_Activity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "maps open", Toast.LENGTH_SHORT).show();
 
 //                Intent intent=new Intent(getApplicationContext(), GoogleMap_Main_Activity.class);
-                Intent intent=new Intent(getApplicationContext(), CustomMarkerClusteringDemoActivity.class);
+//                Intent intent=new Intent(getApplicationContext(), GoogleMap_Main_Activity.class);
+//                Intent intent=new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent=new Intent(getApplicationContext(), BaseGoogleMapsActivity.class);
                 startActivity(intent);
                 break;
             }

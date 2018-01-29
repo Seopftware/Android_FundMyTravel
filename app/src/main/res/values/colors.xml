@@ -11,6 +11,8 @@
     <color name="colorPerisCope">#3fa4c2</color>
     <color name="colorViewer_grey">#576162</color>
     <color name="colorViewer_cleargrey">#10000000</color>
+    <color name="App_googleRed">#E0492E</color>
+    <color name="white">#D0FFFFFF</color>
 
     <!-- A light Holo shade of blue -->
     <color name="holo_blue_light">#ff33b5e5</color>

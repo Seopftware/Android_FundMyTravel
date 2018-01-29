@@ -93,6 +93,16 @@ public class MyApp extends Application {
         String Time = time_split[1];
         Log.d("시간 확인", "Date : " + Date + " Time : " + Time);*/
 
+
+/*        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy" + "_" + "MM" + "_" + "dd" + "_" + "HH" + "_" + "mm" + "_" + "ss");
+        String bmpName = format.format(date);
+
+        File f = new File(Environment.getExternalStorageDirectory().getPath() + "/" + bmpName + ".jpg");
+        if (f.exists()) {
+            f.delete();
+        }*/
+
         return Show_Time;
     }
 

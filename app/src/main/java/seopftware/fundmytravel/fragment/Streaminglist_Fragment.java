@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +25,6 @@ import seopftware.fundmytravel.function.streaming.ActivityLink;
 import seopftware.fundmytravel.function.streaming.BeforeStreaming_Activity;
 import seopftware.fundmytravel.function.streaming.PlayerStreaming_Activity;
 import seopftware.fundmytravel.function.streaming.Streaming_Acticity;
-import seopftware.fundmytravel.activity.Home_Profile_Activity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
@@ -36,6 +36,8 @@ import static seopftware.fundmytravel.function.chatting.Chat_Service.channel;
 public class Streaminglist_Fragment extends Fragment {
     private String mTitle;
     private List<ActivityLink> activities;
+    static final int REQUEST_ALBUM = 2002;
+
 
     private final String[] PERMISSIONS = {
             Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA,
@@ -62,12 +64,14 @@ public class Streaminglist_Fragment extends Fragment {
 
 
         View v = inflater.inflate(R.layout.fragment_streaminglist, null);
-        createList();
+//        createList();
 
         if (!hasPermissions(getContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
         }
 
+
+        // 방송 보기
         Button btn_viewer = (Button) v.findViewById(R.id.btn_viewer);
         btn_viewer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,17 +80,6 @@ public class Streaminglist_Fragment extends Fragment {
                 startActivity(intent);
             }
         });
-
-
-        Button btn_call = (Button) v.findViewById(R.id.btn_call);
-        btn_call.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(getContext(), Home_Profile_Activity.class);
-                startActivity(intent);
-            }
-        });
-
 
         Button btn_server = (Button) v.findViewById(R.id.btn_server);
         btn_server.setOnClickListener(new View.OnClickListener() {
@@ -99,30 +92,75 @@ public class Streaminglist_Fragment extends Fragment {
             }
         });
 
+        // 방송 시작하기
         Button btn_streamer = (Button) v.findViewById(R.id.btn_streamer);
         btn_streamer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (hasPermissions(getContext(), PERMISSIONS)) {
-                    ActivityLink link = activities.get(0);
-                    int minSdk = link.getMinSdk();
-                    if (Build.VERSION.SDK_INT >= minSdk) {
-                        startActivity(link.getIntent());
-                    } else {
-                        showMinSdkError(minSdk);
-                    }
-                } else {
-                    showPermissionsErrorAndRequest();
-                }
 
-                Intent intent=new Intent(getContext(), BeforeStreaming_Activity.class);
-                startActivity(intent);
+//                if (hasPermissions(getContext(), PERMISSIONS)) {
+//                    ActivityLink link = activities.get(0);
+//                    int minSdk = link.getMinSdk();
+//                    if (Build.VERSION.SDK_INT >= minSdk) {
+//                        startActivity(link.getIntent());
+//                    } else {
+//                        showMinSdkError(minSdk);
+//                    }
+//                } else {
+//                    showPermissionsErrorAndRequest();
+//                }
+
+
+                // 앨범 호출
+                showFileChoose();
+
+
             }
         });
 
 
 
         return v;
+    }
+
+
+    // 앨범 호출 함수
+    private void showFileChoose() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_ALBUM);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            case REQUEST_ALBUM:
+
+                Uri album_uri = data.getData();
+
+                if(album_uri!=null) {
+                    Intent intent=new Intent(getContext(), BeforeStreaming_Activity.class);
+                    intent.putExtra("photoUri", album_uri);
+                    startActivity(intent);
+                    break;
+                }
+
+
+
+
+                /*                Glide.with(this).load(album_uri).bitmapTransform(new CropCircleTransformation(getContext())).into(iv_Profile);
+                try {
+                    //Getting the Bitmap from Gallery
+                    album_bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), album_uri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+
+        }
     }
 
     private void createList() {

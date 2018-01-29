@@ -21,9 +21,10 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- 구글맵 퍼미션 -->
-    <uses-permission android:name="com.google.maps.android.utils.permission.MAPS_RECEIVE"/>
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
-
+    <uses-permission android:name="com.google.maps.android.utils.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- some devices need it -->
     <uses-feature android:name="android.hardware.camera" />
@@ -47,7 +48,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCS7QdtueWQ5yWXNJqqaXZe12jCWo2sJ9g" />
-
 
         <activity
             android:name=".activity.Intro_Activity"
@@ -122,10 +122,121 @@
             android:name=".function.googlevision.canvas.PenPalette_Activity"
             android:theme="@style/Base.Theme.AppCompat.Dialog.Alert" />
         <activity android:name=".activity.Pic_Receive_Activity" />
-        <activity android:name=".function.googlemap.CustomMarkerClusteringDemoActivity"/>
-        <activity android:name=".function.googlemap.GoogleMap_Main_Activity"></activity>
+        <activity android:name=".function.googlemap.CustomMarkerClusteringDemoActivity" />
+        <activity android:name=".function.googlemap.GoogleMap_Main_Activity" />
+        <activity android:name=".function.googlemap.map" />
+        <activity android:name=".maps.MainActivity" />
+        <activity
+            android:name=".maps.BasicMapDemoActivity"
+            android:label="@string/basic_map_demo_label" />
+        <activity
+            android:name=".maps.CameraDemoActivity"
+            android:label="@string/camera_demo_label" />
+        <activity
+            android:name=".maps.CameraClampingDemoActivity"
+            android:label="@string/camera_clamping_demo_label" />
+        <activity
+            android:name=".maps.CircleDemoActivity"
+            android:label="@string/circle_demo_label" />
+        <activity
+            android:name=".maps.EventsDemoActivity"
+            android:label="@string/events_demo_label" />
+        <activity
+            android:name=".maps.GroundOverlayDemoActivity"
+            android:label="@string/ground_overlay_demo_label" />
+        <activity
+            android:name=".maps.IndoorDemoActivity"
+            android:label="@string/indoor_demo_label" />
+        <activity
+            android:name=".maps.LayersDemoActivity"
+            android:label="@string/layers_demo_label" />
+        <activity
+            android:name=".maps.LiteDemoActivity"
+            android:label="@string/lite_demo_label" />
+        <activity
+            android:name=".maps.LiteListDemoActivity"
+            android:label="@string/lite_list_demo_label" />
+        <activity
+            android:name=".maps.LocationSourceDemoActivity"
+            android:label="@string/location_source_demo_label" />
+        <activity
+            android:name=".maps.MapInPagerDemoActivity"
+            android:label="@string/map_in_pager_demo_label" />
+        <activity
+            android:name=".maps.MarkerDemoActivity"
+            android:label="@string/marker_demo_label" />
+        <activity
+            android:name=".maps.MarkerCloseInfoWindowOnRetapDemoActivity"
+            android:label="@string/marker_close_info_window_on_retap_demo_label" />
+        <activity
+            android:name=".maps.MultiMapDemoActivity"
+            android:label="@string/multi_map_demo_label" />
+        <activity
+            android:name=".maps.MyLocationDemoActivity"
+            android:label="@string/my_location_demo_label" />
+        <activity
+            android:name=".maps.OptionsDemoActivity"
+            android:label="@string/options_demo_label" />
+        <activity
+            android:name=".maps.PolygonDemoActivity"
+            android:label="@string/polygon_demo_label" />
+        <activity
+            android:name=".maps.PolylineDemoActivity"
+            android:label="@string/polyline_demo_label" />
+        <activity
+            android:name=".maps.ProgrammaticDemoActivity"
+            android:label="@string/programmatic_demo_label" />
+        <activity
+            android:name=".maps.RawMapViewDemoActivity"
+            android:label="@string/raw_map_view_demo_label" />
+        <activity
+            android:name=".maps.RetainMapDemoActivity"
+            android:label="@string/retain_map_demo_label" />
+        <activity
+            android:name=".maps.SaveStateDemoActivity"
+            android:label="@string/save_state_demo_label" />
+        <activity
+            android:name=".maps.SnapshotDemoActivity"
+            android:label="@string/snapshot_demo_label" />
+        <activity
+            android:name=".maps.SplitStreetViewPanoramaAndMapDemoActivity"
+            android:label="@string/split_street_view_panorama_and_map_demo_label" />
+        <activity
+            android:name=".maps.StreetViewPanoramaBasicDemoActivity"
+            android:label="@string/street_view_panorama_basic_demo_label" />
+        <activity
+            android:name=".maps.StreetViewPanoramaEventsDemoActivity"
+            android:label="@string/street_view_panorama_events_demo_label" />
+        <activity
+            android:name=".maps.StreetViewPanoramaNavigationDemoActivity"
+            android:label="@string/street_view_panorama_navigation_demo_label" />
+        <activity
+            android:name=".maps.StreetViewPanoramaOptionsDemoActivity"
+            android:label="@string/street_view_panorama_options_demo_label" />
+        <activity
+            android:name=".maps.StreetViewPanoramaViewDemoActivity"
+            android:label="@string/street_view_panorama_view_demo_label" />
+        <activity
+            android:name=".maps.StyledMapDemoActivity"
+            android:label="@string/styled_map_demo_label" />
+        <activity
+            android:name=".maps.TagsDemoActivity"
+            android:label="@string/tags_demo_label" />
+        <activity
+            android:name=".maps.TileCoordinateDemoActivity"
+            android:label="@string/tile_coordinate_demo_label" />
+        <activity
+            android:name=".maps.TileOverlayDemoActivity"
+            android:label="@string/tile_overlay_demo_label" />
+        <activity
+            android:name=".maps.UiSettingsDemoActivity"
+            android:label="@string/ui_settings_demo_label" />
+        <activity
+            android:name=".maps.VisibleRegionDemoActivity"
+            android:label="@string/visible_region_demo_label" />
+
+        <activity android:name=".maps2.BaseGoogleMapsActivity">
+        </activity>
     </application>
-
-
 
 </manifest>

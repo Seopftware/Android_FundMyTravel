@@ -98,7 +98,7 @@ public class Videocall_Receive_Activity extends AppCompatActivity {
         user_id = intent.getStringExtra("user_id"); // 전화를 건 사람의 ID
         room_number = intent.getStringExtra("room_number"); // webRTC 방번호
 
-        iv_profile= (ImageView) findViewById(R.id.iv_profile);
+        iv_profile= (ImageView) findViewById(R.id.iv_streampic);
         tv_name= (TextView) findViewById(R.id.tv_name);
 
         // 통화 거절시

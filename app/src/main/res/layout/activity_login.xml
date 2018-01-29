@@ -56,7 +56,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="8dp"
-            android:background="#E0492E"
+            android:background="@color/App_googleRed"
             android:drawableLeft="@drawable/googlelogo"
             android:paddingLeft="18dp"
             android:paddingRight="36dp"

@@ -136,7 +136,7 @@ public class Home_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.Vie
             tv_Id= (TextView) itemView.findViewById(R.id.tv_Id);
             tv_Name= (TextView) itemView.findViewById(R.id.tv_name);
             tv_Message= (TextView) itemView.findViewById(R.id.tv_Message);
-            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_profile);
+            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_streampic);
 
         }
     }
@@ -153,7 +153,7 @@ public class Home_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView.Vie
             tv_Id= (TextView) itemView.findViewById(R.id.tv_Id);
             tv_Name= (TextView) itemView.findViewById(R.id.tv_name);
             tv_Message= (TextView) itemView.findViewById(R.id.tv_Message);
-            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_profile);
+            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_streampic);
             Linear_up= (LinearLayout) itemView.findViewById(R.id.Linear_up);
             Linear_up.setVisibility(View.GONE);
             Linear_down= (LinearLayout) itemView.findViewById(R.id.Linear_down);

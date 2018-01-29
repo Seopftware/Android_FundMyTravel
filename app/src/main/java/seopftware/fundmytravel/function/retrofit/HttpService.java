@@ -46,7 +46,13 @@ public interface HttpService {
     Call<Parsing>get_friendslist(
             @Field("user_login_id") int user_login_id);
 
+    // 나의 id 보내고 친구 목록 가져오기
+    @FormUrlEncoded
+    @POST("php/select/find_roomlist.php") // 폴더명/파일명
+    Call<Parsing>get_roomlist(
+            @Field("user_login_id") int user_login_id);
 
+    // Pic Message
     // Retrofit을 통해 서버로 사진을 전송하기 위한 부분
     @Multipart
     @POST("php/insert/add_pic_message.php")
@@ -57,7 +63,24 @@ public interface HttpService {
             @Part("receiver_id") int receiver_id, // 사진 메세지를 받는 사람의 ID
             @Part("message_limited_time") String message_limited_time, // 상대방이 사진을 보는 순간 메세지가 사라지는데 걸리는 시간
             @Part("message_date") String message_date // 메세지를 보낸 시간
+    );
 
+    // Streaming Room Info
+    // 스트리밍 방 정보를 서버로 보내 DB에 등록
+    // Retrofit을 통해 서버로 사진을 전송하기 위한 부분
+    @Multipart
+    @POST("php/insert/add_roominfo.php")
+    Call<ResponseBody>upload_roominfo(
+
+            @Part MultipartBody.Part photo,
+            @Part("room_id") String room_id, // 방 고유 ID 저장
+            @Part("room_numpeople") int room_numpeople, // 방 참가자 수
+            @Part("room_name_title") String room_name_title, // 방 이름
+            @Part("room_name_tag") String message_date, // 방 태그
+            @Part("room_name_streamer") String room_name_streamer, // 스트리머 이름
+            @Part("room_image_path") String room_image_path, // 방송 메인 사진 이름
+            @Part("room_status") String room_status, // 방송 여부 표시 (LIVE, VOD)
+            @Part("room_location") String room_location // 방송 좌표
     );
 
 

@@ -7,43 +7,97 @@
     tools:context="seopftware.fundmytravel.function.streaming.BeforeStreaming_Activity">
 
     <LinearLayout
+        android:id="@+id/linearLayout8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="204dp"
+        android:layout_marginTop="175dp"
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="27dp">
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@mipmap/ic_launcher_round"
-            tools:layout_editor_absoluteX="70dp"
-            tools:layout_editor_absoluteY="171dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/editText2"
+
+            <TextView
+                android:id="@+id/tv_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name" />
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="TITLE"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/editText"
+                android:id="@+id/et_title"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/edittext"
+                android:ems="10"
+                android:hint="Streaming Title"
+                android:inputType="textPersonName"
+                android:paddingLeft="10dp"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_tag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="TAG"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_tag"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/edittext"
+                android:hint="TAG"
                 android:inputType="textPersonName"
-                android:text="Name" />
+                android:paddingLeft="10dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tv_tag2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="LOCATION"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/linear_location"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ibtn_location"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:background="@drawable/ic_location_on_black_24dp"
+                    android:scaleType="fitXY" />
+
+                <TextView
+                    android:id="@+id/tv_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="20sp"
+                    android:text="click here to get location" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
@@ -60,5 +114,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_roomimage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="48dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/btn_streamstart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

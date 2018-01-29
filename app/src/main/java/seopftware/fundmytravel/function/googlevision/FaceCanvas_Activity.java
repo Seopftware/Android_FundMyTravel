@@ -52,6 +52,7 @@ import seopftware.fundmytravel.function.retrofit.HttpService;
 
 import static seopftware.fundmytravel.activity.Home_Profile_Activity.PIC_MESSAGE_USERINFO;
 import static seopftware.fundmytravel.activity.Home_Profile_Activity.PIC_MESSAGE_USERINFO_ID;
+import static seopftware.fundmytravel.function.MyApp.SERVER_URL;
 import static seopftware.fundmytravel.function.MyApp.TimeCheck;
 import static seopftware.fundmytravel.function.MyApp.USER_ID;
 import static seopftware.fundmytravel.function.MyApp.USER_NAME;
@@ -382,7 +383,8 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
         MultipartBody.Part file = MultipartBody.Part.createFormData("uploaded_file", pic_file.getName(), filepart); // 서버로 보낼 FILES['uploaded_file']['name];
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://52.79.138.20/") // 서버 주소
+//                .baseUrl("http://52.79.138.20/") // 서버 주소
+                .baseUrl(SERVER_URL) // 서버 주소
                 .addConverterFactory(GsonConverterFactory.create()) // Gson을 통해 Json 변환
                 .build();
 
