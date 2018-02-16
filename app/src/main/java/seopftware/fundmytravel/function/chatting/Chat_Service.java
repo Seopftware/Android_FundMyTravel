@@ -37,6 +37,7 @@ import seopftware.fundmytravel.activity.Pic_Receive_Activity;
 
 import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_STATUS;
 import static seopftware.fundmytravel.function.MyApp.AUTO_LOGIN_USERID;
+import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_MESSAGE;
 import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_MESSAGE_PIC;
 import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_VIDEOCALL;
 import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_VIDEOCALL_DENY;
@@ -164,11 +165,8 @@ public class Chat_Service extends Service {
 
             Log.d(TAG, "****************************************************************");
 
-
-            // 자동 로그인 확인을 위한 부분
+            // 나의 고유 ID 값 불러오기 (SharedPreferences)
             SharedPreferences autologin = getSharedPreferences(AUTO_LOGIN_STATUS, Activity.MODE_PRIVATE);
-
-            // 로그인 한 경험이 있는 회원은 자동으로 Home 화면으로 넘어가게끔.
             USER_ID = autologin.getInt(AUTO_LOGIN_USERID, 0); // USER_ID 전역 변수에 고유 ID 값 담아서 어디서든 사용하기 편하게 해준다.
             Log.d(TAG, "USER_ID 값은? : " + USER_ID);
 
@@ -178,6 +176,7 @@ public class Chat_Service extends Service {
             Log.d(TAG, "message_type : " + message_type);
 
 
+            // 메세지의 타입에 따라서 서버로 부터 받은 메세지를 어떻게 처리할 것인가가 달라진다.
             switch (message_type) {
 
                 // 클라 ㅡ> 서버 (JSON 형태)
@@ -205,6 +204,8 @@ public class Chat_Service extends Service {
                 // (키:user_id. 벨류:Chanel) 작업. 키 값으로 유저 구분해주기 위해서
                 case "server_disconnect":
                     Log.d(TAG, "Netty Chat Server와 'disconnect' 되었습니다.");
+
+
                     break;
 
 
@@ -262,12 +263,6 @@ public class Chat_Service extends Service {
 
                     break;
 
-
-                case "message_normal":
-
-                    break;
-
-
                 // 이미지 메세지 전달 받는 곳
                 case "message_pic":
 
@@ -286,15 +281,90 @@ public class Chat_Service extends Service {
                     Intent picIntent = new Intent(BROADCAST_NETTY_MESSAGE_PIC);
                     sendBroadcast(picIntent);
 
+                    break;
 
 
+                // 일반 메세지 받았을 때
+                case "message_normal":
+                    Log.d(TAG, "****************************************************************");
+                    Log.d(TAG, "(Service) message_normal");
+                    Log.d(TAG, "****************************************************************");
 
+                    String room_id = jsonObject.getString("room_id");
+                    int sender_id = jsonObject.getInt("id");
+                    String sender_name = jsonObject.getString("name");
+                    String sender_profile = jsonObject.getString("profile");
+                    String sender_message = jsonObject.getString("message");
+
+                    Intent messageIntent = new Intent(BROADCAST_NETTY_MESSAGE);
+                    messageIntent.putExtra("message_type", "message_normal");
+                    messageIntent.putExtra("room_id", room_id); // 방번호
+                    messageIntent.putExtra("id", sender_id);
+                    messageIntent.putExtra("name", sender_name); // 닉네임
+                    messageIntent.putExtra("profile", sender_profile); // 프로필 사진
+                    messageIntent.putExtra("message", sender_message); // 메세지 내용
+                    sendBroadcast(messageIntent);
+
+                    break;
+
+
+                // 별풍선 메세지 서버로 부터 받고 난 후, 액티비티로 보낼 때
+                case "message_star":
+                    Log.d(TAG, "****************************************************************");
+                    Log.d(TAG, "(Service) message_star");
+                    Log.d(TAG, "****************************************************************");
+
+                    String streamer_name = jsonObject.getString("streamer_name"); // 스트리머 이름
+                    String send_money = jsonObject.getString("send_money"); // 보내는 돈의 액수
+
+                    Intent starIntent = new Intent(BROADCAST_NETTY_MESSAGE);
+                    starIntent.putExtra("message_type", "message_star");
+                    starIntent.putExtra("streamer_name", streamer_name); // 방번호
+                    starIntent.putExtra("send_money", send_money); // 방번호
+                    sendBroadcast(starIntent);
+
+                    break;
+
+
+                // 스트리머가 방송을 시작한 시간을 클라이언트와 공유하기 위해서 1초 간격으로 메세지를 보내줌.
+                // 비효율 적인 방법임. 스트리머의 방송 시간을 공유할 수 있는 더 좋은 방법이 없을까?? 고민하기.
+                // 일단은 매초마다 스트리머의 방송 시간을 공유하는 방식으로
+                // 최초 방에 접속시 클라에게 해당 시간을 보내주면 되지 않을까?? 클라는 1번만 받고 내 쪽에서 크로노 미터를 실행
+                case "message_time":
+                    Log.d(TAG, "****************************************************************");
+                    Log.d(TAG, "(Service) message_time");
+                    Log.d(TAG, "****************************************************************");
+
+                    String broadcast_time1 = (String) jsonObject.get("broadcast_time"); // 스트리머의 현재 방송 시간
+
+                    Log.d(TAG, "broadcast_time : " + broadcast_time1);
+
+                    // 이미지 메세지를 받은 상대방에게 알림 보내기 (다이얼로그 메세지 창 띄우기)
+                    Intent timeIntent = new Intent(BROADCAST_NETTY_MESSAGE);
+                    timeIntent.putExtra("message_type", "message_time");
+                    timeIntent.putExtra("broadcast_time", broadcast_time1); // 방송 시간
+                    sendBroadcast(timeIntent);
+
+                    break;
+
+
+                // 영상 스트리밍 방송 종료시
+                case "streaming_finish":
+
+                    Log.d(TAG, "****************************************************************");
+                    Log.d(TAG, "(Service) streaming_finish");
+                    Log.d(TAG, "****************************************************************");
+
+                    // 방송 종료 알림 보내기 (PlayerStreaming_Activity)로
+                    Intent streamingIntent = new Intent(BROADCAST_NETTY_MESSAGE);
+                    streamingIntent.putExtra("message_type", "streaming_finish");
+                    sendBroadcast(streamingIntent);
 
                     break;
 
 
 
-                // 서비스 ㅡ> 액티비티
+                    // 서비스 ㅡ> 액티비티
                 // 굳이 이렇게 해야하나? 방에 최초 입장시 onCreate가 생성될 때 뿌려주면 안되?
                 case "room_in":
                     Log.d(TAG, "~님이 방에 입장하셨습니다.");

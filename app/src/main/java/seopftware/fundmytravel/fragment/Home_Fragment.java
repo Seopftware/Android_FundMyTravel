@@ -161,19 +161,11 @@ public class Home_Fragment extends Fragment {
             public void onResponse(Call<Parsing> call, Response<Parsing> response) {
                 Parsing parsing = response.body();
 
-//                Log.d(TAG, "response.body : " + response.body().toString());
-//                Log.d(TAG, "response.body : " + response.body().getFriendslist().toString());
-
-                // 사이즈는 어떻게 알지?
-                Log.d(TAG, "adapter.getItemCount() 전: " + adapter.getItemCount());
-                Log.d(TAG, "recycler_itemlist.size(): " + recycler_itemlist.size());
-
                 adapter.addMe(USER_NAME, USER_STATUS_MESSAGE, USER_PHOTO); // NAME, 상태 메세지, PROFILE
-
 
                 //Todo 여기 무한 반복 어떻게?
                 // 친구목록을 뿌려주는 곳
-                for (int i=0; i<6; i++) {
+                for (int i=0; i<parsing.getFriendCount(); i++) {
 
                     // 친구의 고유 ID
                     int friends_id = parsing.getFriendslist().get(i).getUserFriendsId();
@@ -193,8 +185,6 @@ public class Home_Fragment extends Fragment {
                 }
 
                 adapter.notifyDataSetChanged();
-
-                Log.d(TAG, "adapter.getItemCount() 후: " + adapter.getItemCount());
 
             }
 

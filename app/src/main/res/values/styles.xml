@@ -70,4 +70,11 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="CustomActivityDialog" parent="Base.Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@null</item>
+        <item name="windowNoTitle">true</item>
+        <!--<item name="android:windowNoTitle">true</item> android: 를 붙이게 되면 말 그대로 배경색만 제거됨.-->
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
 </resources>

@@ -3,6 +3,7 @@ package seopftware.fundmytravel.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,19 +44,6 @@ public class Roomlist_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView
 
     }
 
-/*    @Override
-    public int getItemViewType(int position) {
-        int viewType = itemlist.get(position).getStreaming_type();
-        Log.d(TAG, "mItems.get(position).getHome_type: " + itemlist.get(position).getStreaming_type());
-
-        switch (viewType) {
-            // 입장 또는 나갔을 때 띄우는 view type
-            case ENTRANCE:
-                viewType =0;
-                break;
-        }
-        return viewType;
-    }*/
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -68,21 +56,6 @@ public class Roomlist_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_streaming_roomlist, parent, false);
         viewHolder = new ItemOneViewHolder(view);
 
-/*        Log.d(TAG, "viewType : " + viewType);
-
-        switch (viewType) {
-            case ENTRANCE:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_streaming_entrance, parent, false);
-                viewHolder = new ItemOneViewHolder(view);
-                break;
-
-            case MESSAGE:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_streaming_message, parent, false);
-                viewHolder = new ItemTwoViewHolder(view);
-                break;
-        }*/
-
-
         return viewHolder;
     }
 
@@ -92,7 +65,6 @@ public class Roomlist_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Roomlist_Item listviewItem = itemlist.get(position);
 
-        // 1. 입장 또는 나갔을 때 View
         if(holder instanceof ItemOneViewHolder) {
 
             ((ItemOneViewHolder)holder).tv_roomid.setText(listviewItem.getRoom_id()); // 방송 고유 번호
@@ -104,15 +76,22 @@ public class Roomlist_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView
 
             Glide.with(context)
                     .load(listviewItem.getRoom_image_path())
-//                    .bitmapTransform(new CropCircleTransformation(context))
                     .into(((ItemOneViewHolder)holder).iv_streampic); // 방송 대문 이미지
 
 
             // 방송 상태를 가져오는 변수
-            String room_status = listviewItem.getRoom_status(); // 받는 값: true(방송 중), false(방송 종료->VOD)
+            String room_status = listviewItem.getRoom_status(); // 받는 값: LIVE, VOD
+            room_status =  room_status.replace("\"", "");
+
+//            Log.d(TAG, "****************************************************************");
+//            Log.d(TAG, "현재 방송 중인지 아닌지 구분");
+//            Log.d(TAG, "room_status : " + room_status);
+//            Log.d(TAG, "****************************************************************");
 
             // 만약 방송 중이면
-            if(room_status.equals(true)) {
+            if(room_status.equals("LIVE")) {
+
+                Log.d(TAG, "어댑터 방송 중");
 
                 ((ItemOneViewHolder)holder).btn_streamstatus.setText("LIVE"); // 방송 중
                 ((ItemOneViewHolder)holder).btn_streamstatus.setBackgroundColor(Color.rgb(224,73,46)); // 방송 중 (빨간색)
@@ -120,7 +99,9 @@ public class Roomlist_Recycler_Adapter extends RecyclerView.Adapter<RecyclerView
             }
 
             // 만약 방송 중이 아니면
-            else if(room_status.equals(false)) {
+            else if(room_status.equals("VOD")) {
+
+                Log.d(TAG, "어댑터 VOD 서비스");
 
                 ((ItemOneViewHolder)holder).btn_streamstatus.setText("VOD"); // 방송 종료
                 ((ItemOneViewHolder)holder).btn_streamstatus.setBackgroundColor(Color.rgb(189,189,189)); // 방송 중 (빨간색)

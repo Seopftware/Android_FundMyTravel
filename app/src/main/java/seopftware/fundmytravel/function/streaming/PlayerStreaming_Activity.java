@@ -45,10 +45,17 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.activity.Home_Activity;
 import seopftware.fundmytravel.adapter.Streaming_Recycler_Adapter;
 import seopftware.fundmytravel.dataset.Streaming_Item;
+import seopftware.fundmytravel.function.retrofit.HttpService;
+import seopftware.fundmytravel.function.retrofit.RetrofitClient;
 
 import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_MESSAGE;
 import static seopftware.fundmytravel.function.MyApp.TimeCheck;
@@ -97,6 +104,12 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
     private EditText et_input_message; // 보낼 메세지를 입력하는 곳
     private ImageButton ibtn_chat_send; // 메세지를 보내는 버튼
 
+    // 변수
+    String broadcast_time; // 현재 내가 보고 있는 방송의 시간
+    String room_id; // 현재 내가 시청하고 있느 방의 고유 ID
+    String message; // 보내고자 하는 메세지
+    String streamer_name; // 현재 내가 시청하고 있는 스트리머의 이름 값
+
     // 키보드 작업
     InputMethodManager imm; // 키보드 강제로 올리고 내리기 위한 변수
 
@@ -111,10 +124,18 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
     BroadcastReceiver broadcast_receiver; // 서비스로부터 메세지를 받기 위해 브로드 캐스트 리시버 동적 생성
     IntentFilter intentfilter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playerstreaming);
+
+        // Streaminglist_Fragment로 부터 받아오는 값 : room_id
+        Intent intent = getIntent();
+        room_id = intent.getStringExtra("room_id"); // room_id 값을 받아온다.
+        streamer_name = intent.getStringExtra("streamer_name"); // room_id 값을 받아온다.
+        Log.d(TAG, "Fragement로 부터 받아온 room_id 값은 ? : " + room_id);
+
 
         userAgent = Util.getUserAgent(this, "ExoPlayerDemo");
         shouldAutoPlay = true;
@@ -131,7 +152,7 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
         recyclerView.bringToFront();
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recycler_item = new Streaming_Item();
-        adapter= new Streaming_Recycler_Adapter();
+        adapter= new Streaming_Recycler_Adapter(recycler_itemlist);
         recyclerView.setAdapter(adapter);
         recyclerView.bringToFront();
 
@@ -160,6 +181,7 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
         tv_viewer_num= (TextView) findViewById(R.id.tv_viewer_num); // 현재 방송 시청자 수
         ibtn_chat_send= (ImageButton) findViewById(R.id.ibtn_chat_send); // 채팅 메세지 보내기
         ibtn_chat_send.setOnClickListener(this);
+
 
         // 채팅 메세지 입력
         et_input_message= (EditText) findViewById(R.id.et_input_message);
@@ -194,6 +216,7 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
             }
         });
 
+
     }
 
     // =========================================================================================================
@@ -208,47 +231,62 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                String getMessage = intent.getStringExtra("MessageFromService");
-
-                Log.d(TAG, "getMessage (서버에서 받은 메세지 (from Service) : " + getMessage);
-
                 Log.d(TAG, "****************************************************************");
                 Log.d(TAG, "BroadcastReceiver() : (받기) 2.서비스에서 받은 메세지를 리스트뷰에 추가하는 곳");
                 Log.d(TAG, "****************************************************************");
 
-                // JSON 객체를 분해하는 곳
-                //msg : [you]
-                // {"Sender_Id":"3",
-                // "Sender_Name":"인섭",
-                // "Sender_Message":"ggh",
-                // "Sender_Profile":"1.jpg",
-                // "Sender_Time":"2018년 01월 04일 목요일_163725"}
+                    String message_type = intent.getStringExtra("message_type");
 
-                try {
-                    JSONObject jsonObject = new JSONObject(getMessage);
+                    // 일반적인 메세지를 받았을 때
+                    if(message_type.equals("message_normal")) {
+                        Log.d(TAG, "message_normal 작동");
 
-                    String Sender_Id = jsonObject.getString("Sender_Id");
-                    String Sender_Name = jsonObject.getString("Sender_Name");
-                    String Sender_Message = jsonObject.getString("Sender_Message");
-                    String Sender_Profile = jsonObject.getString("Sender_Profile");
+                        int sender_id = intent.getIntExtra("id", 1);
+                        String sender_name = intent.getStringExtra("name");
+                        String sender_profile = intent.getStringExtra("profile");
+                        String sender_message = intent.getStringExtra("message");
 
 
-                    if(Sender_Id.equals(USER_ID)) {
+                        if(sender_id == USER_ID) {
 
-                        Log.d(TAG, "보낸자와 받는자가 같으므로 Recycler View를 추가하지 않는다.");
+                            Log.d(TAG, "보낸자와 받는자가 같으므로 Recycler View를 추가하지 않는다.");
 
-                    } else {
-                        adapter.addMessage(Sender_Name, Sender_Message, Sender_Profile); // Name, Message, Profile(파일명)
-                        adapter.notifyDataSetChanged();
-                        Log.d(TAG, "ListView 추가");
+                        } else {
+                            adapter.addMessage(sender_name, sender_message, sender_profile); // Name, Message, Profile(파일명)
+                            adapter.notifyDataSetChanged();
+
+                            recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                            Log.d(TAG, "ListView 추가");
+                        }
                     }
 
+                    // 서버로 부터 방송 시간 받기
+                    else if(message_type.equals("message_time")) {
+                        Log.d(TAG, "message_time 작동");
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                        broadcast_time = intent.getStringExtra("broadcast_time");
+
+                    }
+                    
+                    // 서버로 부터 방송 종료 알림 받기
+                    else if(message_type.equals("streaming_finish")) {
+                        Intent finishintent=new Intent(getApplicationContext(), PlayerFinish_Activity.class);
+                        startActivity(finishintent);
+                        finish();
+                    }
+
+                    // 서버로 부터(엄밀히 말하면 서비스) 별풍선을 보냈다는 알람 나타내기
+                    else if(message_type.equals("message_star")) {
+
+                        // 별풍선 효과 나타내기
+                        Log.d(TAG, "별풍선 효과!!!");
 
 
+                        
+                    }
+                    
+                
+                
             }
         };
 
@@ -257,33 +295,76 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
 
     }
 
-    // 메세지를 보내는 곳
+    // Netty를 통해서 채팅 메세지를 보내는 곳
     private void sendMessage_toServer() {
-        String message = et_input_message.getText().toString();
+
+        message = et_input_message.getText().toString();
 
         // 1.나의 RecylcerView에 Item 추가
         adapter.addMessage(USER_NAME,message, USER_PHOTO); // Name, Message, Profile
+        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
 
         // 2.서버에 내가 작성한 메세지 JSON 형태로 보냄 (서버에서는 나에게 받은 메세지를 DB에 저장)
         try {
 
             String time = TimeCheck();
             Log.d(TAG, "메세지 보내는 시간 체크 : "+ time);
+            Log.d(TAG, "메세지 보내는 broadcast_time : "+ broadcast_time);
 
             JSONObject object = new JSONObject();
-            object.put("Sender_Id", USER_ID);
-            object.put("Sender_Name", USER_NAME);
-            object.put("Sender_Message", message);
-            object.put("Sender_Profile", USER_PHOTO);
-            object.put("Sender_Time", time);
+
+            Log.d(TAG, "sender_profile : " + USER_PHOTO);
+
+            object.put("message_type", "message_normal");
+            object.put("room_id", room_id);
+            object.put("id", USER_ID);
+            object.put("name", USER_NAME);
+            object.put("message", message);
+            object.put("profile", USER_PHOTO);
+//            object.put("broadcast_time", broadcast_time);
             String Object_Data = object.toString();
 
             // 서버에 메세지를 보냄
             channel.writeAndFlush(Object_Data);
 
+            sendMessage_toRDBMS();
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendMessage_toRDBMS() {
+        Log.d(TAG, "sendMessage_toRDBMS 작동");
+        Log.d(TAG, "서버로 보내는 값 sender_profile : " + USER_PHOTO);
+
+
+        // Http 통신하는 부분
+        // 보내는 값: 방 번호, 유저 이름, 유저 사진, 메세지, 메세지 보낸 시간(방송 시간 기준으로)
+        // 받는 값: 성공 여부
+        Retrofit retrofit = RetrofitClient.getClient();
+        HttpService httpService = retrofit.create(HttpService.class);
+        Call<ResponseBody> comment = httpService.save_chatmessage(
+                room_id, USER_NAME, USER_PHOTO, message, broadcast_time
+        );
+        comment.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                if (!response.isSuccessful()) {
+                    Log.d(TAG, "유저 정보 등록 실패");
+                    return;
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
     }
 
 
@@ -349,123 +430,19 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
 
                 break;
 
+            case R.id.ibtn_show_star: // 별풍선 보내기 기능
+                Log.d(TAG, "ibtn_show_star 클릭");
+
+                // 스트리머의 아이디값을 받아 온 다음 별풍선을 보낼 때 마다 DB 정보를 업데이트 해준다.
+                Intent intent2 = new Intent(getApplicationContext(), PlayerStarSend_Activity.class);
+                intent2.putExtra("room_id", room_id); // 별풍선 보낼 떄 방 번호도 함꼐 보낸다.
+                intent2.putExtra("streamer_name", streamer_name); // 스트리머 이름
+                startActivity(intent2);
+                break;
+
         }
     }
     // =========================================================================================================
-
-
-/*    // =========================================================================================================
-    // Netty Engine
-    // =========================================================================================================
-
-    // 서버와 연결하기 위한 클래스
-    class ChatClient extends Thread {
-
-        private final String host;
-        private final int port;
-
-        public ChatClient(String host, int port) {
-            this.host=host;
-            this.port=port;
-        }
-
-        public void run() {
-            EventLoopGroup group = new NioEventLoopGroup();
-
-            try {
-
-                Log.d(TAG, "**************************************************");
-                Log.d(TAG, "1. 서버와 채널(소켓) 연결");
-                Log.d(TAG, "**************************************************");
-                // to set up a channel
-                bootstrap = new Bootstrap()
-                        .group(group)
-                        .channel(NioSocketChannel.class)
-                        .handler(new ChatClientInitializer());
-
-                // 서버에 최초 접속
-                channel = bootstrap.connect(host, port).sync().channel();
-                channel.writeAndFlush("서버와 연결되었습니다."); // 서버로 보내는 메세지(입장 메세지로?)
-                // 소켓이 연결되고 안되고로 채팅방 입장/퇴장 구분하기
-
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // 메세지를 thread 단에서 서버로 보내는 작업
-    public class ChatClientInitializer extends ChannelInitializer<SocketChannel> {
-
-        static final int MESSAGE_SIZE = 8192;
-
-        @Override
-        protected void initChannel(SocketChannel ch) throws Exception {
-            // Here's define what Netty calls a pipeline
-            // It basically describes how we want to organize our communication
-
-            ChannelPipeline pipeline = ch.pipeline();
-
-            // First, tell netty we're expecting frames of at most 8192 in size, each delimited with line endings
-            pipeline.addLast("framer", new DelimiterBasedFrameDecoder(MESSAGE_SIZE, Delimiters.lineDelimiter()));
-
-            // Since we're just exchanging Strings between the server and clients, we can use the StringDecoder to decode received bytes into Strings.
-            pipeline.addLast("decoder", new StringDecoder());
-
-            // StringEncoder to encode Strings into bytes, which we can then send over to the server
-            pipeline.addLast("encoder", new StringEncoder());
-
-            // finally, define a class which will handle all the decoded incoming Strings from the server
-            pipeline.addLast("handler", new ChatClientHandler());
-
-        }
-    }
-
-    // this class to handle incoming String objects
-    // 메세지 받는 곳
-    public class ChatClientHandler extends SimpleChannelInboundHandler<String> {
-        @Override
-        protected void channelRead0(ChannelHandlerContext ctx, final String msg) throws Exception {
-            // To print any String message we receive from the server to the console
-            // 서버로 부터 받은 메세지
-
-            Log.d(TAG, "****************************************************************");
-            Log.d(TAG, "받은 메세지");
-            Log.d(TAG, "ctx : " + ctx);
-            Log.d(TAG, "msg : " + msg);
-            Log.d(TAG, "****************************************************************");
-
-            //msg : [you]{"Sender_Id":"3","Sender_Name":"인섭","Sender_Message":"ggh","Sender_Profile":"1.jpg","Sender_Time":"2018년 01월 04일 목요일_163725"}
-            //msg : [/192.168.1.64:55555] {"Sender_Id":"3","Sender_Name":"인섭","Sender_Message":"ggh","Sender_Profile":"1.jpg","Sender_Time":"2018년 01월 04일 목요일_163725"}
-
-
-            // Thread를 생성한다.
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    // runOnUiThread를 추가하고 그 안에 UI작업을 한다.
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            adapter.addMessage();
-                        }
-                    });
-                }
-            }).start();
-
-        }
-
-        // 채팅 중 에러 발생시
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-            cause.printStackTrace();
-            ctx.close();
-        }
-
-    } // Finish: ChatClientHandler
-    // =========================================================================================================*/
-
 
     // =========================================================================================================
     // ExoPlayer 준비를 위한 함수
@@ -483,21 +460,21 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
         simpleExoPlayerView.setPlayer(player);
         player.setPlayWhenReady(shouldAutoPlay);
 
-
         // 해당 url에 접근 후 DASH 재생
-        Uri uri = Uri.parse("http://52.79.138.20/dashlive/test.mpd");
+        Uri uri = Uri.parse("http://52.79.138.20/dashlive/" + room_id + ".mpd");
         MediaSource mediaSource = new DashMediaSource(uri, buildDataSourceFactory(false),
                 new DefaultDashChunkSource.Factory(mediaDataSourceFactory), mainHandler, null);
         player.prepare(mediaSource);
 
-/*        // imageview click 이벤트
-        // 재생화면 클릭 시 재생 시작/중지 컨트롤 view가 보였다가 안보였다가 함
-        ivHideControllerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                simpleExoPlayerView.hideController();
-            }
-        });*/
+
+//        // imageview click 이벤트
+//        // 재생화면 클릭 시 재생 시작/중지 컨트롤 view가 보였다가 안보였다가 함
+//        ivHideControllerButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                simpleExoPlayerView.hideController();
+//            }
+//        });
     }
 
     // 화면에서 빠져나갈시 재생 중지를 위해 필요한 부분
@@ -538,8 +515,9 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
     @Override
     public void onStart() {
         super.onStart();
-        if (Util.SDK_INT > 23) {
             initializePlayer();
+
+        if (Util.SDK_INT > 23) {
         }
     }
 
@@ -547,7 +525,7 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
     public void onResume() {
         super.onResume();
         if ((Util.SDK_INT <= 23 || player == null)) {
-            initializePlayer();
+//            initializePlayer();
         }
 
 //        register_receiver();
@@ -557,7 +535,7 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
     public void onPause() {
         super.onPause();
         if (Util.SDK_INT <= 23) {
-            releasePlayer();
+//            releasePlayer();
         }
     }
 

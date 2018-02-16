@@ -148,6 +148,11 @@ public class Parsing {
         return friendslist;
     }
 
+    public int getFriendCount() {
+        return friendslist.size();
+    }
+
+
     public void setFriendslist(List<Friendslist> friendslist) {
         this.friendslist = friendslist;
     }
@@ -235,6 +240,13 @@ public class Parsing {
     public List<Roomlist> getRoomlist() {
         return roomlist;
     }
+
+
+    public int getRoomCount() {
+        return roomlist.size();
+    }
+
+
 
     public void setRoomlist(List<Roomlist> roomlist) {
         this.roomlist = roomlist;
@@ -333,4 +345,74 @@ public class Parsing {
     }
     // =========================================================================================================
 
+    // =========================================================================================================
+    // 채팅 메세지 GSon
+    // 방 정보를 받아오는 테이블 message_normal
+    // =========================================================================================================
+
+    @SerializedName("chatlist")
+    @Expose
+    private List<Chatlist> chatlist = null;
+
+    public List<Chatlist> getChatlist() {
+        return chatlist;
+    }
+
+    public void setChatlist(List<Chatlist> chatlist) {
+        this.chatlist = chatlist;
+    }
+
+    public int getChatCount() {
+        return chatlist.size();
+    }
+
+    // =========================================================================================================
+    public class Chatlist {
+
+        @SerializedName("sender_name")
+        @Expose
+        private String senderName;
+        @SerializedName("sender_profile")
+        @Expose
+        private String senderProfile;
+        @SerializedName("sender_message")
+        @Expose
+        private String senderMessage;
+        @SerializedName("broadcast_time")
+        @Expose
+        private String broadcastTime;
+
+        public String getSenderName() {
+            return senderName;
+        }
+
+        public void setSenderName(String senderName) {
+            this.senderName = senderName;
+        }
+
+        public String getSenderProfile() {
+            return senderProfile;
+        }
+
+        public void setSenderProfile(String senderProfile) {
+            this.senderProfile = senderProfile;
+        }
+
+        public String getSenderMessage() {
+            return senderMessage;
+        }
+
+        public void setSenderMessage(String senderMessage) {
+            this.senderMessage = senderMessage;
+        }
+
+        public String getBroadcastTime() {
+            return broadcastTime;
+        }
+
+        public void setBroadcastTime(String broadcastTime) {
+            this.broadcastTime = broadcastTime;
+        }
+
+    }
 }

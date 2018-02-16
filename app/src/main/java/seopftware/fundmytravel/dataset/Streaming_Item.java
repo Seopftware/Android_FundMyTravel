@@ -11,7 +11,7 @@ public class Streaming_Item {
     String streaming_user_id; // 유저들의 고유 Id 저장
     String streaming_user_nickname; // 유저들의 닉네임
     String streaming_user_message; // 유저가 보낸 메세지
-    String streaming_message_time; // 채팅 메세지 보낸 시간
+    String streaming_message_time; // 채팅 메세지를 보낼 때의 방송 진행 시간
     String streameing_image_profile; // 유저 이미지 프로필
     String streaming_image_star; // 별풍선 효과
     String streaming_image_chat; // 채팅 중 이미지 (이모티콘도 보내고 싶다! 이 부분은 나중에)

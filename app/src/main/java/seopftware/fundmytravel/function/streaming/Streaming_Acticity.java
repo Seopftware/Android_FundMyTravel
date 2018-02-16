@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -41,10 +43,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.activity.Home_Activity;
 import seopftware.fundmytravel.adapter.Streaming_Recycler_Adapter;
 import seopftware.fundmytravel.dataset.Streaming_Item;
+import seopftware.fundmytravel.function.retrofit.HttpService;
+import seopftware.fundmytravel.function.retrofit.RetrofitClient;
 
 import static seopftware.fundmytravel.function.MyApp.BROADCAST_NETTY_MESSAGE;
 import static seopftware.fundmytravel.function.MyApp.TimeCheck;
@@ -65,6 +74,7 @@ import static seopftware.fundmytravel.function.chatting.Chat_Service.channel;
 public class Streaming_Acticity extends AppCompatActivity implements ConnectCheckerRtmp, View.OnClickListener, SurfaceHolder.Callback {
 
     private static final String TAG ="all_"+"Streaming_Activity";
+
 
     // 스트리밍 관련 UI 변수들
     private RtmpCamera1 rtmpCamera1;
@@ -91,6 +101,15 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
     private ImageButton ibtn_chat_send; // 보내기 버튼
     InputMethodManager imm; // 키보드 강제로 올리고 내리기 위한 변수
 
+    // 방송 시간 체크를 위한 Chronometer
+    Chronometer chronometer;
+    String broadcast_time;
+
+    // 변수
+    String room_id; // 현재 내가 시청하고 있느 방의 고유 ID
+    String message; // 내가 입력한 메세지 내용
+
+
     // 방송 준비를 위한 카운트 다운을 위한 변수들
     private CountDownTimer countDownTimer; // 방송 시작 전 카운트 다운을 위한 함수
     private static final int MILLISINFUTURE = 4 * 1000; // 총 시간
@@ -111,6 +130,12 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_streaming);
 
+
+        // Streaminglist_Fragment로 부터 받아오는 값 : room_id
+        Intent intent = getIntent();
+        room_id = intent.getStringExtra("room_id"); // room_id 값을 받아온다.
+        Log.d(TAG, "Fragement로 부터 받아온 room_id 값은 ? : " + room_id);
+
         // 방송 화면 그려줄 View
         SurfaceView view_surface = findViewById(R.id.view_surface);
         rtmpCamera1 = new RtmpCamera1(view_surface, this); // RTMP 객체 생성
@@ -120,6 +145,8 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
         iv_number2 = (ImageView) findViewById(R.id.iv_number2);
         iv_number1 = (ImageView) findViewById(R.id.iv_number1);
 
+        // Chronometer (방송 시간 측정)
+        chronometer = (Chronometer) findViewById(R.id.chronometer);
 
         // 방송 중 기능을 위한 버튼 선언 (방송 상단)
         // 1.카메라 전환
@@ -166,13 +193,8 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recycler_item = new Streaming_Item();
-        adapter = new Streaming_Recycler_Adapter();
+        adapter = new Streaming_Recycler_Adapter(recycler_itemlist);
         recyclerView.setAdapter(adapter);
-
-//        adapter.addEntrance("김인섭님이 입장했습니다");
-//        for(int i=0; i<10; i++) {
-//            adapter.addMessage("InseopKim", i+"번째", "1.jpg");
-//        }
 
         // 채팅 기능을 위한 UI
         linear_message= (LinearLayout) findViewById(R.id.linear_message);
@@ -253,15 +275,18 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
                 }
             }
 
+            // 카운트 다운이 끝났을 때
             @Override
             public void onFinish() {
 
+                // 카운트 다운이 끝나면 카운트 다운 숫자를 나타내는 이미지뷰를 모두 없애준다.
                 iv_number3.setVisibility(View.INVISIBLE);
                 iv_number2.setVisibility(View.INVISIBLE);
                 iv_number1.setVisibility(View.INVISIBLE);
 
-                linear_bottom.setVisibility(View.VISIBLE);
-                linear_top.setVisibility(View.VISIBLE);
+                // 방송 옵션들이 표시된다.
+                linear_bottom.setVisibility(View.VISIBLE); // 채팅창
+                linear_top.setVisibility(View.VISIBLE); // 카메라 옵션창
                 btn_live.setVisibility(View.VISIBLE);
 
             }
@@ -367,6 +392,27 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
                     rtmpCamera1.stopPreview();
                 }
 
+                // http 통신하는 곳
+                // update_roomstatus.php 파일에 접근해서 LIVE -> VOD로 바꿔줌.
+                liveTovod();
+
+
+                // JSONObject형태로 서버에 방송 종료 알리기
+                try {
+
+                    JSONObject object = new JSONObject();
+                    object.put("message_type", "streaming_finish"); // 서버와 연결됨
+                    String Object_Data = object.toString();
+                    channel.writeAndFlush(Object_Data);
+                }
+
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+
                 Intent intent = new Intent(getApplicationContext(), Home_Activity.class);
                 startActivity(intent);
                 finish();
@@ -377,6 +423,34 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
         } // switch 구문 close
     } // onClick 함수 finish
     // =========================================================================================================
+
+    private void liveTovod() {
+
+        // Http 통신하는 부분
+        // 보내는 값: User_Phone
+        // 받는 값: User_Id
+        Retrofit retrofit = RetrofitClient.getClient();
+        HttpService httpService = retrofit.create(HttpService.class);
+        Call<ResponseBody> comment = httpService.update_roomstatus(room_id); // 서버에 아무 값이나 보낸다.
+        comment.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                if (!response.isSuccessful()) {
+                    Log.d(TAG, "LIVE - > VOD 업데이트 실패");
+                    return;
+                } else {
+                    Log.d(TAG, "LIVE - > VOD 업데이트 성공");
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d(TAG, "네트워크 통신 실패");
+            }
+        }); // HTTP 통신 종료
+    }
 
 
     // =========================================================================================================
@@ -466,15 +540,18 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
             if (!rtmpCamera1.isStreaming()) { // 만약 스트리밍 중이 아니면
 
                 if (rtmpCamera1.prepareAudio() && rtmpCamera1.prepareVideo()) { // 오디오 & 비디오 null 값 아니면
-                    rtmpCamera1.startStream("rtmp://52.79.138.20:1935/dash/test"); // 스트리밍 시작. (스트리밍 주소)
+                    rtmpCamera1.startStream("rtmp://52.79.138.20:1935/dash/" + room_id); // 스트리밍 시작. (스트리밍 주소)
 
                     try {
+                        // 카운트 종료 후 방송 시작을 위해 3초 딜레이
+                        // RTMP 방송 준비를 위해 3초의 시간이 필요함
                         Thread.sleep(3000);
-                        startRecord();
+//                        startRecord(); // 녹화 시작
+                        sendTimetoClient(); //
+
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Error preparing stream, This device cant do it", Toast.LENGTH_SHORT).show();
@@ -487,6 +564,55 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
         }
 
     };
+
+
+    // 나의 방송 시간을 유저에게 1초 간격으로 보낸다.
+    // 채팅 할 때 메세지 저장 시간으로 사용한다.
+    private void sendTimetoClient() {
+
+        // 카운트 다운이 끝남과 동시에 방송 시작 카운트
+        chronometer.setBase(SystemClock.elapsedRealtime()); // 초기화
+        chronometer.start();
+
+
+        chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+
+                try {
+
+                    Log.d(TAG, "흐르는 시간 : " + chronometer.getText()); // ex) 00:01, 00:02, 00:03, 01:15 ...
+
+                    broadcast_time = (String) chronometer.getText();
+                    broadcast_time = broadcast_time.replaceAll(":",""); // 0001, 0002, 0115
+
+                    // Netty로 영통이 왔다는 걸 알림
+                    JSONObject object = new JSONObject();
+
+                    object.put("message_type", "message_time"); // 서버와 연결됨
+                    object.put("broadcast_time", broadcast_time); // 나의 id
+
+                    String Object_Data = object.toString();
+                    channel.writeAndFlush(Object_Data);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        }).start();
+
+
+
+
+    }
 
 
     // =========================================================================================================
@@ -520,6 +646,14 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
             }
         } else {
             Toast.makeText(this, "You need min JELLY_BEAN_MR2(API 18) for do it...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void stopRecord() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && rtmpCamera1.isRecording()) {
+            rtmpCamera1.stopRecord();
+            Toast.makeText(this, "file " + currentDateAndTime + ".mp4 saved in " + folder.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+            currentDateAndTime = "";
         }
     }
 
@@ -561,11 +695,7 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
             rtmpCamera1.stopPreview();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && rtmpCamera1.isRecording()) {
-            rtmpCamera1.stopRecord();
-            Toast.makeText(this, "file " + currentDateAndTime + ".mp4 saved in " + folder.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-            currentDateAndTime = "";
-        }
+        stopRecord();
 
     }
 
@@ -573,6 +703,9 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
     protected void onStop() {
         super.onStop();
         unregister_receiver();
+
+        // 반드시 앱 종료전에 STOP 메소드를 호출해야 메모리릭이 발생하지 않는다.
+        chronometer.stop();
     }
 
 
@@ -588,46 +721,43 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                String getMessage = intent.getStringExtra("MessageFromService");
+                String message_type = intent.getStringExtra("message_type");
 
-                Log.d(TAG, "getMessage (서버에서 받은 메세지 (from Service) : " + getMessage);
+                // 일반적인 메세지를 받았을 때
+                if(message_type.equals("message_normal")) {
+                    Log.d(TAG, "message_normal 작동");
 
-                Log.d(TAG, "****************************************************************");
-                Log.d(TAG, "BroadcastReceiver() : (받기) 2.서비스에서 받은 메세지를 리스트뷰에 추가하는 곳");
-                Log.d(TAG, "****************************************************************");
-
-                // JSON 객체를 분해하는 곳
-                //msg : [you]
-                // {"Sender_Id":"3",
-                // "Sender_Name":"인섭",
-                // "Sender_Message":"ggh",
-                // "Sender_Profile":"1.jpg",
-                // "Sender_Time":"2018년 01월 04일 목요일_163725"}
-
-                try {
-                    JSONObject jsonObject = new JSONObject(getMessage);
-
-                    String Sender_Id = jsonObject.getString("Sender_Id");
-                    String Sender_Name = jsonObject.getString("Sender_Name");
-                    String Sender_Message = jsonObject.getString("Sender_Message");
-                    String Sender_Profile = jsonObject.getString("Sender_Profile");
+                    int sender_id = intent.getIntExtra("id", 1);
+                    String sender_name = intent.getStringExtra("name");
+                    String sender_profile = intent.getStringExtra("profile");
+                    String sender_message = intent.getStringExtra("message");
 
 
-                    if(Sender_Id.equals(USER_ID)) {
+                    if(sender_id == USER_ID) {
 
                         Log.d(TAG, "보낸자와 받는자가 같으므로 Recycler View를 추가하지 않는다.");
 
                     } else {
-                        adapter.addMessage(Sender_Name, Sender_Message, Sender_Profile); // Name, Message, Profile(파일명)
+                        adapter.addMessage(sender_name, sender_message, sender_profile); // Name, Message, Profile(파일명)
                         adapter.notifyDataSetChanged();
+                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
                         Log.d(TAG, "ListView 추가");
                     }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
 
+                // 서버로 부터 방송 시간 받기
+                else if(message_type.equals("message_time")) {
+                    Log.d(TAG, "message_time 작동");
+
+                    broadcast_time = intent.getStringExtra("broadcast_time");
+
+                }
+
+                // 서버로 부터(엄밀히 말하면 서비스) 별풍선을 보냈다는 알람 나타내기
+                else if(message_type.equals("message_star")) {
+
+                    // 별풍선 효과 나타내기
+                }
 
             }
         };
@@ -639,31 +769,71 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
 
     // 메세지를 보내는 곳
     private void sendMessage_toServer() {
-        String message = et_input_message.getText().toString();
+        message = et_input_message.getText().toString();
 
         // 1.나의 RecylcerView에 Item 추가
         adapter.addMessage(USER_NAME,message, USER_PHOTO); // Name, Message, Profile
+        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
 
         // 2.서버에 내가 작성한 메세지 JSON 형태로 보냄 (서버에서는 나에게 받은 메세지를 DB에 저장)
         try {
 
             String time = TimeCheck();
             Log.d(TAG, "메세지 보내는 시간 체크 : "+ time);
+            Log.d(TAG, "sender_profile : " + USER_PHOTO);
 
             JSONObject object = new JSONObject();
-            object.put("Sender_Id", USER_ID);
-            object.put("Sender_Name", USER_NAME);
-            object.put("Sender_Message", message);
-            object.put("Sender_Profile", USER_PHOTO);
-            object.put("Sender_Time", time);
+            object.put("message_type", "message_normal");
+            object.put("room_id", room_id);
+            object.put("id", USER_ID);
+            object.put("name", USER_NAME);
+            object.put("profile", USER_PHOTO);
+            object.put("message", message);
+//            object.put("broadcast_time", broadcast_time);
             String Object_Data = object.toString();
 
             // 서버에 메세지를 보냄
             channel.writeAndFlush(Object_Data);
 
+            sendMessage_toRDBMS();
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void sendMessage_toRDBMS() {
+        Log.d(TAG, "sendMessage_toRDBMS 작동");
+
+        // Http 통신하는 부분
+        // 보내는 값: 방 번호, 유저 이름, 유저 사진, 메세지, 메세지 보낸 시간(방송 시간 기준으로)
+        // 받는 값: 성공 여부
+
+        Log.d(TAG, "서버로 보내는 값 sender_profile : " + USER_PHOTO);
+
+        Retrofit retrofit = RetrofitClient.getClient();
+        HttpService httpService = retrofit.create(HttpService.class);
+        Call<ResponseBody> comment = httpService.save_chatmessage(
+                room_id, USER_NAME, USER_PHOTO, message, broadcast_time
+        );
+        comment.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                if (!response.isSuccessful()) {
+                    Log.d(TAG, "유저 정보 등록 실패");
+                    return;
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
     }
 
 

@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -26,10 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import jp.wasabeef.glide.transformations.BlurTransformation;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -68,12 +70,15 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
     EditText et_title, et_tag; // 방송 제목, 방송 태그
     TextView tv_location;
     ImageButton ibtn_location;
-    LinearLayout linear_location;
+    LinearLayout linear_location, linearLayout; // 위치 정보 클릭 시, 다른 뷰들 앞으로 꺼내기
 
     // 위치 정보를 받아오기 위한 google location
     LocationManager locationManager;
     double longitude; // 경도
     double latitude;
+
+    // 변수
+    String room_id; // 내가 만든 방의 고유 ID. 이 값은 스트리머가 방을 생성할 때 Streaming_Activity로 넘겨준다.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,12 +90,9 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
         Log.d(TAG, "Uri 값 : " + photoUri);
 
         // Uri to File (서버에 이미지 파일 전송하기 위해 변경)
-//        photoFile = new File(photoUri.getPath());
         photoFile = new File(getPath(photoUri));
 
 
-        Log.d(TAG, "file : " +photoFile.getName());
-        Log.d(TAG, "file : " +photoFile);
 
         // location manager 선언
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -100,11 +102,24 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
         et_tag = (EditText) findViewById(R.id.et_tag); // 태그
         tv_location = (TextView) findViewById(R.id.tv_location); // 나의 위치 표시
         ibtn_location = (ImageButton) findViewById(R.id.ibtn_location); // 나의 위치 받아오기
+
+
+        // 바탕에 깔릴 배경 선택
+        iv_roomimage= (ImageView) findViewById(R.id.iv_roomimage);
+        Glide.with(getApplicationContext())
+                .load(photoUri)
+                .bitmapTransform(new BlurTransformation(getApplicationContext(), 50, 2)) // Glide Blur 효과
+                .into(iv_roomimage);
+
+
+        linearLayout= (LinearLayout) findViewById(R.id.linearLayout);
+        linearLayout.bringToFront();
         linear_location= (LinearLayout) findViewById(R.id.linear_location);
         linear_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                tv_location.setText("Finding your location");
                 Log.d(TAG, "위치 확인 중");
                 // GPS 허용여부 묻기
                 chkGpsService();
@@ -135,10 +150,9 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
         });
 
 
-        iv_roomimage= (ImageView) findViewById(R.id.iv_roomimage);
-        iv_roomimage.setImageURI(photoUri);
-        Drawable alpha = ((ImageView)findViewById(R.id.iv_roomimage)).getDrawable();
-        alpha.setAlpha(100); // 이미지뷰 투명도 조절
+
+
+
 
         // 스트리밍 시작 버튼
         btn_streamstart = (Button) findViewById(R.id.btn_streamstart);
@@ -147,13 +161,26 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
         btn_streamstart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Toast.makeText(getApplicationContext(), "Broadcasting Start! :)", Toast.LENGTH_LONG).show();
+
+                btn_streamstart.setEnabled(false); // 버튼 클릭 무효화
+
                 // DB에 정보 입력
                 DBInsert_roominfo();
+
+//                // 버튼 더블 클릭 방지
+//                Handler handler = new Handler();
+//                handler.postDelayed(new delay(), 1000); // 1초 지연
             }
         });
-
     }
 
+    class delay implements Runnable {
+        public void run() {
+            btn_streamstart.setEnabled(true); // 버튼 클릭 무효화 해제
+        }
+    }
     private final LocationListener mLocationListener = new LocationListener() {
 
         // 위치값이 갱신되면 이벤트 발생
@@ -214,13 +241,13 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
             return;
         }
 
-        // 서버로 전송하는 부분 (http 통신)
-        retrofit();
+        // HTTP 통신하는 곳 _ 방 정보를 RDB에 저장하는 곳
+        saveStreamingRoom();
 
     }
 
     // 서버로 전송하는 부분 (http 통신)
-    private void retrofit() {
+    private void saveStreamingRoom() {
 
         // 날짜 받아오기
         Date date = new Date();
@@ -229,7 +256,7 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
 
         // 서버로 보낼 변수들
         // 1
-        String room_id = USER_ID + time; // room_id
+        room_id = USER_ID + time; // room_id
 
         // 2
         int room_numpeople = 1; // 방 참여자수는 일단 1로 표시 (자기 자신)
@@ -250,7 +277,7 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
         String room_status = "LIVE";
 
         // 8
-        String room_location = String.valueOf(longitude +"_"+latitude);
+        String room_location = String.valueOf(latitude +"_"+longitude); // 위도/경도
 
         // 파일 전송을 위한 request body
         RequestBody filepart = RequestBody.create(MediaType.parse("image/*"), photoFile);
@@ -269,19 +296,41 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                // 위치 정보 그만 받아오기
-                locationManager.removeUpdates(mLocationListener);
+                if(response.isSuccessful()) {
+                    Log.d(TAG, "방 정보 RDB 입력 성공");
 
-//                // 서버에 방송 정보가 완료되면 방송 시작
-//                // 방송 시작
-                Intent intent = new Intent(getApplicationContext(), Streaming_Acticity.class);
-                startActivity(intent);
-                finish();
+                    // 위치 정보 그만 받아오기
+                    locationManager.removeUpdates(mLocationListener);
+
+                    Log.d(TAG, "방 정보 RDB 입력 완료");
+
+
+                    // 서버에 방송 정보가 완료되면 방송 시작
+                    // 방송 시작
+                    Intent intent = new Intent(getApplicationContext(), Streaming_Acticity.class);
+                    intent.putExtra("room_id", room_id);
+                    startActivity(intent);
+                    finish();
+                }
+
+
+                else {
+                    Log.d(TAG, "방 정보 RDB 입력 실패");
+                }
+
+
+
+
 
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                Log.d(TAG, "****************************************************************");
+                Log.d(TAG, "errer message");
+                Log.d(TAG, "t.getMessage().toString() : " +  t.getMessage().toString());
+                Log.d(TAG, "****************************************************************");
 
             }
         });
@@ -297,7 +346,7 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
         if (!(gps.matches(".*gps.*") && gps.matches(".*network.*"))) {
 
             // GPS OFF 일때 Dialog 표시
-            AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
+            final AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
             gsDialog.setTitle("위치 서비스 설정");
             gsDialog.setIcon(R.drawable.ic_menu_send);
             gsDialog.setMessage("GPS 사용 동의 후 위치 서비스 사용이 가능합니다.\n위치 서비스 기능을 설정하시겠습니까?");
@@ -313,9 +362,8 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
                     return;
                 }
             }).create();
-
-            AlertDialog alertDialog = gsDialog.create();
-            alertDialog.show();
+//            AlertDialog alertDialog = gsDialog.create();
+//            gsDialog.show();
             return true;
 
         } else {

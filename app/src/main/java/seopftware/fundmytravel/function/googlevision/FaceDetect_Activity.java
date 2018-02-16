@@ -377,6 +377,8 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
                 .setMessage(R.string.no_camera_permission)
                 .setPositiveButton(R.string.ok, listener)
                 .show();
+
+
     }
 
     //==============================================================================================

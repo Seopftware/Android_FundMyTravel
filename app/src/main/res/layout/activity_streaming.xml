@@ -91,6 +91,7 @@
         android:id="@+id/btn_live"
         android:layout_width="60dp"
         android:layout_height="30dp"
+        android:layout_marginRight="56dp"
         android:layout_marginTop="16dp"
         android:background="@android:color/holo_red_light"
         android:text="Live"
@@ -218,4 +219,16 @@
 
 
     </LinearLayout>
+
+    <Chronometer
+        android:id="@+id/chronometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="18dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/btn_live"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

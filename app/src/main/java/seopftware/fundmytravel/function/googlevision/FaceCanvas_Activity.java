@@ -260,12 +260,9 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
             }
         };
 
-
         // show pen palette dialog
         Intent intent = new Intent(getApplicationContext(), PenPalette_Activity.class);
         startActivity(intent);
-
-
     }
 
     // 메세지 종료 시간 설정
@@ -274,10 +271,7 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
             @Override
             public void onSelectingValue(int value) {
                 Toast.makeText(FaceCanvas_Activity.this, "Selected "+String.valueOf(value), Toast.LENGTH_SHORT).show();
-
                 limited_time= String.valueOf(value);
-
-
             }
         });
         dialog.show();

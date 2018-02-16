@@ -29,7 +29,8 @@ public interface HttpService {
     Call<ResponseBody>register_phone(
             // @Field("서버에 보낼 변수명")
             @Field("user_method") String user_method, // 회원가입 방법
-            @Field("user_phone") String user_phone); // 회원가입할 휴대폰 번호
+            @Field("user_phone") String user_phone // 회원가입할 휴대폰 번호
+    );
 
 
 
@@ -37,20 +38,23 @@ public interface HttpService {
     @FormUrlEncoded
     @POST("php/select/user_info.php") // 폴더명/파일명
     Call<Parsing>get_userinfo(
-            @Field("user_key") int user_key); // 유저 고유 ID
+            @Field("user_key") int user_key // 유저 고유 ID
+    );
 
 
     // 나의 id 보내고 친구 목록 가져오기
     @FormUrlEncoded
     @POST("php/select/find_friendlist.php") // 폴더명/파일명
     Call<Parsing>get_friendslist(
-            @Field("user_login_id") int user_login_id);
+            @Field("user_login_id") int user_login_id
+    );
 
     // 나의 id 보내고 친구 목록 가져오기
     @FormUrlEncoded
     @POST("php/select/find_roomlist.php") // 폴더명/파일명
     Call<Parsing>get_roomlist(
-            @Field("user_login_id") int user_login_id);
+            @Field("user_login_id") int user_login_id
+    );
 
     // Pic Message
     // Retrofit을 통해 서버로 사진을 전송하기 위한 부분
@@ -82,6 +86,47 @@ public interface HttpService {
             @Part("room_status") String room_status, // 방송 여부 표시 (LIVE, VOD)
             @Part("room_location") String room_location // 방송 좌표
     );
+
+
+    // 채팅 메세지 저장
+    @FormUrlEncoded
+    @POST("php/insert/save_chatmessage.php") // 폴더명/파일명
+    Call<ResponseBody>save_chatmessage(
+            // @Field("서버에 보낼 변수명")
+            @Field("room_id") String room_id, // 방의 고유 아이디
+            @Field("sender_name") String sender_name, // 메세지 보낸 사람의 이름
+            @Field("sender_profile") String sende_profile, // 보낸 사람의 프로필 사진 경로
+            @Field("sender_message") String sender_message, // 메세지 내용
+            @Field("broadcast_time") String broadcast_time // 메세지를 보냈을 때의 방송 시간
+    );
+
+    // 채팅 메세지 불러오기
+    // 서버로 부터 Json 데이터 값을 가져온다.
+    @FormUrlEncoded
+    @POST("php/select/get_chatlist.php") // 폴더명/파일명
+    Call<Parsing>get_chatlist(
+            // @Field("서버에 보낼 변수명")
+            @Field("room_id") String room_id // 방의 고유 아이디
+    );
+
+
+    // 생방송 끝나면 RDB에 접근해서 LIVE -> VOD 로 바꿔주기
+    @FormUrlEncoded
+    @POST("php/update/update_roomstatus.php") // 폴더명/파일명
+    Call<ResponseBody>update_roomstatus(
+            // @Field("서버에 보낼 변수명")
+            @Field("room_id") String room_id // 방 번호를 보낸다.
+    );
+
+    // 별풍선 갯수 업데이트 해주는 곳
+    // 폰 번호로 회원가입할 때
+    @FormUrlEncoded
+    @POST("php/update/update_star.php") // 폴더명/파일명
+    Call<ResponseBody>update_star(
+            @Field("streamer_name") String streamer_name, // 코인을 보내고자 하는 대상
+            @Field("send_money") int send_money // 보내고자 하는 코인의 갯수
+    );
+
 
 
 

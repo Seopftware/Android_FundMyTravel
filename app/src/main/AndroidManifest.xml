@@ -236,7 +236,23 @@
             android:label="@string/visible_region_demo_label" />
         <activity android:name=".maps2.BaseGoogleMapsActivity" />
         <activity android:name=".maps2.ARNavigation_Activity" />
-        <activity android:name=".maps2.FindAddress_Activity"></activity>
+        <activity android:name=".maps2.FindAddress_Activity" />
+        <activity android:name=".maps2.MapNavigation_Activity" />
+        <activity android:name=".function.streaming.Vodplayer_Activity" />
+        <activity android:name=".function.vodEmoticon.FbLiveVideoReactionDemoActivity">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
+        <activity android:name=".function.streaming.StreamerFinish_Activity" />
+        <activity android:name=".function.streaming.PlayerFinish_Activity" />
+        <activity
+            android:name=".function.streaming.PlayerStarSend_Activity"
+            android:theme="@style/CustomActivityDialog" />
     </application>
 
 </manifest>

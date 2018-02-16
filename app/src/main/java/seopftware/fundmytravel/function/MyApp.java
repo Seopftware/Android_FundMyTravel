@@ -1,7 +1,14 @@
 package seopftware.fundmytravel.function;
 
+import android.app.Activity;
 import android.app.Application;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.AppCompatDialog;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -15,6 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.dataset.Parsing;
 import seopftware.fundmytravel.function.retrofit.HttpService;
 import seopftware.fundmytravel.function.retrofit.RetrofitClient;
@@ -34,6 +42,10 @@ public class MyApp extends Application {
 
     public static String TAG ="all_"+"MyApp";
 
+    private static MyApp myApp;
+    AppCompatDialog progressDialog; // 커스텀한 다이얼로그를 띄우기 위한 변수
+
+
     // 로그인한 유저를 전역에 사용할 변수
     public static int USER_ID; // 로그인한 유저의 고유 ID 번호
     public static String USER_NAME; // 로그인한 유저의 이름
@@ -48,24 +60,39 @@ public class MyApp extends Application {
 
     // Server 관련 정보들
     public static String SERVER_URL = "http://52.79.138.20/"; // AWS Server
-    public static String SERVER_IP = "172.30.1.38"; // Netty Chat Server IP
+//    public static String SERVER_IP = "172.30.1.22"; // Netty Chat Server IP
+//    public static String SERVER_IP = "52.79.138.20"; // Netty Chat Server IP
+    public static String SERVER_IP = "129.12.199.234"; // Netty Chat Server IP
     public static int NETTY_PORT = 8000; // Netty Chat Server Port
 
     // 이미지 파일 갯수 관리
     public static ArrayList<String> numberofpic = new ArrayList<>(); // 받은 이미지 파일 담아두는 곳
     public static int PIC_MESSAGE= 0; // 노티피케이션 메세지 알람 숫자
 
-
+    // =========================================================================================================//
     // Broad cast Receiver_ intent filter 값들
-    public static String BROADCAST_NETTY_MESSAGE = "seopftware.fundmytravel.chatmessage.SEND_BROAD_CAST"; // Netty_채팅 메세지
-    public static String BROADCAST_NETTY_MESSAGE_PIC = "seopftware.fundmytravel.chatmessage.MESSAGE_PIC"; // Netty_영상 통화 거절시
+    // Netty_채팅 메세지 (PlayerStreaming_Activity)
+    public static String BROADCAST_NETTY_MESSAGE = "seopftware.fundmytravel.chatmessage.SEND_BROAD_CAST";
+    public static String BROADCAST_NETTY_BROADCASTING_TIME = "seopftware.fundmytravel.chatmessage.BROADCASTING_TIME"; // Netty_스트리머가 방송을 시작한 시간
+
+    // Netty_사진 메세지
+    public static String BROADCAST_NETTY_MESSAGE_PIC = "seopftware.fundmytravel.chatmessage.MESSAGE_PIC";
+
+    // Netty_영상 통화
     public static String BROADCAST_NETTY_VIDEOCALL = "seopftware.fundmytravel.chatmessage.SEND_VIDEO_CALL"; // Netty_영상 통화 걸 때
     public static String BROADCAST_NETTY_VIDEOCALL_DENY = "seopftware.fundmytravel.chatmessage.SEND_VIDEO_CALLDENY"; // Netty_영상 통화 거절시
+    // =========================================================================================================//
+
+
+    public static MyApp getInstance() {
+        return myApp;
+    }
 
 
     @Override
     public void onCreate() {
         super.onCreate();
+        myApp = this;
 
     }
 
@@ -145,5 +172,130 @@ public class MyApp extends Application {
     // Toast 메세지를 간편하게 띄우기 위한 함수
     public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    // =========================================================================================================
+    // 커스텀 다이얼로그
+    // =========================================================================================================
+
+//    // 프로그레스 다이어로그를 띄워야 하는 시점에 Dialog를 만들고,
+//    // 다이얼로그로 표시할 layout을 customview로 설정 해준다.
+//    public void progressON(Activity activity, String message) {
+//
+//        if (activity == null || activity.isFinishing()) {
+//            return;
+//        }
+//
+//
+//        if (progressDialog != null && progressDialog.isShowing()) {
+//            progressSET(message);
+//        } else {
+//
+//            progressDialog = new AppCompatDialog(activity);
+//            progressDialog.setCancelable(false);
+//            progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+//            progressDialog.setContentView(R.layout.progress_loading);
+//            progressDialog.show();
+//
+//        }
+//
+//        // 다이얼로그로 띄울 layout의 image View
+//        final ImageView img_loading_frame = (ImageView) progressDialog.findViewById(R.id.iv_frame_loading);
+//        final AnimationDrawable frameAnimation = (AnimationDrawable) img_loading_frame.getBackground();
+//        img_loading_frame.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                frameAnimation.start();
+//            }
+//        });
+//
+//        // 다이얼로그로 띄울 layout의 TextView
+//        TextView tv_progress_message = (TextView) progressDialog.findViewById(R.id.tv_progress_message);
+//        if (!TextUtils.isEmpty(message)) {
+//            tv_progress_message.setText(message);
+//        }
+//
+//
+//    }
+//
+//    //프로그레스 다이어로그가 이미 띄워져 있는경우라면 메세지만 바꿔주면 되므로,
+//    // progressSET()이라는 함수를 만들고 여기서는 메세지 내용만 바꿔 주면 된다.
+//    public void progressSET(String message) {
+//
+//        if (progressDialog == null || !progressDialog.isShowing()) {
+//            return;
+//        }
+//
+//
+//        TextView tv_progress_message = (TextView) progressDialog.findViewById(R.id.tv_progress_message);
+//        if (!TextUtils.isEmpty(message)) {
+//            tv_progress_message.setText(message);
+//        }
+//
+//    }
+//
+//    // 프로그레스를 종료해야하는 시점에는 progressOFF()를 호출
+//    public void progressOFF() {
+//        if (progressDialog != null && progressDialog.isShowing()) {
+//            progressDialog.dismiss();
+//        }
+//    }
+
+
+    public void progressON(Activity activity, String message) {
+
+        if (activity == null || activity.isFinishing()) {
+            return;
+        }
+
+
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressSET(message);
+        } else {
+
+            progressDialog = new AppCompatDialog(activity);
+            progressDialog.setCancelable(false);
+            progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            progressDialog.setContentView(R.layout.progress_loading);
+            progressDialog.show();
+
+        }
+
+
+        final ImageView img_loading_frame = (ImageView) progressDialog.findViewById(R.id.iv_frame_loading);
+        final AnimationDrawable frameAnimation = (AnimationDrawable) img_loading_frame.getBackground();
+        img_loading_frame.post(new Runnable() {
+            @Override
+            public void run() {
+                frameAnimation.start();
+            }
+        });
+
+        TextView tv_progress_message = (TextView) progressDialog.findViewById(R.id.tv_progress_message);
+        if (!TextUtils.isEmpty(message)) {
+            tv_progress_message.setText(message);
+        }
+
+
+    }
+
+    public void progressSET(String message) {
+
+        if (progressDialog == null || !progressDialog.isShowing()) {
+            return;
+        }
+
+
+        TextView tv_progress_message = (TextView) progressDialog.findViewById(R.id.tv_progress_message);
+        if (!TextUtils.isEmpty(message)) {
+            tv_progress_message.setText(message);
+        }
+
+    }
+
+    public void progressOFF() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 }

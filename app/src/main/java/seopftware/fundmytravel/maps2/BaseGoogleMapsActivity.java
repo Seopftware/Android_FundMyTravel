@@ -1,6 +1,8 @@
 package seopftware.fundmytravel.maps2;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -91,7 +93,7 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
-        setTitle(Html.fromHtml("<font color=\"#FFFFFF\">" + "Maps" + "</font>"));
+        setTitle(Html.fromHtml("<font color=\"#FFFFFF\">" + "World Braodcast" + "</font>"));
 
         // UI
         tv_numofroom = (TextView) findViewById(R.id.tv_numofroom); // 룸 갯수를 표시할 text View
@@ -144,7 +146,6 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
     // =========================================================================================================
     // 액션바 메뉴 부분
     // =========================================================================================================
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -164,39 +165,20 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
 
             // AR 길찾기
             case R.id.action_findway:
-                Toast.makeText(getApplicationContext(), "길 찾기", Toast.LENGTH_LONG).show();
-                Intent intent=new Intent(getApplicationContext(), FindAddress_Activity.class);
-                startActivity(intent);
-                break;
+                chkGpsService();
 
-//            //  하단의 panel layout 보이기 / 숨기기
-//            case R.id.action_toggle: {
-//                if (mLayout != null) {
-//                    if (mLayout.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN) {
-//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-//                        item.setTitle(R.string.action_show);
-//                    } else {
-//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-//                        item.setTitle(R.string.action_hide);
-//                    }
-//                }
-//                return true;
-//            }
-//
-//            case R.id.action_anchor: {
-//                if (mLayout != null) {
-//                    if (mLayout.getAnchorPoint() == 1.0f) {
-//                        mLayout.setAnchorPoint(0.7f);
-//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
-//                        item.setTitle(R.string.action_anchor_disable);
-//                    } else {
-//                        mLayout.setAnchorPoint(1.0f);
-//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-//                        item.setTitle(R.string.action_anchor_enable);
-//                    }
-//                }
-//                return true;
-//            }
+
+                if(chkGpsService() == false) {
+
+                    Toast.makeText(getApplicationContext(), "AR 길찾기", Toast.LENGTH_LONG).show();
+                    Intent intent=new Intent(getApplicationContext(), FindAddress_Activity.class);
+                    startActivity(intent);
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "위치 허용이 필요합니다.", Toast.LENGTH_LONG).show();
+                }
+
+                break;
         }
         return super.onOptionsItemSelected(item);
     } // onOptionsItemSelected finish
@@ -258,7 +240,7 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
         mMap.setMyLocationEnabled(true);
 
         // 초기 카메라 위치 (내 위치로 바꾸기)
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-26.167616, 22.079329), 3));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.566535, 126.977969), 3));
 
         // 클러스터링 매니저
         // 클러스터링을 할 때는 구글맵에 직접 마커를 찍어 주는 것이 아니라, ClusterManager
@@ -338,12 +320,26 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
                 Log.d(TAG, "mLayout.getPanelState() :" + mLayout.getPanelState());
 
 
-                recycler_itemlist.clear();
-                adapter.addRoom("1", 1, "roomname", "room_tag", "streamer_name", "1.jpg", "live");
+                recycler_itemlist.clear(); // 리스트뷰 아이템 정리
+                tv_numofroom.setText("방송 목록 보기 (1)");
+
+                // 아이템 1개 클릭 시 해당 아이템의 정보 가져오기
+                String room_id = markers.getRoom_id();
+                int room_numpeople = markers.getRoom_numpeople();
+                String room_name_title = markers.getRoom_name_title();
+                String room_name_tag = markers.getRoom_name_tag();
+                String room_name_streamer = markers.getRoom_name_streamer();
+                String room_image_path = markers.getRoom_image_path();
+                String room_status = markers.getRoom_status();
+
+                adapter.addRoom(room_id, room_numpeople, room_name_title, room_name_tag, room_name_streamer, room_image_path, room_status);
+
+                // recycler view 업데이트
                 adapter.notifyDataSetChanged();
 
+                // recycler view 아이템 크기에 맞추기. (만약, 아이템이 1개면 1개의 아이템 크기에 맞추기)
                 ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
-                params.height = 255;
+                params.height = 255; // 아이템 1개의 크기
                 recyclerView.setLayoutParams(params);
 
                 return false;
@@ -365,9 +361,11 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
             public void onResponse(Call<Parsing> call, Response<Parsing> response) {
 
                 Parsing parsing = response.body();
+
+                Log.d(TAG, "맵 갯수는!!?!? : " + parsing.getRoomCount());
                 //Todo 여기 무한 반복 어떻게?
                 // 맵에 marker 뿌려주는 곳
-                for (int i=0; i<7; i++) {
+                for (int i=0; i<parsing.getRoomCount(); i++) {
 
                      // 1
                     String room_id = parsing.getRoomlist().get(i).getRoomId();
@@ -376,16 +374,22 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
                     int room_numpeople = parsing.getRoomlist().get(i).getRoomNumpeople();
 
                     // 3
-                    String room_name_title = parsing.getRoomlist().get(i).getRoomNameTitle();
+                    String room_name_title1 = parsing.getRoomlist().get(i).getRoomNameTitle();
+                    String room_name_title = room_name_title1.replaceAll("\"", "");
 
                     // 4
-                    String room_name_tag = parsing.getRoomlist().get(i).getRoomNameTag();
+                    String room_name_tag1 = parsing.getRoomlist().get(i).getRoomNameTag();
+                    String room_name_tag = room_name_tag1.replaceAll("\"", "");
+
 
                     // 5
-                    String room_name_streamer = parsing.getRoomlist().get(i).getRoomNameStreamer();
+                    String room_name_streamer1 = parsing.getRoomlist().get(i).getRoomNameStreamer();
+                    String room_name_streamer = room_name_streamer1.replaceAll("\"", "");
+
 
                     // 6
                     String room_image_path = parsing.getRoomlist().get(i).getRoomImagePath();
+                    Log.d(TAG, "room_image_path :" + room_image_path);
 
                     // 7
                     String room_status = parsing.getRoomlist().get(i).getRoomStatus();
@@ -407,13 +411,26 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
                     double longitude = Double.parseDouble(s_longitude);
                     double latitude = Double.parseDouble(s_latitude);
 
-                    mClusterManager.addItem(new Markers(longitude, latitude, room_name_streamer, R.drawable.kakao1,
-                            room_id, room_numpeople, room_name_title, room_name_tag, room_image_path, room_status));
+
+                    if(room_name_streamer.equals("INSEOP")) {
+                        mClusterManager.addItem(new Markers(longitude, latitude, room_name_streamer, R.drawable.profile_background_3,
+                                room_id, room_numpeople, room_name_title, room_name_tag, room_image_path, room_status));
+                    }
+
+                    else if(room_name_streamer.equals("JAYWON")) {
+                        mClusterManager.addItem(new Markers(longitude, latitude, room_name_streamer, R.drawable.kakao1,
+                                room_id, room_numpeople, room_name_title, room_name_tag, room_image_path, room_status));
+                    }
+
+                    else if(room_name_streamer.equals("NOVA")) {
+                        mClusterManager.addItem(new Markers(longitude, latitude, room_name_streamer, R.drawable.nova,
+                                room_id, room_numpeople, room_name_title, room_name_tag, room_image_path, room_status));
+                    }
+
 
 
 //                     mClusterManager.addItem(new Markers(51.503186, -0.126446, "HAHA", R.drawable.kakao1,
 //                             "room_id", 1, "title", "tag", "1.jpg", "live"));
-
 //                    mClusterManager.addItem(new Person(51.503186, -0.126446, "Walter", R.drawable.kakao1));
 
                 }
@@ -433,8 +450,8 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
 
     }
 
-/*
-     클러스터링은 크게 알고리즘과 렌더러 두 가지로 나눠져있다. 알고리즘은 클러스터를 어떤 위치에 생성할지, 어떤 마커를 어떤 클러스터에 넣을지를 연산한다.
+    /*
+    클러스터링은 크게 알고리즘과 렌더러 두 가지로 나눠져있다. 알고리즘은 클러스터를 어떤 위치에 생성할지, 어떤 마커를 어떤 클러스터에 넣을지를 연산한다.
     렌더러는 클러스터를 이쁘게 출력해주는 역할을 한다.
     알고리즘과 렌더러는 ClusterManager의 setAlgorithm과 setRenderer 메서드로 커스텀 클래스를 등록할 수 있으며
     등록하지 않은 경우에는 유틸리티 라이브러리에 기본으로 탑재되어 있는 DefaultClusterRenderer와 NonHierarchicalDistanceBasedAlgorithm 클래스를 사용한다.*/
@@ -521,6 +538,44 @@ public class BaseGoogleMapsActivity extends AppCompatActivity implements OnMapRe
         return mMap;
     }
 
+    // =========================================================================================================
+    // GPS 허용 여부 체크
+    // =========================================================================================================
+    private boolean chkGpsService() {
+
+        String gps = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+        if (!(gps.matches(".*gps.*") && gps.matches(".*network.*"))) {
+
+            // GPS OFF 일때 Dialog 표시
+            final AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
+            gsDialog.setTitle("위치 서비스 설정");
+            gsDialog.setIcon(R.drawable.ic_menu_send);
+            gsDialog.setMessage("GPS 사용 동의 후 위치 서비스 사용이 가능합니다.\n위치 서비스 기능을 설정하시겠습니까?");
+            gsDialog.setPositiveButton("설정", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // GPS설정 화면으로 이동
+                    Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    startActivity(intent);
+                    Log.d(TAG, "여기는 언제 옵니까? ");
+
+                }
+            })
+                    .setNegativeButton("설정안함", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    }).create();
+            gsDialog.show();
+            Log.d(TAG, "여기 까지 옵니까?");
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
 
 
 
@@ -567,4 +622,38 @@ mLayout 옵션들
                 mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
+
+
+
+
+Sliding Up pannel 옵션들
+
+//            //  하단의 panel layout 보이기 / 숨기기
+//            case R.id.action_toggle: {
+//                if (mLayout != null) {
+//                    if (mLayout.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN) {
+//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+//                        item.setTitle(R.string.action_show);
+//                    } else {
+//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+//                        item.setTitle(R.string.action_hide);
+//                    }
+//                }
+//                return true;
+//            }
+//
+//            case R.id.action_anchor: {
+//                if (mLayout != null) {
+//                    if (mLayout.getAnchorPoint() == 1.0f) {
+//                        mLayout.setAnchorPoint(0.7f);
+//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+//                        item.setTitle(R.string.action_anchor_disable);
+//                    } else {
+//                        mLayout.setAnchorPoint(1.0f);
+//                        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+//                        item.setTitle(R.string.action_anchor_enable);
+//                    }
+//                }
+//                return true;
+//            }
 */

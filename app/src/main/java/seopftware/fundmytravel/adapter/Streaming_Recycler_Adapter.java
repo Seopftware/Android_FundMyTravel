@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -39,12 +38,16 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
     private static final int MESSAGE= 1; // 메세지
     private static final int IMAGE= 2; // 이미지 전송
     private static final int STAR= 3; // 별풍선
+    private static final int VOD_MESSAGE= 4; // 별풍선
 
     ArrayList<Streaming_Item> itemlist = new ArrayList<Streaming_Item>(); // 아이템을 담기 위한 객체가 담겨 있는 ArrayList
     Context context;
 
     public Streaming_Recycler_Adapter() {
+    }
 
+    public Streaming_Recycler_Adapter(ArrayList<Streaming_Item> itemlist) {
+        this.itemlist = itemlist;
     }
 
     @Override
@@ -72,6 +75,12 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
             case STAR:
                 viewType =3;
                 break;
+
+            // 메세지를 보냈을 때 띄우는 view type
+            case VOD_MESSAGE:
+                viewType =4;
+                break;
+
         }
         return viewType;
     }
@@ -95,6 +104,11 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_streaming_message, parent, false);
                 viewHolder = new ItemTwoViewHolder(view);
                 break;
+
+            case VOD_MESSAGE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_vod_message, parent, false);
+                viewHolder = new ItemThreeViewHolder(view);
+                break;
         }
 
 
@@ -112,7 +126,6 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
 
             ((ItemOneViewHolder)holder).tv_Id.setText(listviewItem.getStreaming_user_id()); // 고유 Id
             ((ItemOneViewHolder)holder).tv_Entrance.setText(listviewItem.getStreaming_user_message()); // 닉네임
-//            ((ItemOneViewHolder)holder).tv_Message.setText(listviewItem.getHome_message()); //메세지
 
         }
 
@@ -128,6 +141,8 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
                     .into(((ItemTwoViewHolder)holder).iv_Profile); // 유저 이미지
 
 
+            // TODO
+            // 만약 유저가 방장 이면 방패 모양 띄워주기 (디버깅 필요)
             if(USER_ID == 50) {
                 ((ItemTwoViewHolder)holder).iv_Roommaker.setVisibility(View.VISIBLE);
                 ((ItemTwoViewHolder)holder).iv_Roommaker.bringToFront();
@@ -138,7 +153,19 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
             }
         }
 
+        else if(holder instanceof ItemThreeViewHolder) {
 
+            ((ItemThreeViewHolder)holder).tv_vod_name.setText(listviewItem.getStreaming_user_nickname()); // 닉네임
+            ((ItemThreeViewHolder)holder).tv_vod_message.setText(listviewItem.getStreaming_user_message()); // 메세지
+            ((ItemThreeViewHolder)holder).tv_vod_time.setText(listviewItem.getStreaming_message_time()); // 메세지
+
+            Glide.with(context)
+                    .load(listviewItem.getStreameing_image_profile())
+                    .bitmapTransform(new CropCircleTransformation(context))
+                    .into(((ItemThreeViewHolder)holder).iv_Profile); // 유저 이미지
+
+
+        }
     }
 
 
@@ -157,9 +184,8 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
-    // 2. MESSAGE
+    // 2. STREAMING MESSAGE
     class ItemTwoViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout Linear_up, Linear_down;
         TextView tv_Id, tv_Name, tv_Message;
         ImageView iv_Profile, iv_Roommaker;
 
@@ -171,6 +197,23 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
             tv_Message= (TextView) itemView.findViewById(R.id.tv_Message);
             iv_Profile= (ImageView) itemView.findViewById(R.id.iv_streampic);
             iv_Roommaker= (ImageView) itemView.findViewById(R.id.iv_Roommaker);
+
+        }
+    }
+
+
+    // 3. VOD MESSAGE
+    class ItemThreeViewHolder extends RecyclerView.ViewHolder {
+        TextView tv_vod_name, tv_vod_message, tv_vod_time;
+        ImageView iv_Profile;
+
+        public ItemThreeViewHolder(View itemView) {
+            super(itemView);
+
+            tv_vod_name= (TextView) itemView.findViewById(R.id.tv_vod_name);
+            tv_vod_message= (TextView) itemView.findViewById(R.id.tv_vod_message);
+            tv_vod_time= (TextView) itemView.findViewById(R.id.tv_vod_time);
+            iv_Profile= (ImageView) itemView.findViewById(R.id.iv_streampic);
 
         }
     }
@@ -196,6 +239,20 @@ public class Streaming_Recycler_Adapter extends RecyclerView.Adapter<RecyclerVie
         item.setStreaming_user_nickname(name);
         item.setStreaming_user_message(message);
         item.setStreameing_image_profile(SERVER_URL + "photo/"+profile);
+
+        itemlist.add(item);
+    }
+
+    // MESSAGE 메세지 추가하는 곳
+    public void addVODMessage(String name, String message, String profile, String time) {
+        Streaming_Item item = new Streaming_Item();
+
+        item.setStreaming_type(VOD_MESSAGE);
+        item.setStreaming_user_nickname(name);
+        item.setStreaming_user_message(message);
+        item.setStreameing_image_profile(SERVER_URL + "photo/"+profile);
+        item.setStreaming_message_time(time);
+
 
         itemlist.add(item);
     }

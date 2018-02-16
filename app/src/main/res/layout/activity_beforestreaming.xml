@@ -7,12 +7,13 @@
     tools:context="seopftware.fundmytravel.function.streaming.BeforeStreaming_Activity">
 
     <LinearLayout
-        android:id="@+id/linearLayout8"
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="175dp"
+        android:layout_marginTop="120dp"
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent"
+        android:padding="16dp"
         tools:layout_editor_absoluteX="27dp">
 
         <LinearLayout
@@ -26,7 +27,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TITLE"
                 android:textColor="@android:color/black"
@@ -36,7 +36,6 @@
                 android:id="@+id/et_title"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="@drawable/edittext"
                 android:ems="10"
                 android:hint="Streaming Title"
                 android:inputType="textPersonName"
@@ -48,7 +47,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TAG"
                 android:textColor="@android:color/black"
@@ -58,18 +56,17 @@
                 android:id="@+id/et_tag"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="@drawable/edittext"
                 android:hint="TAG"
                 android:inputType="textPersonName"
                 android:paddingLeft="10dp"
                 android:textSize="18sp" />
+            <!--android:background="@drawable/edittext"-->
 
             <TextView
                 android:id="@+id/tv_tag2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
                 android:text="LOCATION"
                 android:textColor="@android:color/black"
