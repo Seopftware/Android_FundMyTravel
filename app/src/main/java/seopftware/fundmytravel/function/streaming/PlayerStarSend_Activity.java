@@ -10,8 +10,18 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Hashtable;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -22,6 +32,7 @@ import seopftware.fundmytravel.R;
 import seopftware.fundmytravel.function.retrofit.HttpService;
 import seopftware.fundmytravel.function.retrofit.RetrofitClient;
 
+import static seopftware.fundmytravel.function.MyApp.USER_ID;
 import static seopftware.fundmytravel.function.chatting.Chat_Service.channel;
 
 // 시청자 화면에서 별풍선을 보내기 위한 다이얼로그 액티비티
@@ -36,6 +47,7 @@ public class PlayerStarSend_Activity extends AppCompatActivity implements View.O
     ImageView iv_star500, iv_star900, iv_star999; // 세 번쨰 줄의 별풍선
 
     // 변수
+    String room_id;
     String streamer_name; // 내가 접속한 방의 스트리머 이름
     String money = null; // 보내고자 하는 코인의 갯수
 
@@ -45,6 +57,7 @@ public class PlayerStarSend_Activity extends AppCompatActivity implements View.O
         setContentView(R.layout.activity_player_star_send);
 
         Intent intent = getIntent();
+        room_id = intent.getStringExtra("room_id"); // 스트리머 이름
         streamer_name = intent.getStringExtra("streamer_name"); // 스트리머 이름
 
         tv_currentmoney = (TextView) findViewById(R.id.tv_currentmoney); // 나의 돈 현황
@@ -74,6 +87,8 @@ public class PlayerStarSend_Activity extends AppCompatActivity implements View.O
         iv_star999= (ImageView) findViewById(R.id.iv_star999);
         iv_star999.setOnClickListener(this);
 
+        // 현재 나의 별풍선 갯수
+        currentStar();
 
     }
 
@@ -154,8 +169,6 @@ public class PlayerStarSend_Activity extends AppCompatActivity implements View.O
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
             }
         })
                 .setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -167,14 +180,19 @@ public class PlayerStarSend_Activity extends AppCompatActivity implements View.O
 
     } // onClick finish
 
+    // =========================================================================================================
     // Http 통신 하는 곳
+
     // 보내는 값: 스트리머의 이름, 보내고자 하는 코인의 갯수
     // 받는 값: 성공 여부
     // PHP: update_star
     private void starUpdate() {
+
+        String update_roomid = "\""+room_id + "\"";
+
         Retrofit retrofit = RetrofitClient.getClient();
         HttpService httpService = retrofit.create(HttpService.class);
-        Call<ResponseBody> comment = httpService.update_star(streamer_name, Integer.valueOf(money)); // 클라에서 서버로 보내는 값
+        Call<ResponseBody> comment = httpService.update_star(streamer_name, Integer.valueOf(money), String.valueOf(USER_ID), update_roomid); // 클라에서 서버로 보내는 값
         comment.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -191,5 +209,42 @@ public class PlayerStarSend_Activity extends AppCompatActivity implements View.O
 
             }
         });
+    }
+
+    // 보내는 값: 현재 나의 코인 갯수
+    // 받는 값: 성공 여부
+    // PHP: currentStar
+    // 쉐프 프로필 정보 받아오는 함수
+    private void currentStar() {
+
+        String url = "http://52.79.138.20/php/select/currentStar.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Log.d(TAG, "결과값 : " + response.toString());
+
+                tv_currentmoney.setText(response.toString());
+
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Anything you want
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Log.d(TAG, "나의 고유 번호 : "+USER_ID);
+                Map<String, String> map = new Hashtable<>();
+                map.put("user_key", String.valueOf(USER_ID));
+
+                return map;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
     }
 }

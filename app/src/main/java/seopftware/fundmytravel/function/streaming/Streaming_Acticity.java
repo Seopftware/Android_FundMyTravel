@@ -4,11 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,9 +26,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pedro.encoder.input.video.CameraOpenException;
@@ -43,13 +47,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import nl.dionsegijn.konfetti.KonfettiView;
+import nl.dionsegijn.konfetti.models.Shape;
+import nl.dionsegijn.konfetti.models.Size;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import seopftware.fundmytravel.R;
-import seopftware.fundmytravel.activity.Home_Activity;
 import seopftware.fundmytravel.adapter.Streaming_Recycler_Adapter;
 import seopftware.fundmytravel.dataset.Streaming_Item;
 import seopftware.fundmytravel.function.retrofit.HttpService;
@@ -100,6 +106,12 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
     private EditText et_input_message; // 채팅 입력창
     private ImageButton ibtn_chat_send; // 보내기 버튼
     InputMethodManager imm; // 키보드 강제로 올리고 내리기 위한 변수
+
+    // 별풍선 효과
+    private FrameLayout frameLayout; // ImageView, TextView, KonfettiView가 담겨있음
+    private ImageView iv_star; // 별풍선 이미지
+    private TextView tv_starinfo;
+    private KonfettiView konfettiView; // 별풍선을 보냈을 때 Konfetti 효과 주기
 
     // 방송 시간 체크를 위한 Chronometer
     Chronometer chronometer;
@@ -179,6 +191,12 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
         linear_top = (LinearLayout) findViewById(R.id.linear_top);
         linear_bottom = (LinearLayout) findViewById(R.id.linear_bottom);
         linear_bottom.setClickable(false);
+
+        // Konfetti Effect
+        frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
+        konfettiView = (KonfettiView) findViewById(R.id.viewKonfetti);
+        iv_star = (ImageView) findViewById(R.id.iv_star);
+        tv_starinfo = (TextView) findViewById(R.id.tv_starinfo);
 
 
         // 바로 스트리밍이 시작되면 검은 화면이 뜬다. 그래서 3초 딜레이 줘야한다. (페북처럼 3 2 1 효과로 시간 벌기)
@@ -410,10 +428,10 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
                     e.printStackTrace();
                 }
 
-
-
-
-                Intent intent = new Intent(getApplicationContext(), Home_Activity.class);
+                // 방송 끝나고 방송 데이터 분석을 위한 정보 넘기기
+                Intent intent = new Intent(getApplicationContext(), StreamerFinish_Activity.class);
+                intent.putExtra("room_id", room_id); // 방 번호
+                intent.putExtra("broadcast_time", broadcast_time); // 방송 진행 시간
                 startActivity(intent);
                 finish();
 
@@ -590,7 +608,7 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
                     JSONObject object = new JSONObject();
 
                     object.put("message_type", "message_time"); // 서버와 연결됨
-                    object.put("broadcast_time", broadcast_time); // 나의 id
+                    object.put("broadcast_time", broadcast_time); // 방송 진행 시간
 
                     String Object_Data = object.toString();
                     channel.writeAndFlush(Object_Data);
@@ -756,7 +774,42 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
                 // 서버로 부터(엄밀히 말하면 서비스) 별풍선을 보냈다는 알람 나타내기
                 else if(message_type.equals("message_star")) {
 
+                    String streamer_name = intent.getStringExtra("streamer_name");
+                    String send_money = intent.getStringExtra("send_money");
+
                     // 별풍선 효과 나타내기
+                    Log.d(TAG, "별풍선 효과!!!");
+
+                    frameLayout.setVisibility(View.VISIBLE);
+
+                    // 누가 코인을 얼마 보냈는지 알려주는 곳
+                    tv_starinfo.setText(streamer_name + "님이 " + send_money + "코인을 보냈습니다.");
+
+                    // ImageView 이미지 변경하는 곳.(보낸 코인의 갯수에 따라 이미지 달라짐)
+                    int id = getResources().getIdentifier("star" + send_money, "drawable", getPackageName());
+                    iv_star.setImageResource(id);
+
+                    // konfetti 효과 주는 곳
+                    konfettiView.build()
+                            .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                            .setDirection(0.0, 359.0)
+                            .setSpeed(1f, 5f)
+                            .setFadeOutEnabled(true)
+                            .setTimeToLive(1500L)
+                            .addShapes(Shape.RECT, Shape.CIRCLE)
+                            .addSizes(new Size(12, 5f))
+                            .setPosition(-50f, konfettiView.getWidth() + 50f, -50f, -50f)
+                            .stream(300, 1500L);
+
+                    // 5초 지난 후 FrameLayout INVISIBLE하게 하기. (별풍선 선물 알림창 종료)
+                    Handler handler = new Handler() {
+                        public void handleMessage(Message msg) {
+                            super.handleMessage(msg);
+                            frameLayout.setVisibility(View.INVISIBLE);
+
+                        }
+                    };
+                    handler.sendEmptyMessageDelayed(0, 5000);
                 }
 
             }
@@ -801,15 +854,15 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
             e.printStackTrace();
         }
     }
+    // =========================================================================================================
 
 
+    // =========================================================================================================
+    // Http 통신하는 부분
+    // 보내는 값: 방 번호, 유저 이름, 유저 사진, 메세지, 메세지 보낸 시간(방송 시간 기준으로)
+    // 받는 값: 성공 여부
     private void sendMessage_toRDBMS() {
         Log.d(TAG, "sendMessage_toRDBMS 작동");
-
-        // Http 통신하는 부분
-        // 보내는 값: 방 번호, 유저 이름, 유저 사진, 메세지, 메세지 보낸 시간(방송 시간 기준으로)
-        // 받는 값: 성공 여부
-
         Log.d(TAG, "서버로 보내는 값 sender_profile : " + USER_PHOTO);
 
         Retrofit retrofit = RetrofitClient.getClient();
@@ -825,16 +878,14 @@ public class Streaming_Acticity extends AppCompatActivity implements ConnectChec
                     Log.d(TAG, "유저 정보 등록 실패");
                     return;
                 }
-
-
             }
-
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
 
             }
         });
     }
+    // =========================================================================================================
 
 
     // 동적으로(코드상으로) 브로드 캐스트 종료

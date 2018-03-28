@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -59,10 +60,10 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
 
     private Map<Integer, PointF> mPreviousProportions = new HashMap<>();
 
-
     int i =1; // 얼굴 마스크 변경하기 위한 변수
     int j =0; // 선글라스 변경하기 위한 변수
 
+    String receiver_name; // 메세지를 받는 사람의 닉네임
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,11 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
         requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀바 없애기
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN); // 상태바 없애기
         setContentView(R.layout.activity_face_detect);
+
+        // Home_ProfileActivity에서 메세지를 받는 상대의 이름값 가져옴
+        Intent intent=getIntent();
+        receiver_name = intent.getStringExtra("receiver_name");
+
 
         // UI 설정
         mPreview = (CameraSourcePreview) findViewById(R.id.preview); // 카메라 프리뷰
@@ -106,7 +112,7 @@ public class FaceDetect_Activity extends AppCompatActivity implements View.OnCli
                 mPreview.setDrawingCacheEnabled(true); // surfaceView에 저장된 카메라 뷰를 bitmap화 시키기 위한 작업
                 bitmap_preview = mPreview.getDrawingCache(); // 마스크가 담겨있음
                 Bitmap bitmap_preview_final = Bitmap.createScaledBitmap(bitmap_preview, 720, 1280, false); // bitmap, width, height, filter
-                mPreview.takecamera(bitmap_preview_final); // 마스크 정보가 담겨있는 bitmap을 takecamera() 함수로 넘긴다.
+                mPreview.takecamera(bitmap_preview_final, receiver_name); // 마스크 정보가 담겨있는 bitmap을 takecamera() 함수로 넘긴다.
                 mPreview.destroyDrawingCache(); // clean up the cache
 
                 break;

@@ -32,8 +32,6 @@ public interface HttpService {
             @Field("user_phone") String user_phone // 회원가입할 휴대폰 번호
     );
 
-
-
     // 나의 id 보내고 내 정보 가져오기
     @FormUrlEncoded
     @POST("php/select/user_info.php") // 폴더명/파일명
@@ -54,6 +52,13 @@ public interface HttpService {
     @POST("php/select/find_roomlist.php") // 폴더명/파일명
     Call<Parsing>get_roomlist(
             @Field("user_login_id") int user_login_id
+    );
+
+    // 나의 id 보내고 채팅 목록 가져오기
+    @FormUrlEncoded
+    @POST("php/select/find_chatlist.php") // 폴더명/파일명
+    Call<Parsing>get_chatlist(
+            @Field("user_key") int user_key // 유저 고유 ID
     );
 
     // Pic Message
@@ -124,12 +129,29 @@ public interface HttpService {
     @POST("php/update/update_star.php") // 폴더명/파일명
     Call<ResponseBody>update_star(
             @Field("streamer_name") String streamer_name, // 코인을 보내고자 하는 대상
-            @Field("send_money") int send_money // 보내고자 하는 코인의 갯수
+            @Field("send_money") int send_money, // 보내고자 하는 코인의 갯수
+            @Field("user_key") String sender_name, // 코인을 보내고자 하는 대상
+            @Field("room_id") String room_id // 코인을 보내고자 하는 대상
     );
 
 
+    // 별풍선 갯수 업데이트 해주는 곳
+    // 폰 번호로 회원가입할 때
+    @FormUrlEncoded
+    @POST("php/update/update_roominfo.php") // 폴더명/파일명
+    Call<ResponseBody>update_roominfo(
+            @Field("room_id") String room_id, // 방의 고유 아이디\
 
+            // 방에 접속한 사람의 성별
+            @Field("room_male") int room_male,
+            @Field("room_female") int room_female,
 
+            // 방에 접속한 사람의 연령대
+            @Field("room_20s") int room_20s,
+            @Field("room_30s") int room_30s,
+            @Field("room_40s") int room_40s,
+            @Field("room_50s") int room_50s
+    );
 }
 
 /**

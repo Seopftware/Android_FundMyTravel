@@ -1,20 +1,259 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
 
-    <Button
-        android:id="@+id/btn_streamer"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="settings"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/iv_ProfileBack">
 
+
+        <View
+            android:layout_width="390dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="3dp"
+            android:background="#BDBDBD" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:id="@+id/ex_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="NAME"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="NAME"
+                android:textAlignment="textEnd"
+                android:textColor="@color/App_Blue"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:background="#BDBDBD" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:weightSum="4">
+
+            <TextView
+                android:id="@+id/ex_call"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3"
+                android:text="PHONE"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_PhoneNum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="CALL"
+                android:textAlignment="textEnd"
+                android:textColor="@color/App_Blue"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:background="#BDBDBD" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:weightSum="4">
+
+            <TextView
+                android:id="@+id/ex_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3"
+                android:text="TRIP COIN"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_TotalStar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="STAR"
+                android:textAlignment="textEnd"
+                android:textColor="@color/App_Blue"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:background="#BDBDBD" />
+
+        <LinearLayout
+            android:id="@+id/Linear_SNS"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_weight="4"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:weightSum="4">
+
+            <TextView
+                android:id="@+id/ex_SNS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="SNS"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/iv_SNS"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="160dp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tv_SNSName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginLeft="10dp"
+                android:gravity="right"
+                android:text="연동안됨"
+                android:textAlignment="textEnd"
+                android:textColor="@color/App_Blue"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:background="#BDBDBD" />
+
+        <LinearLayout
+            android:id="@+id/Linear_SNS"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="4"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:weightSum="4">
+
+            <TextView
+                android:id="@+id/ex_SNS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="푸쉬허용"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_SNS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginLeft="10dp"
+                android:gravity="right"
+                android:text="SNS"
+                android:textAlignment="textEnd"
+                android:textColor="@color/App_Blue"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="390dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="#BDBDBD" />
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_ProfileFront"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="@drawable/star1"
+        android:scaleType="fitXY"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_ProfileBack"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_camera"
+        android:layout_width="45dp"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_ProfileBack"
+        app:layout_constraintRight_toRightOf="@+id/iv_ProfileBack"
+        app:srcCompat="@drawable/circlecamera" />
+
+    <ImageView
+        android:id="@+id/iv_ProfileBack"
+        android:layout_width="0dp"
+        android:layout_height="268dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/abra" />
 
 </android.support.constraint.ConstraintLayout>

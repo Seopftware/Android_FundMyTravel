@@ -182,6 +182,7 @@ public class Home_Profile_Activity extends Activity implements View.OnClickListe
             // 4.사진 메세지 보내기
             case R.id.ibtn_pic_message:
                 Intent intent=new Intent(getApplicationContext(), FaceDetect_Activity.class);
+                intent.putExtra("receiver_name", user_name);
                 startActivity(intent);
                 finish();
 

@@ -89,6 +89,7 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
 
     String limited_time ="5"; // 기본 사진 종료 시간 설정
     String image_file_name; // 보내고자 하는 이미지 파일 이름
+    String receiver_name; // 메세지를 받는 사람의 이름
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +98,8 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
         requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀바 없애기
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN); // 상태바 없애기
         setContentView(R.layout.activity_face_canvas);
+
+        receiver_name = getIntent().getStringExtra("receiver_name");
 
         // UI 설정
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout); // 스크린샷 찍을 부분
@@ -377,7 +380,6 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
         MultipartBody.Part file = MultipartBody.Part.createFormData("uploaded_file", pic_file.getName(), filepart); // 서버로 보낼 FILES['uploaded_file']['name];
 
         Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("http://52.79.138.20/") // 서버 주소
                 .baseUrl(SERVER_URL) // 서버 주소
                 .addConverterFactory(GsonConverterFactory.create()) // Gson을 통해 Json 변환
                 .build();
@@ -414,6 +416,7 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
                         JSONObject object = new JSONObject();
                         object.put("user_id", USER_ID); // 보내는 사람 ID
                         object.put("receiver_id", receiver_id); // 받는 사람의 ID
+                        object.put("receiver_name", receiver_name); // 받는 사람의 이름
                         object.put("message_type", "message_pic"); // 보내는 사람의 이름
                         object.put("image_file_name", image_file_name); // 보내는 사람의 Profile
                         object.put("sender_name", USER_NAME); // 보내는 사람의 이름
@@ -422,6 +425,7 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
                         String Object_Data = object.toString();
                         channel.writeAndFlush(Object_Data);
 //                    }
+
 
 
                 }
@@ -446,17 +450,7 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
 
             }
         });
-
-
-        // =========================================================================================================
-        // Netty를 통해 상대방에게 메세지 전달
-        // =========================================================================================================
-
-
-
     }
-
-
 
     // 파일 경로 얻어오기
     private String getRealPathFromURIPath(Uri contentURI, Activity activity) {

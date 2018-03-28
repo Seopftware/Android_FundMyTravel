@@ -55,6 +55,8 @@ public class CameraSourcePreview extends ViewGroup {
     private boolean mStartRequested;
     private boolean mSurfaceAvailable;
 
+    // 메세지를 받는 사람의 닉네임
+    String receiver_name;
 
 
     public CameraSourcePreview(Context context, AttributeSet attrs) {
@@ -111,9 +113,12 @@ public class CameraSourcePreview extends ViewGroup {
 
 
     // 사진 촬영 후 'CAMERA'와 'CANVAS' 합치는 곳
-    public void takecamera(Bitmap bitmap) {
+    public void takecamera(Bitmap bitmap, String receiver_name) {
         maskBitmap = bitmap; // 현재 마스크
         mCameraSource.takePicture(null, myPictureCallback_JPG);
+        this.receiver_name = receiver_name;
+
+
     }
 
 
@@ -151,6 +156,7 @@ public class CameraSourcePreview extends ViewGroup {
                 // 파일명을 보낸 다음 캔버스를 그려줄 액티비티에서 파일명을 가져와서 이미지를 띄움
                 Intent int1 = new Intent(getContext(), FaceCanvas_Activity.class);
                 int1.putExtra("image", fileName);
+                int1.putExtra("receiver_name", receiver_name);
                 getContext().startActivity(int1);
 
 

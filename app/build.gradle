@@ -44,6 +44,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:11.8.0'
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
 
+    // Pie Chart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -103,5 +106,11 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 
+    // Konfetti
+    compile 'nl.dionsegijn:konfetti:1.1.0'
+
+
+    // Volley
+    compile 'com.mcxiaoke.volley:library-aar:1.0.0'
 
 }

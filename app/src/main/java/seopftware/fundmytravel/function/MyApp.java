@@ -60,9 +60,8 @@ public class MyApp extends Application {
 
     // Server 관련 정보들
     public static String SERVER_URL = "http://52.79.138.20/"; // AWS Server
-//    public static String SERVER_IP = "172.30.1.22"; // Netty Chat Server IP
-//    public static String SERVER_IP = "52.79.138.20"; // Netty Chat Server IP
-    public static String SERVER_IP = "129.12.199.234"; // Netty Chat Server IP
+//    public static String SERVER_IP = "192.168.0.2"; // Netty Chat Server IP
+    public static String SERVER_IP = "172.30.1.45"; // Netty Chat Server IP
     public static int NETTY_PORT = 8000; // Netty Chat Server Port
 
     // 이미지 파일 갯수 관리
@@ -160,6 +159,14 @@ public class MyApp extends Application {
                 // 유저의 상태 메세지
                 String user_status = parsing.getResult().get(0).getUserStatus();
                 USER_STATUS_MESSAGE=user_status;
+
+//                // 유저의 상태 메세지
+//                String user_status = parsing.getResult().get(0).getUserStatus();
+//                USER_STATUS_MESSAGE=user_status;
+//
+//                // 유저의 상태 메세지
+//                String user_status = parsing.getResult().get(0).getUserStatus();
+//                USER_STATUS_MESSAGE=user_status;
             }
 
             @Override
@@ -242,6 +249,7 @@ public class MyApp extends Application {
 //    }
 
 
+    // 커스텀 다이얼로그 띄우기
     public void progressON(Activity activity, String message) {
 
         if (activity == null || activity.isFinishing()) {
@@ -261,7 +269,7 @@ public class MyApp extends Application {
 
         }
 
-
+        // 커스텀 다이얼로그에 띄우고자 하는 이미지 사진
         final ImageView img_loading_frame = (ImageView) progressDialog.findViewById(R.id.iv_frame_loading);
         final AnimationDrawable frameAnimation = (AnimationDrawable) img_loading_frame.getBackground();
         img_loading_frame.post(new Runnable() {

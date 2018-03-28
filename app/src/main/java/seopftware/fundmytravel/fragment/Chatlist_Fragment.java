@@ -1,114 +1,112 @@
 package seopftware.fundmytravel.fragment;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 import seopftware.fundmytravel.R;
-import seopftware.fundmytravel.function.chatting.Chatroom_Activity;
-import seopftware.fundmytravel.function.streaming.ActivityLink;
-import seopftware.fundmytravel.function.streaming.Streaming_Acticity;
+import seopftware.fundmytravel.adapter.ChatRoomlist_Recycler_Adapter;
+import seopftware.fundmytravel.dataset.ChatRoomlist_Item;
+import seopftware.fundmytravel.dataset.Parsing;
+import seopftware.fundmytravel.function.etc.RecyclerItemClickListener;
+import seopftware.fundmytravel.function.retrofit.HttpService;
+import seopftware.fundmytravel.function.retrofit.RetrofitClient;
 
-import static android.os.Build.VERSION_CODES.JELLY_BEAN;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static seopftware.fundmytravel.function.MyApp.USER_ID;
 
 @SuppressLint("ValidFragment")
 public class Chatlist_Fragment extends Fragment {
-    private String mTitle;
-    private List<ActivityLink> activities;
 
-    private final String[] PERMISSIONS = {
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
+    // Recycler View 관련 변수
+    RecyclerView recyclerView;
+    ChatRoomlist_Recycler_Adapter adapter;
+    ArrayList<ChatRoomlist_Item> recycler_itemlist;
+    ChatRoomlist_Item recycler_item;
+
 
     public static Chatlist_Fragment getInstance() {
-        Chatlist_Fragment home_fragment = new Chatlist_Fragment();
-        return home_fragment;
+        Chatlist_Fragment chatlist_fragment = new Chatlist_Fragment();
+        return chatlist_fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_chatlist, null);
-        createList();
 
-        if (!hasPermissions(getContext(), PERMISSIONS)) {
-            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
-        }
+        // Recycler view 선언
+        recyclerView = (RecyclerView) v.findViewById(R.id.roomlist_recycler);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recycler_itemlist = new ArrayList<ChatRoomlist_Item>();
 
-        Button btn_streamer = (Button) v.findViewById(R.id.btn_streamer);
-        btn_streamer.setOnClickListener(new View.OnClickListener() {
+        recycler_item = new ChatRoomlist_Item();
+        adapter = new ChatRoomlist_Recycler_Adapter(recycler_itemlist);
+        recyclerView.setAdapter(adapter);
+
+        // Recycler View click Listener
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onItemClick(View view, int position) {
 
-                Intent intent=new Intent(getContext(), Chatroom_Activity.class);
-                startActivity(intent);
+                String message_status = recycler_itemlist.get(position).getMessage_status();
+
+                if(message_status.equals("Receive")) {
+                    // 이미지 메세지 오픈
+                }
             }
-        });
+
+            @Override
+            public void onLongItemClick(View view, int position) {
+
+            }
+        }));
+
+        // 채팅 목록 받아오기
+        getChatRoomList();
 
         return v;
     }
 
-    private void createList() {
-        activities = new ArrayList<>();
-        activities.add(new ActivityLink(new Intent(getContext(), Streaming_Acticity.class), "Streaming", JELLY_BEAN));
-    }
+    // HTTP 통신
+    // 보내는 값: 유저 ID
+    // 받는 값: 채팅방 리스트
+    // PHP: select/find_chatlist.php
+    private void getChatRoomList() {
 
-    private boolean hasPermissions(Context context, String... permissions) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
+        Retrofit retrofit = RetrofitClient.getClient();
+        HttpService httpService = retrofit.create(HttpService.class);
+        Call<Parsing> comment = httpService.get_chatlist(USER_ID);
+        comment.enqueue(new Callback<Parsing>() {
+            @Override
+            public void onResponse(Call<Parsing> call, Response<Parsing> response) {
+                Parsing parsing = response.body();
             }
-        }
-        return true;
+
+            @Override
+            public void onFailure(Call<Parsing> call, Throwable t) {
+
+            }
+        });
+
     }
 
-    private void showMinSdkError(int minSdk) {
-        String named;
-        switch (minSdk) {
-            case JELLY_BEAN_MR2:
-                named = "JELLY_BEAN_MR2";
-                break;
-            case LOLLIPOP:
-                named = "LOLLIPOP";
-                break;
-            default:
-                named = "JELLY_BEAN";
-                break;
-        }
-        Toast.makeText(getContext(), "You need min Android " + named + " (API " + minSdk + " )", Toast.LENGTH_SHORT).show();
-    }
 
-    private void showPermissionsErrorAndRequest() {
-        Toast.makeText(getContext(), "You need permissions before", Toast.LENGTH_SHORT).show();
-        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
-    }
 
 }

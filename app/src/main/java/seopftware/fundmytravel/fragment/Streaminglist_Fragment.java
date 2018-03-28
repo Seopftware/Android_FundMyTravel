@@ -8,14 +8,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,7 +26,6 @@ import seopftware.fundmytravel.dataset.Roomlist_Item;
 import seopftware.fundmytravel.function.etc.RecyclerItemClickListener;
 import seopftware.fundmytravel.function.retrofit.HttpService;
 import seopftware.fundmytravel.function.retrofit.RetrofitClient;
-import seopftware.fundmytravel.function.streaming.ActivityLink;
 import seopftware.fundmytravel.function.streaming.BeforeStreaming_Activity;
 import seopftware.fundmytravel.function.streaming.PlayerStreaming_Activity;
 import seopftware.fundmytravel.function.streaming.Vodplayer_Activity;
@@ -38,11 +35,11 @@ public class Streaminglist_Fragment extends Fragment {
 
     private static final String TAG = "all_" + Streaminglist_Fragment.class;
 
-    private List<ActivityLink> activities;
     static final int REQUEST_ALBUM = 2002;
 
     // floating button
     com.melnykov.fab.FloatingActionButton fab;
+
     // Recycler View 관련 변수
     RecyclerView recyclerView;
     Roomlist_Recycler_Adapter adapter;
@@ -60,16 +57,13 @@ public class Streaminglist_Fragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle(Html.fromHtml("<font color=\"red\">" + "streaming" + "</font>"));
-        getActivity().getResources().getColor(android.R.color.white);
+//        getActivity().setTitle(Html.fromHtml("<font color=\"red\">" + "streaming" + "</font>"));
+//        getActivity().getResources().getColor(android.R.color.white);
 
         View v = inflater.inflate(R.layout.fragment_streaminglist, null);
 

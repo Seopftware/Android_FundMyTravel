@@ -1,13 +1,8 @@
 package seopftware.fundmytravel.fragment;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,8 +40,6 @@ import static seopftware.fundmytravel.function.MyApp.USER_STATUS_MESSAGE;
 public class Home_Fragment extends Fragment {
 
     private static final String TAG = "all_"+Home_Fragment.class;
-
-    private String mTitle;
     private List<ActivityLink> activities;
 
     // Recycler View
@@ -55,32 +48,18 @@ public class Home_Fragment extends Fragment {
     Home_Recycler_Item recycler_item;
     ArrayList<Home_Recycler_Item> recycler_itemlist;
 
-
-    // 허용 여부
-    private final String[] PERMISSIONS = {
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
-
-    public static Home_Fragment getInstance() {
-        Home_Fragment home_fragment = new Home_Fragment();
-        return home_fragment;
-    }
-
+    // Fragment 호출
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    // Fragment View 생성
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_home, null);
         createList();
-
-        if (!hasPermissions(getContext(), PERMISSIONS)) {
-            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
-        }
 
         recyclerView = (RecyclerView) v.findViewById(R.id.home_recycler);
         recyclerView.setHasFixedSize(true);
@@ -111,11 +90,7 @@ public class Home_Fragment extends Fragment {
                     intent.putExtra("FRIENDS_ID",friendsid);
                     startActivity(intent);
                     Log.d(TAG, "Connect_Activity로 넘어갑니다.");
-
                 }
-
-
-
             }
 
             @Override
@@ -125,7 +100,7 @@ public class Home_Fragment extends Fragment {
             }
         }));
 
-
+        // 친구 목록 불러오기
         getFriendslist();
 
 
@@ -137,16 +112,9 @@ public class Home_Fragment extends Fragment {
         activities.add(new ActivityLink(new Intent(getContext(), Streaming_Acticity.class), "Streaming", JELLY_BEAN));
     }
 
-    private boolean hasPermissions(Context context, String... permissions) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
+    public static Home_Fragment getInstance() {
+        Home_Fragment home_fragment = new Home_Fragment();
+        return home_fragment;
     }
 
     // 보내는 값: 나의 고유 ID

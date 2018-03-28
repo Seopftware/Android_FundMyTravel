@@ -146,7 +146,6 @@ public class Chat_Service extends Service {
 
             // finally, define a class which will handle all the decoded incoming Strings from the server
             pipeline.addLast("handler", new ChatClientHandler());
-
         }
     }
 
@@ -324,7 +323,6 @@ public class Chat_Service extends Service {
                     sendBroadcast(starIntent);
 
                     break;
-
 
                 // 스트리머가 방송을 시작한 시간을 클라이언트와 공유하기 위해서 1초 간격으로 메세지를 보내줌.
                 // 비효율 적인 방법임. 스트리머의 방송 시간을 공유할 수 있는 더 좋은 방법이 없을까?? 고민하기.

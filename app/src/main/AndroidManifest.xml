@@ -253,6 +253,7 @@
         <activity
             android:name=".function.streaming.PlayerStarSend_Activity"
             android:theme="@style/CustomActivityDialog" />
+        <activity android:name=".activity.Tutorial_Activity"></activity>
     </application>
 
 </manifest>

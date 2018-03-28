@@ -5,9 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -17,7 +19,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -45,6 +49,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import nl.dionsegijn.konfetti.KonfettiView;
+import nl.dionsegijn.konfetti.models.Shape;
+import nl.dionsegijn.konfetti.models.Size;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -104,6 +111,12 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
     private EditText et_input_message; // 보낼 메세지를 입력하는 곳
     private ImageButton ibtn_chat_send; // 메세지를 보내는 버튼
 
+    // 별풍선 효과
+    private FrameLayout frameLayout; // ImageView, TextView, KonfettiView가 담겨있음
+    private ImageView iv_star; // 별풍선 이미지
+    private TextView tv_starinfo;
+    private KonfettiView konfettiView; // 별풍선을 보냈을 때 Konfetti 효과 주기
+
     // 변수
     String broadcast_time; // 현재 내가 보고 있는 방송의 시간
     String room_id; // 현재 내가 시청하고 있느 방의 고유 ID
@@ -137,6 +150,7 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
         Log.d(TAG, "Fragement로 부터 받아온 room_id 값은 ? : " + room_id);
 
 
+        // ExoPlayer 관련 변수들
         userAgent = Util.getUserAgent(this, "ExoPlayerDemo");
         shouldAutoPlay = true;
         bandwidthMeter = new DefaultBandwidthMeter();
@@ -144,6 +158,12 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
         window = new Timeline.Window();
         mainHandler = new Handler();
         // ivHideControllerButton = (ImageView) findViewById(R.id.exo_controller); // 컨트롤러 안보이게 하기
+
+        // 별풍선 효과
+        frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
+        konfettiView = (KonfettiView) findViewById(R.id.viewKonfetti);
+        iv_star = (ImageView) findViewById(R.id.iv_star);
+        tv_starinfo = (TextView) findViewById(R.id.tv_starinfo);
 
         // Recycler View UI 적용
         imm= (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); // 키보드를 띄우기 위한 변수
@@ -216,6 +236,8 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
             }
         });
 
+        // 방송 정보 데이터 업데이트
+        roominfo_update();
 
     }
 
@@ -278,22 +300,50 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
                     // 서버로 부터(엄밀히 말하면 서비스) 별풍선을 보냈다는 알람 나타내기
                     else if(message_type.equals("message_star")) {
 
+                        String send_money = intent.getStringExtra("send_money");
+
                         // 별풍선 효과 나타내기
                         Log.d(TAG, "별풍선 효과!!!");
 
+                        frameLayout.setVisibility(View.VISIBLE);
 
-                        
-                    }
-                    
-                
-                
-            }
+                        // 누가 코인을 얼마 보냈는지 알려주는 곳
+                        tv_starinfo.setText(USER_NAME + "님이 " + send_money + "코인을 보냈습니다.");
+
+                        // ImageView 이미지 변경하는 곳.(보낸 코인의 갯수에 따라 이미지 달라짐)
+                        int id = getResources().getIdentifier("star" + send_money, "drawable", getPackageName());
+                        iv_star.setImageResource(id);
+
+                        // konfetti 효과 주는 곳
+                        konfettiView.build()
+                                .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                                .setDirection(0.0, 359.0)
+                                .setSpeed(1f, 5f)
+                                .setFadeOutEnabled(true)
+                                .setTimeToLive(1500L)
+                                .addShapes(Shape.RECT, Shape.CIRCLE)
+                                .addSizes(new Size(12, 5f))
+                                .setPosition(-50f, konfettiView.getWidth() + 50f, -50f, -50f)
+                                .stream(300, 1500L);
+
+                        // 5초 지난 후 FrameLayout INVISIBLE하게 하기. (별풍선 선물 알림창 종료)
+                        Handler handler = new Handler() {
+                            public void handleMessage(Message msg) {
+                                super.handleMessage(msg);
+                                frameLayout.setVisibility(View.INVISIBLE);
+
+                            }
+                        };
+                        handler.sendEmptyMessageDelayed(0, 5000);
+
+                    } // message_star() finish
+
+            } // onReceive() finish
         };
-
         registerReceiver(broadcast_receiver, intentfilter);
         Log.d(TAG, "broadcast receiver를 시작합니다.");
 
-    }
+    } // registerReceive() finish
 
     // Netty를 통해서 채팅 메세지를 보내는 곳
     private void sendMessage_toServer() {
@@ -326,7 +376,6 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
 
             // 서버에 메세지를 보냄
             channel.writeAndFlush(Object_Data);
-
             sendMessage_toRDBMS();
 
 
@@ -375,6 +424,47 @@ public class PlayerStreaming_Activity extends Activity implements View.OnClickLi
             broadcast_receiver=null;
             Log.d(TAG, "broadcast receiver를 종료합니다.");
         }
+    }
+    // =========================================================================================================
+
+    // =========================================================================================================
+    // Http 통신하는 부분
+    // 보내는 값: 방 번호, 유저 성별, 유저 연령대
+    // 받는 값: 성공 여부
+    private void roominfo_update() {
+        Log.d(TAG, "roominfo_update 작동");
+        Log.d(TAG, "서버로 보내는 값 room_id : " + room_id);
+
+        // 회원가입 할 때 유저 정보에서 입력 받기
+        // 유저 성별
+        int room_male=1;
+        int room_female=0;
+
+        // 유저 연령대
+        int room_20s=1;
+        int room_30s=0;
+        int room_40s=0;
+        int room_50s=0;
+
+        String update_roomid = "\""+room_id + "\"";
+        Retrofit retrofit = RetrofitClient.getClient();
+        HttpService httpService = retrofit.create(HttpService.class);
+        Call<ResponseBody> comment = httpService.update_roominfo(
+                update_roomid, room_male, room_female, room_20s, room_30s, room_40s, room_50s);
+        comment.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (!response.isSuccessful()) {
+                    Log.d(TAG, "유저 정보 업데이트 실패");
+                    return;
+                } else {
+                    Log.d(TAG, "유저 정보 업데이트 성공");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            }
+        });
     }
     // =========================================================================================================
 

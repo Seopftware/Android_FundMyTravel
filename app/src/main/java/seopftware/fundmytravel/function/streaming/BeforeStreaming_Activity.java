@@ -92,8 +92,6 @@ public class BeforeStreaming_Activity extends AppCompatActivity {
         // Uri to File (서버에 이미지 파일 전송하기 위해 변경)
         photoFile = new File(getPath(photoUri));
 
-
-
         // location manager 선언
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 

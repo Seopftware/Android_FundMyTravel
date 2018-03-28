@@ -35,7 +35,7 @@ public class Intro_Activity extends AppCompatActivity {
         public void run() {
 
             // 다음 화면인 Login_Activity로 넘어가기
-            Intent intent=new Intent(getApplicationContext(), Login_Activity.class);
+            Intent intent=new Intent(getApplicationContext(), Tutorial_Activity.class);
             startActivity(intent);
             finish();
 
