@@ -415,4 +415,89 @@ public class Parsing {
         }
 
     }
+
+    // =========================================================================================================
+    // 채팅 방 정보 GSon
+    // 채팅 방 정보를 받아오는 Table: message_room
+    // =========================================================================================================
+        @SerializedName("chatroomlist")
+        @Expose
+        private List<Chatroomlist> chatroomlist = null;
+
+        public List<Chatroomlist> getChatroomlist() {
+            return chatroomlist;
+        }
+
+        public void setChatroomlist(List<Chatroomlist> chatroomlist) {
+            this.chatroomlist = chatroomlist;
+        }
+
+        public int getChatRoomCount() {
+            return chatroomlist.size();
+        }
+
+        // =========================================================================================================
+
+    public class Chatroomlist {
+
+        @SerializedName("user_id")
+        @Expose
+        private String userId;
+        @SerializedName("receiver_id")
+        @Expose
+        private String receiverId;
+        @SerializedName("message_time")
+        @Expose
+        private String messageTime;
+        @SerializedName("message_status")
+        @Expose
+        private String messageStatus;
+        @SerializedName("receiver_name")
+        @Expose
+        private String receiverName;
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public String getReceiverId() {
+            return receiverId;
+        }
+
+        public void setReceiverId(String receiverId) {
+            this.receiverId = receiverId;
+        }
+
+        public String getMessageTime() {
+            return messageTime;
+        }
+
+        public void setMessageTime(String messageTime) {
+            this.messageTime = messageTime;
+        }
+
+        public String getMessageStatus() {
+            return messageStatus;
+        }
+
+        public void setMessageStatus(String messageStatus) {
+            this.messageStatus = messageStatus;
+        }
+
+        public String getReceiverName() {
+            return receiverName;
+        }
+
+        public void setReceiverName(String receiverName) {
+            this.receiverName = receiverName;
+        }
+
+}
+
+
+
 }

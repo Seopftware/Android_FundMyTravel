@@ -53,7 +53,6 @@ import seopftware.fundmytravel.function.retrofit.HttpService;
 import static seopftware.fundmytravel.activity.Home_Profile_Activity.PIC_MESSAGE_USERINFO;
 import static seopftware.fundmytravel.activity.Home_Profile_Activity.PIC_MESSAGE_USERINFO_ID;
 import static seopftware.fundmytravel.function.MyApp.SERVER_URL;
-import static seopftware.fundmytravel.function.MyApp.TimeCheck;
 import static seopftware.fundmytravel.function.MyApp.USER_ID;
 import static seopftware.fundmytravel.function.MyApp.USER_NAME;
 import static seopftware.fundmytravel.function.MyApp.USER_PHOTO;
@@ -71,7 +70,7 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
     LinearLayout optionLayout, boardLayout, paintLayout; // 이미지 옵션창, 페인트 작업할 레이아웃, 페인트 옵션창
 
     // 서버로 보낼 파일 변수
-//    File pic_file;
+    File pic_file;
 
     // 버튼
     ImageButton ibtn_save; // 이미지 저장
@@ -317,7 +316,33 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
 
 
     private void picSend() {
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            // 저장할 주소 + 이름
 
+            image_file_name = Long.toString(System.currentTimeMillis()) + "_save.jpg";
+            File storagePath1 = new File(Environment.getExternalStorageDirectory() + "/FundMyTravel/"); // 저장 경로 설정
+            pic_file = new File(storagePath1, image_file_name); // 파일 저장 경로, 파일 이름
+
+            // create bitmap screen capture
+            frameLayout.setDrawingCacheEnabled(true); // 뷰가 업데이트 될 때마다 그 때의 뷰 이미지를 Drawing cache에 저장할지 여부를 결정합니다.
+            Bitmap bitmap = frameLayout.getDrawingCache();
+
+            // 이미지 파일 생성
+            FileOutputStream outputStream = new FileOutputStream(pic_file);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+
+            frameLayout.destroyDrawingCache();
+            outputStream.flush();
+            outputStream.close();
+
+        } catch (Throwable e) {
+            // Several error may come out with file handling or OOM
+            e.printStackTrace();
+        }
+
+        pictoServer(pic_file);
     }
 
 
@@ -330,7 +355,7 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
 
             image_file_name = Long.toString(System.currentTimeMillis()) + "_save.jpg";
             File storagePath1 = new File(Environment.getExternalStorageDirectory() + "/FundMyTravel/"); // 저장 경로 설정
-            File pic_file = new File(storagePath1, image_file_name); // 파일 저장 경로, 파일 이름
+            pic_file = new File(storagePath1, image_file_name); // 파일 저장 경로, 파일 이름
 
             // create bitmap screen capture
             frameLayout.setDrawingCacheEnabled(true); // 뷰가 업데이트 될 때마다 그 때의 뷰 이미지를 Drawing cache에 저장할지 여부를 결정합니다.
@@ -348,7 +373,6 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
             Toast.makeText(getApplicationContext(), "이미지 저장완료 : " + pic_file, Toast.LENGTH_LONG).show();
 
 
-            pictoServer(pic_file);
 
 
         } catch (Throwable e) {
@@ -372,7 +396,11 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
         final int receiver_id = pref.getInt(PIC_MESSAGE_USERINFO_ID, 999); // 저장된 자동로그인 정보가 있으면 "success" 없을 경우 "fail"
 
         // 서버로 보낼 변수들
-        String message_date = TimeCheck(); // 시간 받아오기
+//        String message_date = TimeCheck(); // 시간 받아오기
+
+
+        long timeInMillis = System.currentTimeMillis();
+        String message_date = String.valueOf(timeInMillis);
 
 
         // MultipartBody.Part is used to send also the actual file name
@@ -416,7 +444,6 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
                         JSONObject object = new JSONObject();
                         object.put("user_id", USER_ID); // 보내는 사람 ID
                         object.put("receiver_id", receiver_id); // 받는 사람의 ID
-                        object.put("receiver_name", receiver_name); // 받는 사람의 이름
                         object.put("message_type", "message_pic"); // 보내는 사람의 이름
                         object.put("image_file_name", image_file_name); // 보내는 사람의 Profile
                         object.put("sender_name", USER_NAME); // 보내는 사람의 이름
@@ -425,8 +452,6 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
                         String Object_Data = object.toString();
                         channel.writeAndFlush(Object_Data);
 //                    }
-
-
 
                 }
 
@@ -437,6 +462,10 @@ public class FaceCanvas_Activity extends AppCompatActivity implements View.OnCli
                 catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+
+                // 이미지 파일 보내고 종료
+//                finish();
 
 
 

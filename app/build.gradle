@@ -113,4 +113,8 @@ dependencies {
     // Volley
     compile 'com.mcxiaoke.volley:library-aar:1.0.0'
 
+    // TimeAgo
+    compile 'com.github.marlonlom:timeago:3.0.2'
+
+
 }

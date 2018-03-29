@@ -12,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -61,11 +60,12 @@ public class MyApp extends Application {
     // Server 관련 정보들
     public static String SERVER_URL = "http://52.79.138.20/"; // AWS Server
 //    public static String SERVER_IP = "192.168.0.2"; // Netty Chat Server IP
-    public static String SERVER_IP = "172.30.1.45"; // Netty Chat Server IP
+    public static String SERVER_IP = "172.30.1.4"; // Netty Chat Server IP
     public static int NETTY_PORT = 8000; // Netty Chat Server Port
 
     // 이미지 파일 갯수 관리
-    public static ArrayList<String> numberofpic = new ArrayList<>(); // 받은 이미지 파일 담아두는 곳
+//    public static ArrayList<String> numberofpic = new ArrayList<>(); // 받은 이미지 파일 담아두는 곳
+    public static String numberofpic;
     public static int PIC_MESSAGE= 0; // 노티피케이션 메세지 알람 숫자
 
     // =========================================================================================================//
@@ -109,7 +109,7 @@ public class MyApp extends Application {
     // 추후, Sync 작업할 때도 날짜를 입맛대로 관리하기 위해 클라에서 관리
     public static String TimeCheck() {
         long now = System.currentTimeMillis();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 E요일_kkmmss", Locale.KOREA);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.KOREA);
         Log.d("시간이 이상함", String.valueOf(simpleDateFormat));
         String Show_Time = simpleDateFormat.format(new Date(now));
 

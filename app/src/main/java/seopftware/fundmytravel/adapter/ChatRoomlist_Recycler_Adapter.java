@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 
 import seopftware.fundmytravel.R;
@@ -63,18 +61,14 @@ public class ChatRoomlist_Recycler_Adapter extends RecyclerView.Adapter<Recycler
         if(holder instanceof ItemOneViewHolder) {
 
             ((ItemOneViewHolder)holder).tv_Name.setText(listviewItem.getUser_name()); // 유저 이름
-            ((ItemOneViewHolder)holder).tv_Name.setText(listviewItem.getMessage_time()); // 메세지 시간
-
-            Glide.with(context)
-                    .load(listviewItem.getMessage_icon())
-                    .into(((ItemOneViewHolder)holder).iv_Status); // 방송 대문 이미지
+            ((ItemOneViewHolder)holder).tv_Date.setText(listviewItem.getMessage_time()); // 메세지 시간
 
 
             // 방송 상태를 가져오는 변수
             String message_status = listviewItem.getMessage_status(); // 받는 값: delivered, received, opened
 
             // 만약 방송 중이면
-            if(message_status.equals("DELIVERED")) {
+            if(message_status.equals("delivered")) {
 
                 Log.d(TAG, "DELIVERED");
                 ((ItemOneViewHolder)holder).tv_MessageStatus.setText("delivered"); // 메세지 전송
@@ -82,14 +76,14 @@ public class ChatRoomlist_Recycler_Adapter extends RecyclerView.Adapter<Recycler
 
             }
 
-            else if(message_status.equals("RECEIVED")) {
+            else if(message_status.equals("received")) {
 
                 Log.d(TAG, "RECEIVED");
                 ((ItemOneViewHolder)holder).tv_MessageStatus.setText("received"); // 메세지 전송
                 ((ItemOneViewHolder)holder).iv_Status.setImageResource(R.drawable.snapchat_icon); // 메세지 전송 아이콘
             }
 
-            else if(message_status.equals("OPENED")) {
+            else if(message_status.equals("opened")) {
 
                 Log.d(TAG, "OPENED");
                 ((ItemOneViewHolder)holder).tv_MessageStatus.setText("opened"); // 메세지 전송

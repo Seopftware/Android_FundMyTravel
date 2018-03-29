@@ -464,7 +464,9 @@ public class Chat_Service extends Service {
         // 임시방편임. 유저 닉네임이 같은 경우에만 +1 해주기
         PIC_MESSAGE++; // 받은 메세지 수 더해주기 (+1) 노티피케이션 클릭 시 0으로 다시 초기화 시켜주기
 
-        numberofpic.add(image_file_name);
+//        numberofpic.add(image_file_name);
+
+        numberofpic = image_file_name;
 
         // 유저 ID 값 받아오기
         SharedPreferences prefs = getSharedPreferences(AUTO_LOGIN_STATUS, MODE_PRIVATE);

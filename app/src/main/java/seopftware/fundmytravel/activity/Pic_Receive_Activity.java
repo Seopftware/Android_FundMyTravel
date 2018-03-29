@@ -4,13 +4,23 @@ import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.dinuscxj.progressbar.CircleProgressBar;
+
+import java.util.Hashtable;
+import java.util.Map;
 
 import seopftware.fundmytravel.R;
 
@@ -40,9 +50,6 @@ public class Pic_Receive_Activity extends AppCompatActivity {
         // 받은 알람 메세지 0으로 초기화 시켜주기
         PIC_MESSAGE = 0;
 
-
-
-
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
         imageView = (ImageView) findViewById(R.id.imageView);
         mSolidProgressBar = (CircleProgressBar) findViewById(R.id.solid_progress);
@@ -57,9 +64,8 @@ public class Pic_Receive_Activity extends AppCompatActivity {
 //        iv.setLayoutParams(params);
 //        linearLayout.addView(iv);
 
-
-        Glide.with(getApplicationContext()).load(SERVER_URL + "/pic_message/"+numberofpic.get(0)).into(imageView); // 사각형 프로필
-
+//        Glide.with(getApplicationContext()).load(SERVER_URL + "/pic_message/"+numberofpic.get(0)).into(imageView); // 사각형 프로필
+        Glide.with(getApplicationContext()).load(SERVER_URL + "/pic_message/"+numberofpic).into(imageView); // 사각형 프로필
 
         simulateProgress();
 
@@ -129,13 +135,43 @@ public class Pic_Receive_Activity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                messageStatus_Update();
                 finish();
             }
         }).start();
+    }
+
+    // HTTP 통신
+    // 메세지를 읽은 상태 업데이트
+    private void messageStatus_Update() {
+        String url = "http://52.79.138.20/php/update/update_messagestatus.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "결과값 : " + response.toString());
+
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Anything you want
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
 
 
+                long timeInMillis = System.currentTimeMillis();
+                String message_date = String.valueOf(timeInMillis);
 
+                Map<String, String> map = new Hashtable<>();
+                map.put("message_date", String.valueOf(message_date));
 
+                return map;
+            }
+        };
 
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
     }
 }

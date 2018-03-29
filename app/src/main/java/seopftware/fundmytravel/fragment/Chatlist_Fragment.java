@@ -3,11 +3,14 @@ package seopftware.fundmytravel.fragment;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.github.marlonlom.utilities.timeago.TimeAgo;
 
 import java.util.ArrayList;
 
@@ -27,6 +30,11 @@ import static seopftware.fundmytravel.function.MyApp.USER_ID;
 
 @SuppressLint("ValidFragment")
 public class Chatlist_Fragment extends Fragment {
+
+    private static final String TAG = "all_"+"Chatlist_Fragment";
+
+    // pull to refresh
+    SwipeRefreshLayout mSwipeRefresh;
 
     // Recycler View 관련 변수
     RecyclerView recyclerView;
@@ -51,7 +59,7 @@ public class Chatlist_Fragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_chatlist, null);
 
         // Recycler view 선언
-        recyclerView = (RecyclerView) v.findViewById(R.id.roomlist_recycler);
+        recyclerView = (RecyclerView) v.findViewById(R.id.chatlist_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler_itemlist = new ArrayList<ChatRoomlist_Item>();
@@ -78,6 +86,20 @@ public class Chatlist_Fragment extends Fragment {
             }
         }));
 
+
+        // Pull to Refresh
+        mSwipeRefresh = (SwipeRefreshLayout) v.findViewById(R.id.pulltoRefresh);
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // 동작이 완료 되면 새로고침 아이콘 없애기
+                mSwipeRefresh.setRefreshing(false);
+
+                recycler_itemlist.clear();
+                getChatRoomList();
+            }
+        });
+
         // 채팅 목록 받아오기
         getChatRoomList();
 
@@ -97,6 +119,25 @@ public class Chatlist_Fragment extends Fragment {
             @Override
             public void onResponse(Call<Parsing> call, Response<Parsing> response) {
                 Parsing parsing = response.body();
+
+
+                for (int i = 0; i<parsing.getChatRoomCount(); i++) {
+
+                    String userId = parsing.getChatroomlist().get(i).getUserId();
+                    String receiverId = parsing.getChatroomlist().get(i).getReceiverId();
+                    String messageTime = parsing.getChatroomlist().get(i).getMessageTime();
+                    String messageStatus = parsing.getChatroomlist().get(i).getMessageStatus();
+                    String receiverName = parsing.getChatroomlist().get(i).getReceiverName();
+
+                    // TimeAgo Library를 활용한 남은 시간 표현
+                    Long update_time = Long.valueOf(messageTime);
+                    String text = TimeAgo.using(update_time); // 1minutes Ago
+
+                    adapter.addChatroom(Integer.parseInt(userId), Integer.parseInt(receiverId), receiverName, text, messageStatus);
+
+                }
+
+                adapter.notifyDataSetChanged();
             }
 
             @Override

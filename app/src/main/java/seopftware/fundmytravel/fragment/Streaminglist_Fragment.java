@@ -197,7 +197,7 @@ public class Streaminglist_Fragment extends Fragment {
 
                     // 7
                     String room_status = parsing.getRoomlist().get(i).getRoomStatus();
-                    Log.d(TAG, "room_status : " + room_status);
+//                    Log.d(TAG, "room_status : " + room_status);
 
                     adapter.addRoom(room_id, room_numpeople, room_name_title, room_name_tag, room_name_streamer, room_image_path, room_status);
 

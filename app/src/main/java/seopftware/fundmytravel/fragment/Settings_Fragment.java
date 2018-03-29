@@ -4,16 +4,29 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
@@ -23,6 +36,7 @@ import seopftware.fundmytravel.function.streaming.Streaming_Acticity;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static seopftware.fundmytravel.function.MyApp.SERVER_URL;
+import static seopftware.fundmytravel.function.MyApp.USER_ID;
 import static seopftware.fundmytravel.function.MyApp.USER_NAME;
 import static seopftware.fundmytravel.function.MyApp.USER_PHOTO;
 
@@ -52,7 +66,6 @@ public class Settings_Fragment extends Fragment {
         // UI 선언
         iv_ProfileBack = (ImageView) v.findViewById(R.id.iv_ProfileBack); // 프로필 백그라운드 사진
         iv_ProfileFront = (ImageView) v.findViewById(R.id.iv_ProfileFront); // 프로필 사진
-        iv_ProfileBack.bringToFront();
 
         iv_SNS = (ImageView) v.findViewById(R.id.iv_SNS); // SNS 여부 사진
         iv_camera = (ImageView) v.findViewById(R.id.iv_camera);
@@ -78,6 +91,12 @@ public class Settings_Fragment extends Fragment {
 
         tv_Name.setText(USER_NAME);
 
+        iv_SNS.bringToFront();
+        iv_ProfileFront.bringToFront();
+
+
+        messageStatus_Update();
+
         return v;
     }
 
@@ -89,6 +108,76 @@ public class Settings_Fragment extends Fragment {
     private void createList() {
         activities = new ArrayList<>();
         activities.add(new ActivityLink(new Intent(getContext(), Streaming_Acticity.class), "Streaming", JELLY_BEAN));
+    }
+
+    // HTTP 통신
+    // 메세지를 읽은 상태 업데이트
+    private void messageStatus_Update() {
+        String url = "http://52.79.138.20/php/select/user_now.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "결과값 : " + response.toString());
+
+                Log.d("parsing1", response);
+
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONArray jsonArray = jsonObject.getJSONArray("result");
+
+                    JSONObject jo = jsonArray.getJSONObject(0);
+
+                    // 로그인 방법
+                    String  user_method= jo.getString("user_method");
+                    if(user_method.equals("gmail")) {
+
+                        iv_SNS.setImageDrawable(getResources().getDrawable(R.drawable.google_icon));
+                        tv_SNSName.setText("Google");
+//                        iv_SNS.setImageResource(R.drawable.google_icon);
+
+                    }
+
+                    else if(user_method.equals("naver")) {
+                        tv_SNSName.setText("Naver");
+                        iv_SNS.setImageDrawable(getResources().getDrawable(R.drawable.naver_icon));
+
+                    }
+
+
+                    // 폰 번호
+                    String user_phone = jo.getString("user_phone");
+                    tv_PhoneNum.setText(user_phone);
+
+
+                    // 현재 별풍선 갯수
+                    String user_star = jo.getString("user_star");
+                    tv_TotalStar.setText(user_star);
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Anything you want
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Map<String, String> map = new Hashtable<>();
+                map.put("user_key", String.valueOf(USER_ID));
+
+                return map;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue.add(stringRequest);
     }
 
 }
